@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  10 17:08:59 2018
-@author: Simon
+@author: cdyangjiudong
 """
 
 import codecs
@@ -10,8 +10,8 @@ import random
 import os
 
 def data_processing():
-    with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt", mode="w", encoding="utf-8") as wfquestion:
-        with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt", mode="w", encoding="utf-8") as wfanswer:
+    with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt", mode="w", encoding="utf-8") as wfquestion:
+        with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt", mode="w", encoding="utf-8") as wfanswer:
             try:
                 wfquestion.truncate()
                 wfanswer.truncate()
@@ -27,14 +27,14 @@ def data_processing():
     countQuestion = 0
     countAnswer = 0
     sessionId = "00029c51f92e8f34250d6af329c9a8df"  #第一行的sessionID
-    with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/chat.txt", mode = 'r', encoding = "utf-8") as rf:
+    with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/chat.txt", mode = 'r', encoding = "utf-8") as rf:
         try:
             line = rf.readline()
             while line:
                 splitline = line.strip('\r\n').split("\t")
                 if sessionId == splitline[0]:
-                    with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt", mode="a", encoding="utf-8") as wf_question:
-                        with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt", mode="a", encoding="utf-8") as wf_answer:
+                    with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt", mode="a", encoding="utf-8") as wf_question:
+                        with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt", mode="a", encoding="utf-8") as wf_answer:
                             try:
                                 if splitline[2] == '0':
                                     if countQuestion == 3 and countAnswer == 2 :
@@ -87,10 +87,10 @@ def data_processing():
    
 def cutDataToTrainDevBy91():
     randomList = []
-    with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/devQuestions.txt", mode="w", encoding="utf-8") as wf_devQuestion:
-        with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/devAnswers.txt", mode="w", encoding="utf-8") as wf_devAnswer:
-            with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/trainQuestions.txt", mode="w", encoding="utf-8") as wf_trainQuestion:
-                with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/trainAnswers.txt", mode="w", encoding="utf-8") as wf_trainAnswer:
+    with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/devQuestions.txt", mode="w", encoding="utf-8") as wf_devQuestion:
+        with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/devAnswers.txt", mode="w", encoding="utf-8") as wf_devAnswer:
+            with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/trainQuestions.txt", mode="w", encoding="utf-8") as wf_trainQuestion:
+                with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/trainAnswers.txt", mode="w", encoding="utf-8") as wf_trainAnswer:
                     try:
                         wf_devQuestion.truncate()
                         wf_devAnswer.truncate()
@@ -102,15 +102,15 @@ def cutDataToTrainDevBy91():
                         wf_devQuestion.close()
                         wf_devAnswer.close()    
     
-    with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt", mode = 'r', encoding = "utf-8") as rf_question:
-        with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt", mode = 'r', encoding = "utf-8") as rf_answer:
+    with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt", mode = 'r', encoding = "utf-8") as rf_question:
+        with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt", mode = 'r', encoding = "utf-8") as rf_answer:
             try:
                 questionLines = rf_question.readlines()
                 answerLines = rf_answer.readlines()
                 #trainset的十分之一的数据集作为devset
                 randomList = random.sample(range(len(questionLines)-1), int(len(questionLines)/10))
-                with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/devQuestions.txt", mode = 'a', encoding = "utf-8") as wf_devQuestion:
-                    with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/devAnswers.txt", mode = 'a', encoding = "utf-8") as wf_devAnswer:
+                with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/devQuestions.txt", mode = 'a', encoding = "utf-8") as wf_devQuestion:
+                    with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/devAnswers.txt", mode = 'a', encoding = "utf-8") as wf_devAnswer:
                         try:
                             for i in randomList:
                                 wf_devQuestion.write(questionLines[i])
@@ -127,12 +127,12 @@ def cutDataToTrainDevBy91():
                 rf_question.close()
                 rf_answer.close()
                 
-    with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt", mode = 'r', encoding="utf-8") as rf_question:
-        with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt", mode='r',encoding="utf-8") as rf_answer:
+    with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt", mode = 'r', encoding="utf-8") as rf_question:
+        with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt", mode='r',encoding="utf-8") as rf_answer:
             questions = rf_question.readlines()
             answers = rf_answer.readlines()
-            with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/trainQuestions.txt",mode='a',encoding="utf-8") as wf_question:
-                with codecs.open("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/trainAnswers.txt",mode='a',encoding="utf-8") as wf_answer:
+            with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/trainQuestions.txt",mode='a',encoding="utf-8") as wf_question:
+                with codecs.open("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/trainAnswers.txt",mode='a',encoding="utf-8") as wf_answer:
                     for i in range(len(questions)):
                         if i not in randomList:
                             wf_question.write(questions[i])
@@ -146,8 +146,8 @@ def cutDataToTrainDevBy91():
                     wf_answer.close()
     
                             
-    os.remove("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt")
-    os.remove("C:/Users/Simon/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt")
+    os.remove("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/questions.txt")
+    os.remove("C:/Users/cdyangjiudong/Desktop/智能对话大赛/开源基线/算法大赛数据集/脱敏第二版日志-3/算法大赛基线数据集QAQAQ+A/answers.txt")
                             
                 
 if __name__ == "__main__": 
