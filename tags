@@ -1,0 +1,141 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ConfigParser	JDDC/Seq2Seq/execute.py	/^    from ConfigParser import ConfigParser$/;"	i
+ConfigParser	JDDC/Seq2Seq/execute.py	/^    from configparser import ConfigParser$/;"	i
+EOS_ID	JDDC/Seq2Seq/data_utils.py	/^EOS_ID = 2$/;"	v
+FileObj	JDDC/TFIDF/fileObject.py	/^class FileObj(object):$/;"	c
+FileObj	JDDC/TFIDF/runModel.py	/^from fileObject import FileObj$/;"	i
+GO_ID	JDDC/Seq2Seq/data_utils.py	/^GO_ID = 1$/;"	v
+NeuHub_API_JDDC	JDDC/Seq2Seq/data_utils.py	/^import NeuHub_API_JDDC$/;"	i
+PAD_ID	JDDC/Seq2Seq/data_utils.py	/^PAD_ID = 0$/;"	v
+Seg	JDDC/TFIDF/cutWords.py	/^class Seg(object):$/;"	c
+Seg	JDDC/TFIDF/sentence.py	/^from cutWords import Seg$/;"	i
+Sentence	JDDC/TFIDF/runModel.py	/^from sentence import Sentence$/;"	i
+Sentence	JDDC/TFIDF/sentence.py	/^class Sentence(object):$/;"	c
+Sentence	JDDC/TFIDF/sentenceSimilarity.py	/^from sentence import Sentence$/;"	i
+SentenceSimilarity	JDDC/TFIDF/runModel.py	/^from sentenceSimilarity import SentenceSimilarity$/;"	i
+SentenceSimilarity	JDDC/TFIDF/sentenceSimilarity.py	/^class SentenceSimilarity():$/;"	c
+Seq2SeqModel	JDDC/Seq2Seq/seq2seq_model.py	/^class Seq2SeqModel(object):$/;"	c
+TfidfModel	JDDC/TFIDF/sentenceSimilarity.py	/^    def TfidfModel(self):$/;"	m	class:SentenceSimilarity
+UNK_ID	JDDC/Seq2Seq/data_utils.py	/^UNK_ID = 3$/;"	v
+_DIGIT_RE	JDDC/Seq2Seq/data_utils.py	/^_DIGIT_RE = re.compile("\\d")$/;"	v
+_EOS	JDDC/Seq2Seq/data_utils.py	/^_EOS = "_EOS"$/;"	v
+_GO	JDDC/Seq2Seq/data_utils.py	/^_GO = "_GO"$/;"	v
+_PAD	JDDC/Seq2Seq/data_utils.py	/^_PAD = "_PAD"$/;"	v
+_START_VOCAB	JDDC/Seq2Seq/data_utils.py	/^_START_VOCAB = [_PAD, _GO, _EOS, _UNK]$/;"	v
+_UNK	JDDC/Seq2Seq/data_utils.py	/^_UNK = "_UNK"$/;"	v
+_WORD_SPLIT	JDDC/Seq2Seq/data_utils.py	/^_WORD_SPLIT = re.compile("([.,!?\\"':;)(])")$/;"	v
+__init__	JDDC/Seq2Seq/seq2seq_model.py	/^  def __init__(self, source_vocab_size, target_vocab_size, buckets, size,$/;"	m	class:Seq2SeqModel
+__init__	JDDC/TFIDF/cutWords.py	/^    def __init__(self):$/;"	m	class:Seg
+__init__	JDDC/TFIDF/fileObject.py	/^    def __init__(self,filepath):$/;"	m	class:FileObj
+__init__	JDDC/TFIDF/sentence.py	/^    def __init__(self,sentence,seg,id = 0):$/;"	m	class:Sentence
+__init__	JDDC/TFIDF/sentenceSimilarity.py	/^    def __init__(self,seg):$/;"	m	class:SentenceSimilarity
+_buckets	JDDC/Seq2Seq/execute.py	/^_buckets = [(40, 50), (50, 60), (60, 70), (70, 90)]$/;"	v
+absolute_import	JDDC/Seq2Seq/data_utils.py	/^from __future__ import absolute_import$/;"	i
+absolute_import	JDDC/Seq2Seq/execute.py	/^from __future__ import absolute_import$/;"	i
+absolute_import	JDDC/Seq2Seq/seq2seq_model.py	/^from __future__ import absolute_import$/;"	i
+answer	JDDC/TFIDF/runModel.py	/^            answer=line[answer_index]$/;"	v
+answer_index	JDDC/TFIDF/runModel.py	/^            answer_index=top_15[j][0]$/;"	v
+basic_tokenizer	JDDC/Seq2Seq/data_utils.py	/^def basic_tokenizer(sentence):$/;"	f
+builtin	JDDC/Seq2Seq/seq2seq_model.py	/^from six.moves import xrange  # pylint: disable=redefined-builtin$/;"	i
+codecs	JDDC/Seq2Seq/dataProcessing.py	/^import codecs$/;"	i
+codecs	JDDC/Seq2Seq/execute.py	/^import codecs$/;"	i
+codecs	JDDC/TFIDF/cutWords.py	/^import codecs$/;"	i
+codecs	JDDC/TFIDF/dataProcessing.py	/^import codecs$/;"	i
+codecs	JDDC/TFIDF/fileObject.py	/^import codecs$/;"	i
+corpora	JDDC/TFIDF/sentenceSimilarity.py	/^from gensim import corpora, models, similarities$/;"	i
+create_model	JDDC/Seq2Seq/execute.py	/^def create_model(session, forward_only):$/;"	f
+create_vocabulary	JDDC/Seq2Seq/data_utils.py	/^def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size,$/;"	f
+cut	JDDC/TFIDF/cutWords.py	/^    def cut(self,sentence,stopword=True):$/;"	m	class:Seg
+cut	JDDC/TFIDF/sentence.py	/^    def cut(self,seg):$/;"	m	class:Sentence
+cutDataToTrainDevBy91	JDDC/Seq2Seq/dataProcessing.py	/^def cutDataToTrainDevBy91():$/;"	f
+cutDataToTrainDevBy91	JDDC/TFIDF/dataProcessing.py	/^def cutDataToTrainDevBy91():$/;"	f
+cut_for_search	JDDC/TFIDF/cutWords.py	/^    def cut_for_search(self,sentence,stopword=True):$/;"	m	class:Seg
+data_processing	JDDC/Seq2Seq/dataProcessing.py	/^def data_processing():$/;"	f
+data_processing	JDDC/TFIDF/dataProcessing.py	/^def data_processing():$/;"	f
+data_to_token_ids	JDDC/Seq2Seq/data_utils.py	/^def data_to_token_ids(data_path, target_path, vocabulary_path,$/;"	f
+data_utils	JDDC/Seq2Seq/execute.py	/^import data_utils$/;"	i
+data_utils	JDDC/Seq2Seq/seq2seq_model.py	/^import data_utils$/;"	i
+decode	JDDC/Seq2Seq/execute.py	/^def decode():$/;"	f
+defaultdict	JDDC/TFIDF/sentenceSimilarity.py	/^from collections import defaultdict$/;"	i
+disable	JDDC/Seq2Seq/seq2seq_model.py	/^from six.moves import xrange  # pylint: disable=redefined-builtin$/;"	i
+division	JDDC/Seq2Seq/data_utils.py	/^from __future__ import division$/;"	i
+division	JDDC/Seq2Seq/execute.py	/^from __future__ import division$/;"	i
+division	JDDC/Seq2Seq/seq2seq_model.py	/^from __future__ import division$/;"	i
+file_obj	JDDC/TFIDF/runModel.py	/^    file_obj = FileObj(r"dataSet\/devQuestions.txt")   $/;"	v
+file_obj	JDDC/TFIDF/runModel.py	/^    file_obj = FileObj(r"dataSet\/trainQuestions.txt")  $/;"	v
+file_result	JDDC/TFIDF/runModel.py	/^    file_result=open('dataSet\/result.txt','w')$/;"	v
+gConfig	JDDC/Seq2Seq/execute.py	/^        gConfig = get_config()$/;"	v
+gConfig	JDDC/Seq2Seq/execute.py	/^        gConfig = get_config(sys.argv[1])$/;"	v
+gConfig	JDDC/Seq2Seq/execute.py	/^gConfig = {}$/;"	v
+gc	JDDC/TFIDF/sentenceSimilarity.py	/^import gc$/;"	i
+get_batch	JDDC/Seq2Seq/seq2seq_model.py	/^  def get_batch(self, data, bucket_id):$/;"	m	class:Seq2SeqModel
+get_config	JDDC/Seq2Seq/execute.py	/^def get_config(config_file='seq2seq.ini'):$/;"	f
+get_cuted_sentence	JDDC/TFIDF/sentence.py	/^    def get_cuted_sentence(self):$/;"	m	class:Sentence
+get_cuted_sentences	JDDC/TFIDF/sentenceSimilarity.py	/^    def get_cuted_sentences(self):$/;"	m	class:SentenceSimilarity
+get_origin_sentence	JDDC/TFIDF/sentence.py	/^    def get_origin_sentence(self):$/;"	m	class:Sentence
+gfile	JDDC/Seq2Seq/data_utils.py	/^from tensorflow.python.platform import gfile$/;"	i
+initialize_vocabulary	JDDC/Seq2Seq/data_utils.py	/^def initialize_vocabulary(vocabulary_path):$/;"	f
+jieba	JDDC/TFIDF/cutWords.py	/^import jieba$/;"	i
+json	JDDC/Seq2Seq/NeuHub_API_JDDC.py	/^import json$/;"	i
+line	JDDC/TFIDF/runModel.py	/^        line = file_answer.readlines()$/;"	v
+logging	JDDC/Seq2Seq/dataProcessing.py	/^import logging$/;"	i
+logging	JDDC/Seq2Seq/execute.py	/^import logging$/;"	i
+logging	JDDC/TFIDF/dataProcessing.py	/^import logging$/;"	i
+math	JDDC/Seq2Seq/execute.py	/^import math$/;"	i
+models	JDDC/TFIDF/sentenceSimilarity.py	/^from gensim import corpora, models, similarities$/;"	i
+np	JDDC/Seq2Seq/execute.py	/^import numpy as np$/;"	i
+np	JDDC/Seq2Seq/seq2seq_model.py	/^import numpy as np$/;"	i
+os	JDDC/Seq2Seq/dataProcessing.py	/^import os$/;"	i
+os	JDDC/Seq2Seq/data_utils.py	/^import os$/;"	i
+os	JDDC/Seq2Seq/execute.py	/^import os$/;"	i
+os	JDDC/TFIDF/dataProcessing.py	/^import os$/;"	i
+parse	JDDC/Seq2Seq/NeuHub_API_JDDC.py	/^def parse(text):$/;"	f
+prepare_custom_data	JDDC/Seq2Seq/data_utils.py	/^def prepare_custom_data(working_directory, train_enc, train_dec, test_enc, test_dec, enc_vocabulary_size, dec_vocabulary_size, tokenizer=None):$/;"	f
+print_function	JDDC/Seq2Seq/data_utils.py	/^from __future__ import print_function$/;"	i
+print_function	JDDC/Seq2Seq/execute.py	/^from __future__ import print_function$/;"	i
+print_function	JDDC/Seq2Seq/seq2seq_model.py	/^from __future__ import print_function$/;"	i
+pylint	JDDC/Seq2Seq/seq2seq_model.py	/^from six.moves import xrange  # pylint: disable=redefined-builtin$/;"	i
+quote	JDDC/Seq2Seq/NeuHub_API_JDDC.py	/^from urllib.parse import quote$/;"	i
+random	JDDC/Seq2Seq/dataProcessing.py	/^import random$/;"	i
+random	JDDC/Seq2Seq/seq2seq_model.py	/^import random$/;"	i
+random	JDDC/TFIDF/dataProcessing.py	/^import random$/;"	i
+re	JDDC/Seq2Seq/data_utils.py	/^import re$/;"	i
+read_data	JDDC/Seq2Seq/execute.py	/^def read_data(source_path, target_path, max_size=None):$/;"	f
+read_in_stopword	JDDC/TFIDF/cutWords.py	/^    def read_in_stopword(self):#读入停用词$/;"	m	class:Seg
+read_lines	JDDC/TFIDF/fileObject.py	/^    def read_lines(self):$/;"	m	class:FileObj
+redefined	JDDC/Seq2Seq/seq2seq_model.py	/^from six.moves import xrange  # pylint: disable=redefined-builtin$/;"	i
+request	JDDC/Seq2Seq/NeuHub_API_JDDC.py	/^from urllib import request$/;"	i
+right_count	JDDC/TFIDF/runModel.py	/^    right_count = 0$/;"	v
+sampled_loss	JDDC/Seq2Seq/seq2seq_model.py	/^      def sampled_loss(labels, inputs):$/;"	f	function:Seq2SeqModel.__init__
+seg	JDDC/Seq2Seq/NeuHub_API_JDDC.py	/^    seg = parse(text)$/;"	v
+seg	JDDC/TFIDF/runModel.py	/^    seg = Seg()$/;"	v
+sentence2vec	JDDC/TFIDF/sentenceSimilarity.py	/^    def sentence2vec(self,sentence):$/;"	m	class:SentenceSimilarity
+sentence_to_token_ids	JDDC/Seq2Seq/data_utils.py	/^def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits=True):$/;"	f
+seq2seq_f	JDDC/Seq2Seq/seq2seq_model.py	/^    def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):$/;"	f	function:Seq2SeqModel.__init__
+seq2seq_model	JDDC/Seq2Seq/execute.py	/^import seq2seq_model$/;"	i
+set_sentences	JDDC/TFIDF/sentenceSimilarity.py	/^    def set_sentences(self,sentences):$/;"	m	class:SentenceSimilarity
+similarities	JDDC/TFIDF/sentenceSimilarity.py	/^from gensim import corpora, models, similarities$/;"	i
+similarity	JDDC/TFIDF/sentenceSimilarity.py	/^    def similarity(self,sentence):$/;"	m	class:SentenceSimilarity
+simple_model	JDDC/TFIDF/sentenceSimilarity.py	/^    def simple_model(self,min_frequency = 1):$/;"	m	class:SentenceSimilarity
+ss	JDDC/TFIDF/runModel.py	/^    ss = SentenceSimilarity(seg)$/;"	v
+st	JDDC/Seq2Seq/NeuHub_API_JDDC.py	/^import string as st$/;"	i
+step	JDDC/Seq2Seq/seq2seq_model.py	/^  def step(self, session, encoder_inputs, decoder_inputs, target_weights,$/;"	m	class:Seq2SeqModel
+stopword_filepath	JDDC/TFIDF/cutWords.py	/^    stopword_filepath="stopwordList\/\/stopword.txt"$/;"	v	class:Seg
+stopwords	JDDC/TFIDF/cutWords.py	/^    stopwords = []$/;"	v	class:Seg
+sys	JDDC/Seq2Seq/execute.py	/^import sys$/;"	i
+test_sentences	JDDC/TFIDF/runModel.py	/^    test_sentences = file_obj.read_lines()$/;"	v
+text	JDDC/Seq2Seq/NeuHub_API_JDDC.py	/^    text = '请您稍等，我们马上为你安排发货#EOS[数字]'$/;"	v
+tf	JDDC/Seq2Seq/execute.py	/^import tensorflow as tf$/;"	i
+tf	JDDC/Seq2Seq/seq2seq_model.py	/^import tensorflow as tf$/;"	i
+time	JDDC/Seq2Seq/execute.py	/^import time$/;"	i
+top_15	JDDC/TFIDF/runModel.py	/^        top_15 = ss.similarity(test_sentences[i])$/;"	v
+train	JDDC/Seq2Seq/execute.py	/^def train():$/;"	f
+train_sentences	JDDC/TFIDF/runModel.py	/^    train_sentences = file_obj.read_lines()$/;"	v
+urllib	JDDC/Seq2Seq/NeuHub_API_JDDC.py	/^import urllib$/;"	i
+xrange	JDDC/Seq2Seq/execute.py	/^from six.moves import xrange$/;"	i
+xrange	JDDC/Seq2Seq/seq2seq_model.py	/^from six.moves import xrange  # pylint: disable=redefined-builtin$/;"	i
