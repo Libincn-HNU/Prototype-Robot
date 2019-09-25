@@ -1,4 +1,7 @@
 # Byte-compiled / optimized / DLL files
+.idea
+corpus
+resources
 .DS_Store
 data/
 *.zip

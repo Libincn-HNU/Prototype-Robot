@@ -110,42 +110,4 @@ def decode():
                 print("> ", "")
                 sys.stdout.flush()
                 sentence = sys.stdin.readline()
-        # else:
-        #     sys.stdout.write("> ")
-        #     sys.stdout.flush()
-        #     sentence = sys.stdin.readline()
-        #
-        #     while sentence:
-        #           # Get token-ids for the input sentence.
-        #           token_ids = sentence_to_token_ids(tf.compat.as_bytes(sentence), vocab)
-        #           # Which bucket does it belong to?
-        #           bucket_id = min([b for b in xrange(len(_buckets))
-        #                            if _buckets[b][0] > len(token_ids)])
-        #           # for loc in locs:
-        #               # Get a 1-element batch to feed the sentence to the model.
-        #           encoder_inputs, decoder_inputs, target_weights = model.get_batch(
-        #                   {bucket_id: [(token_ids, [],)]}, bucket_id)
-        #
-        #           _, _, output_logits = model.step(sess, encoder_inputs, decoder_inputs,
-        #                                                target_weights, bucket_id, True,beam_search)
-        #           # This is a greedy decoder - outputs are just argmaxes of output_logits.
-        #
-        #           outputs = [int(np.argmax(logit, axis=1)) for logit in output_logits]
-        #           # If there is an EOS symbol in outputs, cut them at that point.
-        #           if EOS_ID in outputs:
-        #               # print outputs
-        #               outputs = outputs[:outputs.index(EOS_ID)]
-        #
-        #           print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in outputs]))
-        #           print("> ", "")
-        #           sys.stdout.flush()
-        #           sentence = sys.stdin.readline()
 
-def main(_):
-  if FLAGS.decode:
-    decode()
-  else:
-    train()
-
-if __name__ == "__main__":
-  tf.app.run()
