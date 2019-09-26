@@ -10,8 +10,11 @@ import random
 
 padToken, goToken, eosToken, unknownToken = 0, 1, 2, 3
 
-class Batch:
-    #batch类，里面包含了encoder输入，decoder输入，decoder标签，decoder样本长度mask
+
+class Dataset_Seq2seq(object):
+    """
+    batch类，里面包含了encoder输入，decoder输入，decoder标签，decoder样本长度mask
+    """
     def __init__(self):
         self.encoderSeqs = []
         self.decoderSeqs = []
