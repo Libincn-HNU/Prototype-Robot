@@ -22,7 +22,7 @@ from tensorflow.python.ops import rnn_cell_impl
 from tensorflow.python.ops import variable_scope
 from tensorflow.python.util import nest
 
-Linear = rnn_cell_impl._Linear  # pylint: disable=protected-access,invalid-name
+Linear = core_rnn_cell._linear  # pylint: disable=protected-access,invalid-name
 
 def _extract_beam_search(embedding, beam_size, num_symbols, embedding_size, output_projection=None):
 
