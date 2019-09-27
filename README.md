@@ -11,6 +11,11 @@
 + Step 2. Pipeline model
 + Step 3. End2End model
 
+# Task Type
+
++ chat-bot
++ task-bot
+
 # Dataset
 
 + [chatbot corpus chinese](https://github.com/codemayq/chaotbot_corpus_Chinese)
@@ -211,3 +216,31 @@
   - 聊天机器人经常给出模糊的回应，例如 I don't know
 - 数据集链接
 - https://github.com/facebookresearch/ParlAI/tree/master/parlai/tasks/personachat
+
+### Seq2seq code build
++ https://blog.csdn.net/Irving_zhang/article/details/79088143
+
+https://github.com/qhduan/ConversationalRobotDesign/blob/master/%E5%90%84%E7%A7%8D%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%B9%B3%E5%8F%B0%E8%B0%83%E7%A0%94.md
+
+### DeepQA
+
+### RasaHQ
+
+### NLG/GAN
+
+### Dual Training
+
+### 在可以收敛的情况下，尽可能使用更深的模型
+参考CV 领域的一些做法
+
+https://zhuanlan.zhihu.com/p/35317776
+
+https://zhuanlan.zhihu.com/p/29967933
+https://blog.csdn.net/Irving_zhang/article/details/79088143
+
+### A Neural Conversation Model
++ https://arxiv.org/abs/1506.05869
+
+
+聊天机器人
+多轮对话

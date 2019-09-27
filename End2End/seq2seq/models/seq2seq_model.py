@@ -5,20 +5,6 @@ from seq2seq import embedding_attention_seq2seq
 class Seq2SeqModel():
 
     def __init__(self, args, tokenzier):
-        '''
-        初始化并创建模型
-        :param source_vocab_size: encoder输入的vocab size
-        :param target_vocab_size: decoder输入的vocab size，这里跟上面一样
-        :param en_de_seq_len: 源和目的序列最大长度
-        :param hidden_size: RNN模型的隐藏层单元个数
-        :param num_layers: RNN堆叠的层数
-        :param batch_size: batch大小
-        :param learning_rate: 学习率
-        :param num_samples: 计算loss时做sampled softmax时的采样数
-        :param forward_only: 预测时指定为真
-        :param beam_search: 预测时是采用greedy search还是beam search
-        :param beam_size: beam search的大小
-        '''
 
         # source_vocab_size, target_vocab_size, en_de_seq_len, hidden_size, num_layers,
         # batch_size, learning_rate, num_samples = 1024,
@@ -40,8 +26,6 @@ class Seq2SeqModel():
         self.num_sampled = 24
 
         self.output_projection = None
-
-
 
     def create_rnn_cell(self):
         """
@@ -79,12 +63,9 @@ class Seq2SeqModel():
         self.decoder_targets = []
         self.target_weights = []
 
-        input_max_len = 30
-        output_max_len = 30
-
-        for i in range(input_max_len):
+        for i in range(self.max_seq_len):
             self.encoder_inputs.append(tf.placeholder(tf.int32, shape=[None, ], name="encoder{0}".format(i)))
-        for i in range(output_max_len):
+        for i in range(self.max_seq_len):
             self.decoder_inputs.append(tf.placeholder(tf.int32, shape=[None, ], name="decoder{0}".format(i)))
             self.decoder_targets.append(tf.placeholder(tf.int32, shape=[None, ], name="target{0}".format(i)))
             self.target_weights.append(tf.placeholder(tf.float32, shape=[None, ], name="weight{0}".format(i)))
