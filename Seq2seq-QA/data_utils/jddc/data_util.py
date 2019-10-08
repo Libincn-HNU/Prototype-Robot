@@ -250,9 +250,9 @@ class TextData:
             sample = samples[i]
             print('sample', sample)
             print('sample 0', sample[0])
-            batch.encoderSeqs.append([self.sr_word2id[item] for item in list(reversed(sample[0]) if item in self.word2id.keys() else 3 )])  # Reverse inputs (and not outputs), little trick as defined on the original seq2seq paper
+            batch.encoderSeqs.append([self.sr_word2id[item] if item in self.word2id.keys else 3  for item in list(reversed(sample[0])) ])  # Reverse inputs (and not outputs), little trick as defined on the original seq2seq paper
             print('sample 1', sample[1])
-            batch.decoderSeqs.append([self.sr_word2id[self.goToken]] + [self.sr_word2id[item] for item in list(sample[1]) if item in self.word2id.keys() else 3] + [self.sr_word2id[self.eosToken]])  # Add the <go> and <eos> tokens
+            batch.decoderSeqs.append([self.sr_word2id[self.goToken]] + [self.sr_word2id[item] if item in self.word2id.keys() else 3 for item in list(sample[1])] + [self.sr_word2id[self.eosToken]])  # Add the <go> and <eos> tokens
             batch.targetSeqs.append(batch.decoderSeqs[-1][1:])  # Same as decoder, but shifted to the left (ignore the <go>)
 
             # Long sentences should have been filtered during the dataset creation
