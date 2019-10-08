@@ -137,9 +137,6 @@ class TextData:
             speaker_list = []
             utterance_list = []
 
-            next_session = None
-            next_speaker = None
-
             count = 0
 
             print("self.lines in make conversation \n", self.lines)
@@ -181,7 +178,7 @@ class TextData:
                         second_conv = "".join(str(speaker_list[idx + 1])).strip()
                         print('second conv', second_conv)
                         valid = self.filter_conversations(first_conv, second_conv)
-                        if valid :
+                        if valid:
                             temp = [first_conv, second_conv]
                             print("sample", temp)
                             self.train_samples.append(temp)
@@ -218,7 +215,7 @@ class TextData:
         Return:
             list<Batch>: Get a list of the batches for the next epoch
         """
-        #self.shuffle()
+        # self.shuffle()
 
         batches = []
 
@@ -253,9 +250,9 @@ class TextData:
             sample = samples[i]
             print('sample', sample)
             print('sample 0', sample[0])
-            batch.encoderSeqs.append(list(reversed(sample[0])))  # Reverse inputs (and not outputs), little trick as defined on the original seq2seq paper
+            batch.encoderSeqs.append([self.sr_word2id[item] for item in list(reversed(sample[0]))])  # Reverse inputs (and not outputs), little trick as defined on the original seq2seq paper
             print('sample 1', sample[1])
-            batch.decoderSeqs.append([self.goToken] + list(sample[1]) + [self.eosToken])  # Add the <go> and <eos> tokens
+            batch.decoderSeqs.append([self.sr_word2id[self.goToken]] + [self.sr_word2id[item] for item in list(sample[1])] + [self.sr_word2id[self.eosToken]])  # Add the <go> and <eos> tokens
             batch.targetSeqs.append(batch.decoderSeqs[-1][1:])  # Same as decoder, but shifted to the left (ignore the <go>)
 
             # Long sentences should have been filtered during the dataset creation
@@ -264,15 +261,10 @@ class TextData:
 
             # TODO: Should use tf batch function to automatically add padding and batch samples
             # Add padding & define weight
-            batch.encoderSeqs[i] = [self.sr_word2id[self.padToken]] * (self.args.maxLengthEnco -
-                            len(batch.encoderSeqs[i])) + batch.encoderSeqs[i]  # Left padding for the input
-
-            batch.weights.append(
-                [1.0] * len(batch.targetSeqs[i]) + [0.0] * (self.args.maxLengthDeco - len(batch.targetSeqs[i])))
-            batch.decoderSeqs[i] = batch.decoderSeqs[i] + [self.sr_word2id[self.padToken]] * (
-            self.args.maxLengthDeco - len(batch.decoderSeqs[i]))
-            batch.targetSeqs[i] = batch.targetSeqs[i] + [self.sr_word2id[self.padToken]] * (
-            self.args.maxLengthDeco - len(batch.targetSeqs[i]))
+            batch.encoderSeqs[i] = [self.sr_word2id[self.padToken]] * (self.args.maxLengthEnco - len(batch.encoderSeqs[i])) + batch.encoderSeqs[i]  # Left padding for the input
+            batch.weights.append([1.0] * len(batch.targetSeqs[i]) + [0.0] * (self.args.maxLengthDeco - len(batch.targetSeqs[i])))
+            batch.decoderSeqs[i] = batch.decoderSeqs[i] + [self.sr_word2id[self.padToken]] * (self.args.maxLengthDeco - len(batch.decoderSeqs[i]))
+            batch.targetSeqs[i] = batch.targetSeqs[i] + [self.sr_word2id[self.padToken]] * (self.args.maxLengthDeco - len(batch.targetSeqs[i]))
 
         # Simple hack to reshape the batch
         encoderSeqsT = []  # Corrected orientation
@@ -377,11 +369,8 @@ class TextData:
         Return:
             str: the sentence
         """
-        return ''.join([
-            ' ' + t if not t.startswith('\'') and
-                       t not in string.punctuation
-                    else t
-            for t in tokens]).strip().capitalize()
+        return ''.join([' ' + t if not t.startswith('\'') and t not in string.punctuation else t for t in tokens]).strip().capitalize()
+
 
 if __name__ == '__main__':
     class args:
