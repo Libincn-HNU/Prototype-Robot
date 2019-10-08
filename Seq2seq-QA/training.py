@@ -1,4 +1,4 @@
-from data_utils.cornell.data_util import TextData
+from data_utils.jddc.data_util import TextData
 from seq2seq_model.seq2seq_model import seq2seq
 from args import args
 import tensorflow as tf
@@ -10,26 +10,17 @@ import math
 
 class ChatBot:
     def __init__(self):
-
         self.args = args()
-
         self.text_data = None
-
         self.global_step = 0
-
         self.SENTENCES_PREFIX = ['Q: ', 'A: ']
-
         self.main()
 
     def main(self):
-
         self.text_data = TextData(self.args)
-
         with tf.Graph().as_default():
-
             # build seq2seq model
             self.seq2seq_model = seq2seq(self.args, self.text_data)
-
             # Saver/summaries
             out_dir = os.path.abspath(os.path.join(os.path.curdir, "save/model", self.args.corpus_name))
             self.writer = tf.summary.FileWriter(out_dir)
@@ -56,11 +47,7 @@ class ChatBot:
 
         mergedSummaries = tf.summary.merge_all()
 
-        optimizer = tf.train.AdamOptimizer(self.args.learning_rate,
-                                           beta1=self.args.beta1,
-                                           beta2=self.args.beta2,
-                                           epsilon=self.args.epsilon
-                                           )
+        optimizer = tf.train.AdamOptimizer(self.args.learning_rate, beta1=self.args.beta1, beta2=self.args.beta2, epsilon=self.args.epsilon)
 
         grads_and_vars = optimizer.compute_gradients(self.seq2seq_model.loss)
         self.train_op = optimizer.apply_gradients(grads_and_vars)
@@ -77,9 +64,7 @@ class ChatBot:
                     # step, summaries, loss = self.seq2seq_model.step(next_batch)
                     feed_dict = self.seq2seq_model.step(next_batch)
 
-                    _, summaries, loss = self.sess.run(
-                        (self.train_op, mergedSummaries, self.seq2seq_model.loss),
-                        feed_dict)
+                    _, summaries, loss = self.sess.run((self.train_op, mergedSummaries, self.seq2seq_model.loss), feed_dict)
                     self.global_step += 1
 
                     self.writer.add_summary(summaries, self.global_step)
@@ -172,22 +157,17 @@ class ChatBot:
         """
 
         print('WARNING: ', end='')
-
         model_path = os.path.join(os.path.curdir, 'save/model', self.args.corpus_name)
-
         ckpt = tf.train.latest_checkpoint(model_path)
         if ckpt:
             print('Restoring previous model from {}'.format(ckpt))
             self.saver.restore(self.sess, ckpt)  # Will crash when --reset is not activated and the model has not been saved yet
 
-
     def save_session(self, sess, step):
-
         tqdm.write('Checkpoint reached: saving model (don\'t stop the run)...')
         model_name = os.path.join('save/model', self.args.corpus_name, 'model.ckpt')
         self.saver.save(sess, model_name, global_step=step)  # TODO: Put a limit size (ex: 3GB for the modelDir)
         tqdm.write('Model saved.')
-
 
 if __name__ == '__main__':
     chatbot = ChatBot()
