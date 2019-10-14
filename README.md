@@ -1,7 +1,4 @@
-
-
 [TOC]
-
 
 
 # Workspace of Conversation AI
@@ -223,6 +220,8 @@
 https://github.com/qhduan/ConversationalRobotDesign/blob/master/%E5%90%84%E7%A7%8D%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%B9%B3%E5%8F%B0%E8%B0%83%E7%A0%94.md
 
 ### DeepQA
++ Seq2Seq
++ https://zhuanlan.zhihu.com/p/29075764
 
 ### RasaHQ
 

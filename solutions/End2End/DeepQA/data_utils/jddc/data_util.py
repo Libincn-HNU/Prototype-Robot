@@ -1,13 +1,12 @@
-#coding=utf-8
+# coding=utf-8
 import pandas as pd
-from itertools import chain
 import nltk
-from tqdm import tqdm
 import numpy as np
 import random
 import os
 import string
 import pickle
+
 
 class Batch:
     """Struct containing batches info
@@ -44,7 +43,6 @@ class TextData:
         # generate batches
         self.batch_index = 0
         self.epoch_completed = 0
-
 
     def load_data(self):
         #if not os.path.exists(self.args.sr_word_id_path) or not os.path.exists(self.args.train_samples_path):
