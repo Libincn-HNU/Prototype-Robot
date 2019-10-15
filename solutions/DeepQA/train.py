@@ -18,6 +18,7 @@ class ChatBot:
 
     def main(self):
         self.text_data = TextData(self.args)
+        print(self.text_data)
         with tf.Graph().as_default():
             # build seq2seq model
             self.seq2seq_model = seq2seq(self.args, self.text_data)
