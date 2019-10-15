@@ -1,5 +1,5 @@
 from data_utils.jddc.data_util import TextData
-from seq2seq_model.seq2seq_model import seq2seq
+from models.seq2seq_model import seq2seq
 from args import args
 import tensorflow as tf
 import datetime
@@ -64,6 +64,7 @@ class ChatBot:
                 for next_batch in tqdm(batches, desc="Training"):
                     # step, summaries, loss = self.seq2seq_model.step(next_batch)
                     feed_dict = self.seq2seq_model.step(next_batch)
+                    print(next_batch)
 
                     _, summaries, loss = self.sess.run((self.train_op, mergedSummaries, self.seq2seq_model.loss), feed_dict)
                     self.global_step += 1
