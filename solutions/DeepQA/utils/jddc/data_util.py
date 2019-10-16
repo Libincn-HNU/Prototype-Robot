@@ -74,6 +74,8 @@ class TextData:
 
             all_words = "".join(words)
 
+            from collections import Counter
+            words = Counter(tmp_text).most_common()
 
             print("转化小写完毕")
 
