@@ -1,4 +1,4 @@
-from data_utils.jddc.data_util import TextData
+from utils.jddc.data_util import TextData
 from models.seq2seq_model import seq2seq
 from args import args
 import tensorflow as tf
