@@ -75,7 +75,8 @@ class TextData:
             all_words = "".join(words)
 
             from collections import Counter
-            words = Counter(all_words)
+            words = Counter(all_words).most_common()
+            words = [char for (char, idx) in words]
             print("*"*100)
             print("words", words)
 
@@ -169,7 +170,6 @@ class TextData:
                         # 当前行 和 下一行 不是同一个说话的人
                         speaker_list.append(utterance_list.copy())
                         utterance_list = []
-
                 else:
                     # 当前session 结束
                     # print("tmp_session_id", tmp_session_id)
