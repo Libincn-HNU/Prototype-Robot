@@ -71,6 +71,10 @@ class TextData:
             # 将全部words转为小写
             print("正在转为小写")
             words = list(map(str.lower, words))
+
+            all_words = "".join(words)
+
+
             print("转化小写完毕")
 
             sr_words_count = pd.Series(words).value_counts()
@@ -78,6 +82,7 @@ class TextData:
             #sr_words_size = np.where(sr_words_count.values > self.args.vacab_filter)[0].size
             sr_words_size = np.where(sr_words_count.values > 0)[0].size
             sr_words_index = sr_words_count.index[0:sr_words_size]
+
             print("sr_words_count", sr_words_count)
             print("sr_words_index", sr_words_index)
 
