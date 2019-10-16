@@ -75,7 +75,9 @@ class TextData:
             all_words = "".join(words)
 
             from collections import Counter
-            words = Counter(tmp_text).most_common()
+            words = Counter(all_words).most_common()
+            
+            print("words", words)
 
             print("转化小写完毕")
 
@@ -98,7 +100,7 @@ class TextData:
             self.sr_id2word[1] = self.goToken
             self.sr_id2word[2] = self.eosToken
             self.sr_id2word[3] = self.unknownToken
-            print(self.sr_id2word)
+            print("self sr_id2word", self.sr_id2word)
             print("词典构建完毕")
             with open(os.path.join(self.args.sr_word_id_path), 'wb') as handle:
                 data = {
