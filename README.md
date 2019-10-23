@@ -1,4 +1,55 @@
-[TOC]
+<!-- TOC -->
+
+- [Workspace of Conversation AI](#workspace-of-conversation-ai)
+- [Target](#target)
+- [Task Type](#task-type)
+- [Dataset](#dataset)
+  - [DSTC](#dstc)
+    - [DSTC1](#dstc1)
+      - [DSTC2 and DSTC3](#dstc2-and-dstc3)
+      - [DSTC4](#dstc4)
+      - [DSTC5](#dstc5)
+      - [DSTC6](#dstc6)
+      - [DSTC7](#dstc7)
+      - [DSTC8](#dstc8)
+    - [Ubuntu Dialogue Corpus](#ubuntu-dialogue-corpus)
+    - [Goal-Oriented Dialogue Corpus](#goal-oriented-dialogue-corpus)
+    - [Standford](#standford)
+    - [Frames: A Corpus for Adding Memory to Goal-Oriented Dialogue Systems](#frames-a-corpus-for-adding-memory-to-goal-oriented-dialogue-systems)
+    - [Multi WOZ](#multi-woz)
+    - [Stanford Multi-turn Multi-domain](#stanford-multi-turn-multi-domain)
+    - [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
+- [Resource](#resource)
+- [Metric](#metric)
+- [Solutions](#solutions)
+  - [Chat-Bot](#chat-bot)
+  - [IR-Bot](#ir-bot)
+  - [QA-Bot](#qa-bot)
+  - [Task-Bot](#task-bot)
+  - [Pipeline](#pipeline)
+    - [ASR](#asr)
+    - [NLU](#nlu)
+    - [DM](#dm)
+    - [NLG](#nlg)
+    - [TTS](#tts)
+- [Problem](#problem)
+- [Open Issues](#open-issues)
+- [Milestone](#milestone)
+- [Coding Standards](#coding-standards)
+- [Usages](#usages)
+- [Reference](#reference)
+  - [Links](#links)
+  - [Projects](#projects)
+    - [Personalizing Dialogue Agents: I have a dog, do you have pets too?](#personalizing-dialogue-agents-i-have-a-dog-do-you-have-pets-too)
+    - [Seq2seq code build](#seq2seq-code-build)
+    - [DeepQA](#deepqa)
+    - [RasaHQ](#rasahq)
+    - [NLG/GAN](#nlggan)
+    - [Dual Training](#dual-training)
+    - [More Deep](#more-deep)
+    - [A Neural Conversation Model](#a-neural-conversation-model)
+
+<!-- /TOC -->
 
 
 # Workspace of Conversation AI
@@ -12,6 +63,7 @@
 
 + chat-bot
 + task-bot
++ multi-tune dialogue system
 
 # Dataset
 
@@ -25,11 +77,11 @@
 
 + [dstc8-reddit-corpus](https://github.com/microsoft/dstc8-reddit-corpus)
 
-+ ### DSTC
+## DSTC
 
   - The Dialog State Tracking Challenge (DSTC) is an on-going series of research community challenge tasks. Each task released dialog data labeled with dialog state information, such as the user’s desired restaurant search query given all of the dialog history up to the current turn. The challenge is to create a “tracker” that can predict the dialog state for new dialogs. In each challenge, trackers are evaluated using held-out dialog data.
 
-  #### DSTC1
+### DSTC1
 
   - DSTC1 used human-computer dialogs in the bus timetable domain. Results were presented in a special session at [SIGDIAL 2013](http://www.sigdial.org/workshops/sigdial2013/). DSTC1 was organized by Jason D. Williams, Alan Black, Deepak Ramachandran, Antoine Raux.
   - Data : https://www.microsoft.com/en-us/research/event/dialog-state-tracking-challenge/#!dstc1-downloads
@@ -229,17 +281,13 @@ https://github.com/qhduan/ConversationalRobotDesign/blob/master/%E5%90%84%E7%A7%
 
 ### Dual Training
 
-### 在可以收敛的情况下，尽可能使用更深的模型
-参考CV 领域的一些做法
-
-https://zhuanlan.zhihu.com/p/35317776
-
-https://zhuanlan.zhihu.com/p/29967933
-https://blog.csdn.net/Irving_zhang/article/details/79088143
+### More Deep
+- 在可以收敛的情况下，尽可能使用更深的模型
+- 参考CV 领域的一些做法
+- https://zhuanlan.zhihu.com/p/35317776
+- https://zhuanlan.zhihu.com/p/29967933
+- https://blog.csdn.net/Irving_zhang/article/details/79088143
 
 ### A Neural Conversation Model
 + https://arxiv.org/abs/1506.05869
 
-
-聊天机器人
-多轮对话
