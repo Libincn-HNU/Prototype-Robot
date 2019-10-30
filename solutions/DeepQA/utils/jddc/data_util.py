@@ -253,7 +253,7 @@ class TextData:
         random.shuffle(self.train_samples)
 
     def create_batch(self, samples):
-        print("sr_word2id", self.sr_word2id)
+        # print("sr_word2id", self.sr_word2id)
         batch = Batch()
         batch_size = len(samples)
 
