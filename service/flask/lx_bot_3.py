@@ -217,16 +217,16 @@ def train():
                 saver.save(sess, 'model/lx_bot_v3')
 
 
-def predict():
+def predict(input_seq):
     """
     预测过程
     """
     with tf.Session() as sess:
         encoder_inputs, decoder_inputs, target_weights, outputs, loss, update, saver, learning_rate_decay_op, learning_rate = get_model(feed_previous=True)
         saver.restore(sess, 'model/lx_bot_v3')
-        sys.stdout.write("[in:]")
-        sys.stdout.flush()
-        input_seq = sys.stdin.readline()
+        # sys.stdout.write("[in:]")
+        # sys.stdout.flush()
+        # input_seq = sys.stdin.readline()
         while input_seq:
             input_seq = input_seq.strip()
             input_id_list = get_id_list_from(input_seq)

@@ -1,7 +1,8 @@
+# coding:utf-8
 '''
 @Author: your name
 @Date: 2019-11-05 16:46:42
-@LastEditTime: 2019-11-06 15:12:39
+@LastEditTime: 2019-11-06 20:42:09
 @LastEditors: Please set LastEditors
 @Description: In User Settings Edit
 @FilePath: /craft/Prototype-Robot/service/flask/xiaoX/app.py
@@ -74,4 +75,4 @@ def stream():
     return flask.Response(event_stream(),mimetype='text/event-stream')
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5052, debug=True, threaded=True)
+    app.run(host='127.0.0.1', port=5053, debug=True, threaded=True)
