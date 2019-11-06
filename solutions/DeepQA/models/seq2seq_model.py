@@ -165,7 +165,7 @@ class seq2seq:
         if not self.args.test:  # Training
             for i in range(self.args.maxLengthEnco):
                 feedDict[self.encoder_inputs[i]]  = batch.encoderSeqs[i]
-                print("encoder >>> ", batch.encoderSeqs[i])
+                # print("encoder >>> ", batch.encoderSeqs[i])
             for i in range(self.args.maxLengthDeco):
                 feedDict[self.decoder_inputs[i]]  = batch.decoderSeqs[i]
                 feedDict[self.decoder_targets[i]] = batch.targetSeqs[i]

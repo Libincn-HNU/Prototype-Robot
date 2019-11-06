@@ -18,7 +18,6 @@ class ChatBot:
 
     def main(self):
         self.text_data = TextData(self.args)
-        print(self.text_data)
 
         with tf.Graph().as_default():
             # build seq2seq model
@@ -68,7 +67,6 @@ class ChatBot:
                 for next_batch in tqdm(batches, desc="Training"):
                     # step, summaries, loss = self.seq2seq_model.step(next_batch)
                     feed_dict = self.seq2seq_model.step(next_batch)
-                    print(next_batch)
 
                     _, summaries, loss = self.sess.run((self.train_op, mergedSummaries, self.seq2seq_model.loss), feed_dict)
                     self.global_step += 1
@@ -111,6 +109,7 @@ class ChatBot:
 
         while True:
             question = input(self.SENTENCES_PREFIX[0])
+            question = str(question.encode(encoding='UTF-8'))
             if question == '' or question == 'exit':
                 break
 

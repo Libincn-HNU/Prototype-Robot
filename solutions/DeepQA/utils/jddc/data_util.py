@@ -139,63 +139,57 @@ class TextData:
     def generate_conversations(self):
 
         if not os.path.exists(self.args.train_samples_path):
-            # 将word替换为id
-            # self.replace_word_with_id()
             print("开始生成训练样本")
-            # 将id与line作为字典，以方便生成训练样本
-           
             session_list = []
-            speaker_list = []
+            speaker_tuple_list = []
             utterance_list = []
-
             count = 0
 
-            # print("self.lines in make conversation \n", self.lines)
-            # print("length", len(self.lines.session_id.values))
-
             for tmp_session_id, tmp_speaker_id, tmp_utterance in zip(self.lines.session_id.values, self.lines.speaker_flag.values, self.lines.utterance.values): 
-                print("count", count)
+                if count % 100000 == 0:
+                    print("%"*50)
+                    print("count", count)
                 count = count + 1
+
+                # 读取 next session id 和 next speaker id
                 if count < len(self.lines.session_id.values):
                     next_session_id = self.lines.session_id.values[count]
                     next_speaker_id = self.lines.speaker_flag.values[count]
                     
                 if tmp_session_id == next_session_id:
                     # 继续当前session，生成speaker_list
-                    utterance_list.append(tmp_utterance)
+                    utterance_list.append(str(tmp_utterance))
                     if tmp_speaker_id == next_speaker_id:
                         # 当前行 和 下一行 是同一个说话的人
                         pass
                     else:
                         # 当前行 和 下一行 不是同一个说话的人
-                        speaker_list.append(utterance_list.copy())
+                        speaker_tuple_list.append((tmp_speaker_id, utterance_list.copy()))
                         utterance_list = []
                 else:
-                    # 当前session 结束
-                    # print("tmp_session_id", tmp_session_id)
-                    # print("next_session_id", next_session_id)
-                    
-                    # print("tmp_speaker_id", tmp_speaker_id)
-                    # print("next_speaker_id", next_speaker_id)
-                    
-                    # print("speaker list", speaker_list)
-                    # 当前session 结束, 遍历speaker_list,
-                    # 生产conversation，speaker_list 清空
 
-                    for idx in range(0, len(speaker_list) - 2, 2):
+                    for idx in range(len(speaker_tuple_list)-2):
+
                         if idx < 0:
                             continue
 
-                        first_conv = "".join('%s' %id for id in speaker_list[idx])
-                        # print('first conv', first_conv)
-                        second_conv = "".join('%s' %id for id in speaker_list[idx + 1])
-                        # print('second conv', second_conv)
-                        # valid = self.filter_conversations(first_conv, second_conv)
-                        # if valid:
-                        if True:
-                            temp = [first_conv, second_conv]
-                            print("sample", temp)
-                            self.train_samples.append(temp)
+                        first_conv_speaker_id = speaker_tuple_list[idx][0]
+                        first_conv_speaker_text = "".join(speaker_tuple_list[idx][1])
+
+                        second_conv_speaker_id = speaker_tuple_list[idx+1][0]
+                        second_conv_speaker_text = "".join(speaker_tuple_list[idx+1][1])
+
+                        if first_conv_speaker_id == "0" and second_conv_speaker_id == "1":
+                            valid = self.filter_conversations(first_conv_speaker_text, second_conv_speaker_text)
+                        else:
+                            valid = False
+                        
+                        if valid:
+                            print("*"*30)
+                            print("Q", first_conv_speaker_text, "A", second_conv_speaker_text)
+                            self.train_samples.append([first_conv_speaker_text, second_conv_speaker_text])
+
+                    speaker_tuple_list = []
 
             print("生成训练样本结束")
             with open(self.args.train_samples_path, 'wb') as handle:
@@ -217,9 +211,13 @@ class TextData:
     def filter_conversations(self, first_conv, second_conv):
         # 筛选样本， 首先将encoder_input 或 decoder_input大于max_length的conversation过滤
         # 其次将target中包含有UNK的conversation过滤
+
+        if '您好' in str(second_conv) or '亲' in str(second_conv):
+            return False
+
         valid = True
-        valid &= len(str(first_conv)) <= 16
-        valid &= len(str(second_conv)) <= 8
+        valid &= len(str(first_conv)) <= 32 and len(str(first_conv)) >= 4
+        valid &= len(str(second_conv)) <= 32 and len(str(second_conv)) >= 4
         valid &= list(second_conv).count(self.sr_word2id[self.unknownToken]) == 0
 
         return valid

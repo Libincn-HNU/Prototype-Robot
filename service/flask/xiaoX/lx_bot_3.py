@@ -24,14 +24,14 @@ GO_ID = 1
 # 结尾标记
 EOS_ID = 2
 # LSTM神经元size
-size = 8
+size = 64
 # 初始学习率
 init_learning_rate = 1
 # 在样本中出现频率超过这个值才会进入词表
-min_freq = 10
+min_freq = 1
 
 # 训练的轮数
-train_round = 50
+train_round = 1000
 
 wordToken = word_token.WordToken()
 
