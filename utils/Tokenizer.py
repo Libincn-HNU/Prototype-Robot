@@ -201,7 +201,3 @@ def build_tokenizer(corpus_files, corpus_type, task_type, embedding_type):
                 f.write(str(key) + '\t' + str(value) + '\n')
 
     return tokenizer
-
-
-if __name__ == '__main__':
-    build_tokenizer(['corpus.txt'], 'entity', 'tencent')
