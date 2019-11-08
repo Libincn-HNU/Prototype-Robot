@@ -2,7 +2,7 @@
 '''
 @Author: your name
 @Date: 2019-11-05 16:46:42
-@LastEditTime: 2019-11-06 20:42:09
+@LastEditTime: 2019-11-07 16:33:49
 @LastEditors: Please set LastEditors
 @Description: In User Settings Edit
 @FilePath: /craft/Prototype-Robot/service/flask/xiaoX/app.py
@@ -13,17 +13,18 @@ import datetime
 import redis
 
 from lx_bot_3 import *
+from metric import *
 
 app=Flask(__name__)
 
-app.secret_key='xujing in inter-credit'
+app.secret_key='service in inter-credit'
 
 #redis数据库
 r=redis.StrictRedis(host='127.0.0.1',port=6379,db=1,decode_responses=True)
 
 def event_stream():
     pubsub=r.pubsub()  #用于查看订阅与发布系统状态，返回由活跃频道组成的列表
-    pubsub.subscribe('lx_chat')  #用于订阅给定的一个或多个频道的信息，返回接收到的信息
+    pubsub.subscribe('chat', 'clf')  #用于订阅给定的一个或多个频道的信息，返回接收到的信息
     for message in pubsub.listen():  #监听活跃频道组成的列表
         print(message)
         yield 'data:{}\n\n'.format(message['data'])
@@ -43,7 +44,7 @@ def login():
         return flask.redirect('/')
     if flask.request.method=='POST':   #如果请求方式是POST
         flask.session['user']=flask.request.form['user']   #获取login表单中的数据
-        r.publish('lx_chat', '用户{}加入了房间!'.format(flask.session['user']))  #用于将信息发送到指定的频道。
+        r.publish('chat', '用户{}加入了房间!'.format(flask.session['user']))  #用于将信息发送到指定的频道。
         return flask.redirect('/')
     return render_template('login.html')
 
@@ -52,7 +53,7 @@ def login():
 def logout():
     user=flask.session.pop('user')   #删除用户绘画中的user
     print(user)
-    r.publish('lx_chat', '用户{}退出了房间'.format(user))
+    r.publish('chat', '用户{}退出了房间'.format(user))
     return flask.redirect('/login')
 
 #发送消息
@@ -61,12 +62,13 @@ def post():
     message=flask.request.form['message']
     user=flask.session.get('user','anonymous')
     now=datetime.datetime.now().replace(microsecond=0).time()  #日期去掉毫秒，只取时间
-    little_x = predict(message)
+    results = predict(message)
+    # clf = Application()
+    # results = clf.run_single(message)
+    # results = clf.run_batch()
 
+    r.publish('chat','[{}] {} : {}format_replace[{}] bot : {}'.format(now.isoformat(), user, message, now.isoformat(),results))  #时间设置成ISO标准格式
 
-    r.publish('lx_chat','[{}] {} : {}xujing_replace[{}] 小X : {}'.format(now.isoformat(),user,message, now.isoformat(),little_x ))  #时间设置成ISO标准格式
-
-   
     return flask.Response(status=204)
 
 #SSE事件流
