@@ -1,56 +1,66 @@
 
 <!-- TOC -->
 
-- [Target](#target)
-- [Dataset](#dataset)
-  - [chatbot corpus chinese](#chatbot-corpus-chinese)
-  - [Dialog corpus](#dialog-corpus)
-  - [chat_corpus](#chatcorpus)
-  - [bAbI](#babi)
-  - [dstc8-reddit-corpus](#dstc8-reddit-corpus)
-  - [DSTC](#dstc)
-    - [DSTC1](#dstc1)
-    - [DSTC2 and DSTC3](#dstc2-and-dstc3)
-    - [DSTC4](#dstc4)
-    - [DSTC5](#dstc5)
-    - [DSTC6](#dstc6)
-    - [DSTC7](#dstc7)
-    - [DSTC8](#dstc8)
-  - [Ubuntu Dialogue Corpus](#ubuntu-dialogue-corpus)
-  - [Goal-Oriented Dialogue Corpus](#goal-oriented-dialogue-corpus)
-  - [Standford](#standford)
-  - [Frames: A Corpus for Adding Memory to Goal-Oriented Dialogue Systems](#frames-a-corpus-for-adding-memory-to-goal-oriented-dialogue-systems)
-  - [Multi WOZ](#multi-woz)
-  - [Stanford Multi-turn Multi-domain](#stanford-multi-turn-multi-domain)
-  - [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
-- [Resource](#resource)
-- [Metric](#metric)
-- [Solutions](#solutions)
-  - [Chat-Bot](#chat-bot)
-  - [IR-Bot](#ir-bot)
-  - [QA-Bot](#qa-bot)
-  - [KB-Bot](#kb-bot)
-  - [Task-Bot](#task-bot)
-  - [Pipeline](#pipeline)
-    - [ASR](#asr)
-    - [NLU](#nlu)
-    - [DM](#dm)
-    - [NLG](#nlg)
-    - [TTS](#tts)
-- [Reference](#reference)
-  - [Links](#links)
-  - [Papers](#papers)
-    - [Knowledge Aware Conversation Generation with Explainable Reasoing ever Augmented Graphs](#knowledge-aware-conversation-generation-with-explainable-reasoing-ever-augmented-graphs)
-    - [Vocabulary Pyramid Network: Multi-Pass Encoding and Decoding with Multi-Level Vocabularies for Response Generation](#vocabulary-pyramid-network-multi-pass-encoding-and-decoding-with-multi-level-vocabularies-for-response-generation)
-  - [Projects](#projects)
-    - [Personalizing Dialogue Agents: I have a dog, do you have pets too?](#personalizing-dialogue-agents-i-have-a-dog-do-you-have-pets-too)
-    - [Seq2seq code build](#seq2seq-code-build)
-    - [DeepQA](#deepqa)
-    - [RasaHQ](#rasahq)
-    - [NLG/GAN](#nlggan)
-    - [Dual Training](#dual-training)
-    - [More Deep](#more-deep)
-    - [A Neural Conversation Model](#a-neural-conversation-model)
+1. [Target](#target)
+2. [Dataset](#dataset)
+    1. [中文数据集](#中文数据集)
+    2. [中文其他数据集](#中文其他数据集)
+    3. [英文其他数据集](#英文其他数据集)
+    4. [JDDC](#jddc)
+    5. [DSTC](#dstc)
+        1. [DSTC1](#dstc1)
+        2. [DSTC2 and DSTC3](#dstc2-and-dstc3)
+        3. [DSTC4](#dstc4)
+        4. [DSTC5](#dstc5)
+        5. [DSTC6](#dstc6)
+        6. [DSTC7](#dstc7)
+        7. [DSTC8](#dstc8)
+    6. [Ubuntu Dialogue Corpus](#ubuntu-dialogue-corpus)
+    7. [Goal-Oriented Dialogue Corpus](#goal-oriented-dialogue-corpus)
+    8. [Standford](#standford)
+    9. [Frames: A Corpus for Adding Memory to Goal-Oriented Dialogue Systems](#frames-a-corpus-for-adding-memory-to-goal-oriented-dialogue-systems)
+    10. [Multi WOZ](#multi-woz)
+    11. [Stanford Multi-turn Multi-domain](#stanford-multi-turn-multi-domain)
+3. [Resource](#resource)
+4. [Metric](#metric)
+    1. [不是安全回答](#不是安全回答)
+    2. [回答具有连续性](#回答具有连续性)
+    3. [词重叠评价指标](#词重叠评价指标)
+        1. [BLEU](#bleu)
+        2. [ROUGE](#rouge)
+        3. [METEOR](#meteor)
+    4. [词向量评价指标](#词向量评价指标)
+        1. [Greedy Matching](#greedy-matching)
+        2. [Embedding Average](#embedding-average)
+        3. [Vector Extrema](#vector-extrema)
+    5. [perplexity困惑度](#perplexity困惑度)
+5. [Solutions](#solutions)
+    1. [Chat-Bot](#chat-bot)
+        1. [Seq2seq](#seq2seq)
+        2. [bi-Transformer](#bi-transformer)
+    2. [IR-Bot](#ir-bot)
+        1. [SMN](#smn)
+        2. [DMN](#dmn)
+    3. [QA-Bot](#qa-bot)
+        1. [KBQA](#kbqa)
+    4. [Task-Bot](#task-bot)
+    5. [Pipeline](#pipeline)
+        1. [ASR](#asr)
+        2. [NLU](#nlu)
+        3. [DM](#dm)
+        4. [NLG](#nlg)
+        5. [TTS](#tts)
+6. [Reference](#reference)
+    1. [Links](#links)
+    2. [Papers](#papers)
+        1. [Knowledge Aware Conversation Generation with Explainable Reasoing ever Augmented Graphs](#knowledge-aware-conversation-generation-with-explainable-reasoing-ever-augmented-graphs)
+        2. [Vocabulary Pyramid Network: Multi-Pass Encoding and Decoding with Multi-Level Vocabularies for Response Generation](#vocabulary-pyramid-network-multi-pass-encoding-and-decoding-with-multi-level-vocabularies-for-response-generation)
+        3. [Personalizing Dialogue Agents: I have a dog, do you have pets too?](#personalizing-dialogue-agents-i-have-a-dog-do-you-have-pets-too)
+    3. [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
+        1. [A Neural Conversation Model](#a-neural-conversation-model)
+    4. [Projects](#projects)
+    5. [Tricks](#tricks)
+        1. [More Deep](#more-deep)
 
 <!-- /TOC -->
 
@@ -61,15 +71,43 @@
 
 # Dataset
 
-## [chatbot corpus chinese](https://github.com/codemayq/chaotbot_corpus_Chinese)
+## 中文数据集
 
-## [Dialog corpus](https://github.com/candlewill/Dialog_Corpus)
+语料名称 | 语料数量 | 语料来源说明 | 语料特点 | 语料样例 | 是否已分词
+---|---|---|---|---|---
+[chatterbot](https://github.com/gunthercox/chatterbot-corpus/tree/master/chatterbot_corpus/data/chinese) | 560 | 开源项目 | 按类型分类，质量较高  | Q:你会开心的 A:幸福不是真正的可预测的情绪。 | 否
+[douban 豆瓣多轮](https://github.com/MarkWuNLP/MultiTurnResponseSelection ) | 352W | 来自北航和微软的paper, 开源项目 | 噪音相对较少，原本是多轮（平均7.6轮）  | Q:烟台 十一 哪 好玩 A:哪 都 好玩 · · · · | 是
+[ptt PTT八卦语料](https://github.com/zake7749/Gossiping-Chinese-Corpus) | 40W | 开源项目，台湾PTT论坛八卦版 | 繁体，语料较生活化，有噪音  | Q:为什么乡民总是欺负国高中生呢QQ	A:如果以为选好科系就会变成比尔盖兹那不如退学吧  | 否
+qingyun（青云语料） | 10W | 某聊天机器人交流群 | 相对不错，生活化  | Q:看来你很爱钱 	 A:噢是吗？那么你也差不多了 | 否
+[subtitle 电视剧对白语料](https://github.com/fateleak/dgk_lost_conv) | 274W | 开源项目，来自爬取的电影和美剧的字幕 | 有一些噪音，对白不一定是严谨的对话，原本是多轮（平均5.3轮）  | Q:京戏里头的人都是不自由的	A:他们让人拿笼子给套起来了了 | 否
+tieba 贴吧论坛回帖语料 | 232W | 偶然找到的 | 多轮，有噪音 https://pan.baidu.com/s/1mUknfwy1nhSM7XzH8xi7gQ 密码:i4si  | Q:前排，鲁迷们都起床了吧	A:标题说助攻，但是看了那球，真是活生生的讽刺了 | 否
+weibo（微博语料） | 443W | 华为 Noah 实验室 Neural Responding Machine for Short-Text Conversation | 仍有一些噪音  | Q:北京的小纯洁们，周日见。#硬汉摆拍清纯照# A:嗷嗷大湿的左手在干嘛，看着小纯洁撸么。 | 否
+[xiaohuangji（小黄鸡语料）](https://github.com/candlewill/Dialog_Corpus) | 45W | 原人人网项目语料 | 有一些不雅对话，少量噪音 | Q:你谈过恋爱么	A:谈过，哎，别提了，伤心..。 | 否
 
-## [chat_corpus](https://github.com/Marsan-Ma-zz/chat_corpus)
 
-## [bAbI](https://github.com/facebook/bAbI-tasks)
+## 中文其他数据集
+- 三千万字幕语料
+https://link.zhihu.com/?target=http%3A//www.shareditor.com/blogshow/%3FblogId%3D112
 
-## [dstc8-reddit-corpus](https://github.com/microsoft/dstc8-reddit-corpus)
+- 白鹭时代中文问答语料
+    - 白鹭时代论坛问答数据，一个问题对应一个最好的答案。下载链接：https://github.com/Samurais/egret-wenda-corpus
+- 微博数据集
+    - 华为李航实验室发布，也是论文“Neural Responding Machine for Short-Text Conversation”使用的数据集下载链接：http://61.93.89.94/Noah_NRM_Data/
+- 新浪微博数据集
+    - 评论回复短句，下载地址：http://lwc.daanvanesch.nl/openaccess.php
+    
+## 英文其他数据集
+
+Cornell Movie Dialogs：电影对话数据集，下载地址：http://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html
+Ubuntu Dialogue Corpus：Ubuntu日志对话数据，下载地址：https://arxiv.org/abs/1506.08909
+OpenSubtitles：电影字幕，下载地址：http://opus.lingfil.uu.se/OpenSubtitles.php
+Twitter：twitter数据集，下载地址：https://github.com/Marsan-Ma/twitter_scraper
+Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理之后，好像挺干净的，下载链接：https://github.com/bshao001/ChatLearner
+
+## JDDC
+
++ 需要注册才能得到数据集
++ 有待上传
 
 ## DSTC
 
@@ -157,30 +195,57 @@
 - 论文citation
   - Key-Value Retrieval Networks for Task-Oriented Dialogue https://arxiv.org/abs/1705.05414
   
-## A Survey of Available Corpora for Building Data-Driven Dialogue Systems
-  
 - 把所有的数据集按照不同类别进行分类总结，里面涵盖了很多数据集
-  - [链接](http://link.zhihu.com/?target=https%3A//docs.google.com/spreadsheets/d/1SJ4XV6NIEl_ReF1odYBRXs0q6mTkedoygY3kLMPjcP8/pubhtml)
-
+ 
 # Resource
 
 + pass
 
-
-
 # Metric
 
+## 不是安全回答
 
+## 回答具有连续性
+
+## 词重叠评价指标
+
+### BLEU
+
+### ROUGE
+
+### METEOR
+
+## 词向量评价指标
+
+### Greedy Matching
+
+### Embedding Average
+
+### Vector Extrema
+
+## perplexity困惑度
 
 # Solutions
 
 ## Chat-Bot
 
+### Seq2seq
++ https://blog.csdn.net/Irving_zhang/article/details/79088143
++ https://github.com/qhduan/ConversationalRobotDesign/blob/master/%E5%90%84%E7%A7%8D%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%B9%B3%E5%8F%B0%E8%B0%83%E7%A0%94.md
++ https://zhuanlan.zhihu.com/p/29075764
+
+### bi-Transformer
++ 
+
 ## IR-Bot
+
+### SMN
+
+### DMN
 
 ## QA-Bot
 
-## KB-Bot
+### KBQA
 
 ## Task-Bot
 
@@ -217,10 +282,13 @@
 - [sizhi bot](https://github.com/ownthink/robot]
 - [home assistant](https://github.com/home-assistant/home-assistant)
 - [textClassifier](https://github.com/jiangxinyang227/textClassifier)
+- 评价指标
+    - https://blog.csdn.net/liuchonge/article/details/79104045
 
 ## Papers
 
 ### Knowledge Aware Conversation Generation with Explainable Reasoing ever Augmented Graphs
+
 + EMNLP 2019 Baidu
 + Tips 
   + 大部分模型 容易出现安全回复和不连贯回复，这是因为仅仅从语料中学习语义而不是借助背景知识
@@ -232,8 +300,27 @@
 + 此文综合使用结构化信息和非结构化信息， 提出了基于扩充知识图(Augmented Knowledge Graph)开放域对话生成模型，模型由知识选择和回复生成这两个模块组成
 
 ### Vocabulary Pyramid Network: Multi-Pass Encoding and Decoding with Multi-Level Vocabularies for Response Generation
+
 + seq2seq框架作为文本生成的主流框架，在对话领域已被广泛应用。然而在对话生成时，seq2seq倾向于生成通用的答案，缺乏进一步的润色修饰；***解码的过程中词表大小的限制与逐词解码的方式存在偏置问题***，***且目标端的全局信息无法利用***。如何在解码过程中不断丰富词表，利用全局信息丰富句子内容是本论文的主要研究贡献。
 + 论文链接：https://www.aclweb.org/anthology/P19-1367/ 
+
+### Personalizing Dialogue Agents: I have a dog, do you have pets too?
+
+- 本文是 Facebook AI Research 发表于 NIPS 2018 的工作。论文根据一个名为 PERSONA-CHAT 的对话数据集来训练基于 Profile 的聊天机器人，该数据集包含超过 16 万条对话。
+- 本文致力于解决以下问题：
+- 聊天机器人缺乏一致性格特征
+  - 聊天机器人缺乏长期记忆
+  - 聊天机器人经常给出模糊的回应，例如 I don't know
+- 数据集链接
+- https://github.com/facebookresearch/ParlAI/tree/master/parlai/tasks/personachat
+
+## A Survey of Available Corpora for Building Data-Driven Dialogue Systems
+
+- (https://arxiv.org/pdf/1512.05742.pdf
+
+### A Neural Conversation Model
+
++ https://arxiv.org/abs/1506.05869
 
 ## Projects
 
@@ -251,43 +338,12 @@
 + [chatbot-MemN2N-tf](https://github.com/vyraun/chatbot-MemN2N-tensorflow)
 + [DST](https://github.com/voicy-ai/DialogStateTracking)
 
-+ [LatticeLSTM](https://github.com/jiesutd/LatticeLSTM)
-+ [Text CLF](https://github.com/jatana-research/Text-Classification)
-+ [Text CLF cnn-rnn-tf](https://github.com/gaussic/text-classification-cnn-rnn)
-+ [text_classification](https://github.com/brightmart/text_classification)
-
-### Personalizing Dialogue Agents: I have a dog, do you have pets too?
-
-- 本文是 Facebook AI Research 发表于 NIPS 2018 的工作。论文根据一个名为 PERSONA-CHAT 的对话数据集来训练基于 Profile 的聊天机器人，该数据集包含超过 16 万条对话。
-- 本文致力于解决以下问题：
-- 聊天机器人缺乏一致性格特征
-  - 聊天机器人缺乏长期记忆
-  - 聊天机器人经常给出模糊的回应，例如 I don't know
-- 数据集链接
-- https://github.com/facebookresearch/ParlAI/tree/master/parlai/tasks/personachat
-
-### Seq2seq code build
-+ https://blog.csdn.net/Irving_zhang/article/details/79088143
-
-https://github.com/qhduan/ConversationalRobotDesign/blob/master/%E5%90%84%E7%A7%8D%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%B9%B3%E5%8F%B0%E8%B0%83%E7%A0%94.md
-
-### DeepQA
-+ Seq2Seq
-+ https://zhuanlan.zhihu.com/p/29075764
-
-### RasaHQ
-
-### NLG/GAN
-
-### Dual Training
+## Tricks
 
 ### More Deep
 - 在可以收敛的情况下，尽可能使用更深的模型
 - 参考CV 领域的一些做法
 - https://zhuanlan.zhihu.com/p/35317776
 - https://zhuanlan.zhihu.com/p/29967933
-- https://blog.csdn.net/Irving_zhang/article/details/79088143
 
-### A Neural Conversation Model
-+ https://arxiv.org/abs/1506.05869
 
