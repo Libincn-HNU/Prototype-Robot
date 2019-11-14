@@ -36,8 +36,9 @@
     5. [perplexity困惑度](#perplexity困惑度)
 5. [Solutions](#solutions)
     1. [Chat-Bot](#chat-bot)
-        1. [Seq2seq](#seq2seq)
-        2. [bi-Transformer](#bi-transformer)
+        1. [Rasa_Bot](#rasa_bot)
+        2. [Seq2seq](#seq2seq)
+        3. [bi-Transformer](#bi-transformer)
     2. [IR-Bot](#ir-bot)
         1. [SMN](#smn)
         2. [DMN](#dmn)
@@ -61,6 +62,9 @@
     4. [Projects](#projects)
     5. [Tricks](#tricks)
         1. [More Deep](#more-deep)
+        2. [Beam Search](#beam-search)
+        3. [Pointer Generator](#pointer-generator)
+        4. [HERD](#herd)
 
 <!-- /TOC -->
 
@@ -229,13 +233,16 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 
 ## Chat-Bot
 
+### Rasa_Bot
++ 
+
 ### Seq2seq
 + https://blog.csdn.net/Irving_zhang/article/details/79088143
 + https://github.com/qhduan/ConversationalRobotDesign/blob/master/%E5%90%84%E7%A7%8D%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%B9%B3%E5%8F%B0%E8%B0%83%E7%A0%94.md
 + https://zhuanlan.zhihu.com/p/29075764
 
 ### bi-Transformer
-+ 
+ 
 
 ## IR-Bot
 
@@ -337,6 +344,11 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 + [DNN-DST](https://github.com/CallumMain/DNN-DST)
 + [chatbot-MemN2N-tf](https://github.com/vyraun/chatbot-MemN2N-tensorflow)
 + [DST](https://github.com/voicy-ai/DialogStateTracking)
++ [Awesome-chatbot](https://github.com/fendouai/Awesome-Chatbot)
++ [transformer-chatbot](https://github.com/atselousov/transformer_chatbot)
+    + pytorch
++ [rasa_chatbot_cn](https://github.com/GaoQ1/rasa_chatbot_cn)
++ [_rasa_chatbot](https://github.com/zqhZY/_rasa_chatbot)
 
 ## Tricks
 
@@ -346,4 +358,10 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 - https://zhuanlan.zhihu.com/p/35317776
 - https://zhuanlan.zhihu.com/p/29967933
 
+### Beam Search
+
+### Pointer Generator
+
+### HERD 
++ 多轮
 
