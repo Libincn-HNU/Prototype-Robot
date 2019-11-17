@@ -7,7 +7,8 @@
     2. [中文其他数据集](#中文其他数据集)
     3. [英文其他数据集](#英文其他数据集)
     4. [JDDC](#jddc)
-    5. [DSTC](#dstc)
+    5. [Person-Chat](#person-chat)
+    6. [DSTC](#dstc)
         1. [DSTC1](#dstc1)
         2. [DSTC2 and DSTC3](#dstc2-and-dstc3)
         3. [DSTC4](#dstc4)
@@ -15,12 +16,12 @@
         5. [DSTC6](#dstc6)
         6. [DSTC7](#dstc7)
         7. [DSTC8](#dstc8)
-    6. [Ubuntu Dialogue Corpus](#ubuntu-dialogue-corpus)
-    7. [Goal-Oriented Dialogue Corpus](#goal-oriented-dialogue-corpus)
-    8. [Standford](#standford)
-    9. [Frames: A Corpus for Adding Memory to Goal-Oriented Dialogue Systems](#frames-a-corpus-for-adding-memory-to-goal-oriented-dialogue-systems)
-    10. [Multi WOZ](#multi-woz)
-    11. [Stanford Multi-turn Multi-domain](#stanford-multi-turn-multi-domain)
+    7. [Ubuntu Dialogue Corpus](#ubuntu-dialogue-corpus)
+    8. [Goal-Oriented Dialogue Corpus](#goal-oriented-dialogue-corpus)
+    9. [Standford](#standford)
+    10. [Frames: A Corpus for Adding Memory to Goal-Oriented Dialogue Systems](#frames-a-corpus-for-adding-memory-to-goal-oriented-dialogue-systems)
+    11. [Multi WOZ](#multi-woz)
+    12. [Stanford Multi-turn Multi-domain](#stanford-multi-turn-multi-domain)
 3. [Resource](#resource)
 4. [Metric](#metric)
     1. [不是安全回答](#不是安全回答)
@@ -36,9 +37,13 @@
     5. [perplexity困惑度](#perplexity困惑度)
 5. [Solutions](#solutions)
     1. [Chat-Bot](#chat-bot)
-        1. [Rasa_Bot](#rasa_bot)
-        2. [Seq2seq](#seq2seq)
-        3. [bi-Transformer](#bi-transformer)
+        1. [Problem](#problem)
+            1. [个性的一致性](#个性的一致性)
+            2. [安全回答](#安全回答)
+            3. [不能指代消解](#不能指代消解)
+        2. [Rasa_Bot](#rasa_bot)
+        3. [Seq2seq](#seq2seq)
+        4. [bi-Transformer](#bi-transformer)
     2. [IR-Bot](#ir-bot)
         1. [SMN](#smn)
         2. [DMN](#dmn)
@@ -112,6 +117,10 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 
 + 需要注册才能得到数据集
 + 有待上传
+
+## Person-Chat
+    + Facebook
+    + 16w 条
 
 ## DSTC
 
@@ -232,6 +241,13 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 # Solutions
 
 ## Chat-Bot
+
+### Problem
+#### 个性的一致性
++ Adversarial Learning for Neural Dialogue Generation 
+    + 李纪为
+#### 安全回答
+#### 不能指代消解
 
 ### Rasa_Bot
 + 
