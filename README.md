@@ -24,6 +24,7 @@
     12. [Stanford Multi-turn Multi-domain](#stanford-multi-turn-multi-domain)
 3. [Resource](#resource)
 4. [Metric](#metric)
+5. [对话系统中的自然语言生成技术](#对话系统中的自然语言生成技术)
     1. [不是安全回答](#不是安全回答)
     2. [回答具有连续性](#回答具有连续性)
     3. [词重叠评价指标](#词重叠评价指标)
@@ -35,7 +36,7 @@
         2. [Embedding Average](#embedding-average)
         3. [Vector Extrema](#vector-extrema)
     5. [perplexity困惑度](#perplexity困惑度)
-5. [Solutions](#solutions)
+6. [Solutions](#solutions)
     1. [Chat-Bot](#chat-bot)
         1. [Problem](#problem)
             1. [个性的一致性](#个性的一致性)
@@ -56,7 +57,7 @@
         3. [DM](#dm)
         4. [NLG](#nlg)
         5. [TTS](#tts)
-6. [Reference](#reference)
+7. [Reference](#reference)
     1. [Links](#links)
     2. [Papers](#papers)
         1. [Knowledge Aware Conversation Generation with Explainable Reasoing ever Augmented Graphs](#knowledge-aware-conversation-generation-with-explainable-reasoing-ever-augmented-graphs)
@@ -65,11 +66,21 @@
     3. [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
         1. [A Neural Conversation Model](#a-neural-conversation-model)
     4. [Projects](#projects)
+        1. [JDDC](#jddc-1)
+        2. [Chatbot](#chatbot)
+        3. [DST](#dst)
+        4. [Rasa](#rasa)
+        5. [Task](#task)
+        6. [Others](#others)
     5. [Tricks](#tricks)
         1. [More Deep](#more-deep)
         2. [Beam Search](#beam-search)
         3. [Pointer Generator](#pointer-generator)
-        4. [HERD](#herd)
+        4. [HERD/VHERD/AMI](#herdvherdami)
+        5. [DRL](#drl)
+        6. [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
+        7. [seqGAN](#seqgan)
+        8. [CycleGAN](#cyclegan)
 
 <!-- /TOC -->
 
@@ -216,6 +227,11 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 
 # Metric
 
+
+# 对话系统中的自然语言生成技术
+- https://zhuanlan.zhihu.com/p/49197552
+
+
 ## 不是安全回答
 
 ## 回答具有连续性
@@ -347,24 +363,34 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 
 ## Projects
 
+### JDDC
 + [2018 JDDC对话大赛亚军解决方案 Dialog-System-with-Task-Retrieval-and-Seq2seq](https://github.com/Dikea/Dialog-System-with-Task-Retrieval-and-Seq2seq)
 + [seq2seq chatbot](https://github.com/lc222/seq2seq_chatbot)
-+ [Task-Oriented-Dialogue-Dataset-Survey](https://github.com/AtmaHou/Task-Oriented-Dialogue-Dataset-Survey)
 + [jddc_solution_4th](https://github.com/zengbin93/jddc_solution_4th)
 + [jddc_baseline_tfidf](https://github.com/SimonJYang/JDDC-Baseline-TFIDF)
 + [jddc_baseline_seq2seq](https://github.com/SimonJYang/JDDC-Baseline-TFIDF)
-+ [transformer_chatbot](https://github.com/atselousov/transformer_chatbot)
+
+### Chatbot
 + [Seq2Seq_Chatbot_QA](https://github.com/qhduan/Seq2Seq_Chatbot_QA)
-+ [rasa_chatbot](https://github.com/zqhZY/_rasa_chatbot)
-+ [TC-bot](https://github.com/MiuLab/TC-Bot)
-+ [DNN-DST](https://github.com/CallumMain/DNN-DST)
-+ [chatbot-MemN2N-tf](https://github.com/vyraun/chatbot-MemN2N-tensorflow)
-+ [DST](https://github.com/voicy-ai/DialogStateTracking)
 + [Awesome-chatbot](https://github.com/fendouai/Awesome-Chatbot)
 + [transformer-chatbot](https://github.com/atselousov/transformer_chatbot)
     + pytorch
++ [chatbot-MemN2N-tf](https://github.com/vyraun/chatbot-MemN2N-tensorflow)
+
+### DST
++ [DNN-DST](https://github.com/CallumMain/DNN-DST)
++ [DST](https://github.com/voicy-ai/DialogStateTracking)
+
+### Rasa
 + [rasa_chatbot_cn](https://github.com/GaoQ1/rasa_chatbot_cn)
 + [_rasa_chatbot](https://github.com/zqhZY/_rasa_chatbot)
++ [rasa_chatbot](https://github.com/zqhZY/_rasa_chatbot)
+
+### Task
++ [Task-Oriented-Dialogue-Dataset-Survey](https://github.com/AtmaHou/Task-Oriented-Dialogue-Dataset-Survey)
+
+### Others
++ [TC-bot](https://github.com/MiuLab/TC-Bot)
 
 ## Tricks
 
@@ -378,6 +404,23 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 
 ### Pointer Generator
 
-### HERD 
+### HERD/VHERD/AMI
 + 多轮
++ https://blog.csdn.net/liuchonge/article/details/79237611
 
+Building End-To-End Dialogue Systems Using Generative Hierarchical Neural Network Models(HRED)
+A Hierarchical Latent Variable Encoder-Decoder Model for Generating Dialogues(VHRED)
+Attention with Intention for a Neural Network Conversation Model(AWI)
+
+### DRL
++ https://blog.csdn.net/liuchonge/article/details/78749623
++ https://zhuanlan.zhihu.com/p/21587758
+
+### Deep Reinforcement Learning for Dialogue Generation
+
++ https://zhuanlan.zhihu.com/p/21587758
+
+### seqGAN
++ https://github.com/zhaoyingjun/chatbot/blob/master/seq2seqChatbot/seq2seq_model.py
+
+### CycleGAN

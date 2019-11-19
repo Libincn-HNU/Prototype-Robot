@@ -206,7 +206,7 @@ def train():
             [loss_ret, _] = sess.run([loss, update], input_feed)
             if step % 10 == 0:
                 print('[+]step='+str(step)+',loss='+str(loss_ret)+',learning_rate='+str(learning_rate.eval()))
-                with open('lx_bot_v3.log', 'a') as my_logger: 
+                with open('bot.log', 'a') as my_logger: 
                     my_logger.write('[+]step='+str(step)+',loss='+str(loss_ret)+',learning_rate='+str(learning_rate.eval())+'\n')
 
                 if len(previous_losses) > 5 and loss_ret > max(previous_losses[-5:]):
@@ -214,7 +214,7 @@ def train():
                 previous_losses.append(loss_ret)
 
                 # 模型持久化
-                saver.save(sess, 'model/lx_bot_v3')
+                saver.save(sess, 'model/bot')
 
 
 def predict(input_seq):
