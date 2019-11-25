@@ -1,4 +1,8 @@
 # Byte-compiled / optimized / DLL files
+checkpoint
+*.index
+*.meta
+*.data-*
 .idea
 *.pyc
 corpus
