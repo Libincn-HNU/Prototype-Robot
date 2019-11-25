@@ -14,9 +14,9 @@ import random
 """
 
 # 输入序列长度
-input_seq_len = 50
+input_seq_len = 16
 # 输出序列长度
-output_seq_len = 50
+output_seq_len = 16
 # 空值填充0
 PAD_ID = 0
 # 输出序列起始标记
@@ -24,7 +24,7 @@ GO_ID = 1
 # 结尾标记
 EOS_ID = 2
 # LSTM神经元size
-size = 128
+size = 8
 # 初始学习率
 init_learning_rate = 1
 # 在样本中出现频率超过这个值才会进入词表
@@ -195,7 +195,7 @@ def train():
         # 训练很多次迭代，每隔10次打印一次loss，可以看情况直接ctrl+c停止
         previous_losses = []
         for step in range(train_round):
-            sample_encoder_inputs, sample_decoder_inputs, sample_target_weights = get_samples(train_set, 1000)
+            sample_encoder_inputs, sample_decoder_inputs, sample_target_weights = get_samples(train_set, 32)
             input_feed = {}
             for l in range(input_seq_len):
                 input_feed[encoder_inputs[l].name] = sample_encoder_inputs[l]

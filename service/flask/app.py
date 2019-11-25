@@ -12,8 +12,7 @@ import flask
 import datetime
 import redis
 
-from lx_bot_3 import *
-from metric import *
+from bot import *
 
 app=Flask(__name__)
 
