@@ -14,9 +14,9 @@ import random
 """
 
 # 输入序列长度
-input_seq_len = 50
+input_seq_len = 16 
 # 输出序列长度
-output_seq_len = 50
+output_seq_len = 16
 # 空值填充0
 PAD_ID = 0
 # 输出序列起始标记
@@ -24,14 +24,21 @@ GO_ID = 1
 # 结尾标记
 EOS_ID = 2
 # LSTM神经元size
-size = 64
+hidden_dim = 16
+
+# batch_size
+batch_size = 32
+
+# Embedding 
+embedding_size = hidden_dim
+
 # 初始学习率
 init_learning_rate = 1
 # 在样本中出现频率超过这个值才会进入词表
-min_freq = 1
+min_freq = 10
 
 # 训练的轮数
-train_round = 1000
+train_round = 10000
 
 wordToken = word_token.WordToken()
 
@@ -71,12 +78,12 @@ def get_train_set():
 
                     question_id_list = get_id_list_from(question)
                     answer_id_list = get_id_list_from(answer)
-                    if len(question_id_list) > 0 and len(answer_id_list) > 0:
+                    if len(question_id_list) > 0 and len(answer_id_list) >0 and len(question_id_list) < input_seq_len and len(answer_id_list) < output_seq_len :
                         answer_id_list.append(EOS_ID) # 添加 EOS_ID
                         train_set.append([question_id_list, answer_id_list])
                 else:
                     break
-    return train_set
+    return train_set # [ [qustion1, answer1], [question2, answer2], ..., [question n, answer n] ]
 
 
 def get_samples(train_set, batch_num):
@@ -94,11 +101,14 @@ def get_samples(train_set, batch_num):
     # train_set = [[[5, 7, 9], [11, 13, 15, EOS_ID]], [[7, 9, 11], [13, 15, 17, EOS_ID]], [[15, 17, 19], [21, 23, 25, EOS_ID]]]
     raw_encoder_input = []
     raw_decoder_input = []
+
     if batch_num >= len(train_set):
         batch_train_set = train_set
     else:
         random_start = random.randint(0, len(train_set)-batch_num)
         batch_train_set = train_set[random_start:random_start+batch_num]
+
+
     for sample in batch_train_set: # PADDING
         raw_encoder_input.append([PAD_ID] * (input_seq_len - len(sample[0])) + sample[0])
         raw_decoder_input.append([GO_ID] + sample[1] + [PAD_ID] * (output_seq_len - len(sample[1]) - 1)) # GO_ID
@@ -152,7 +162,8 @@ def get_model(feed_previous=False):
     # decoder_inputs左移一个时序作为targets
     targets = [decoder_inputs[i + 1] for i in range(output_seq_len)]
 
-    cell = tf.contrib.rnn.BasicLSTMCell(size)
+    # cell = tf.contrib.rnn.BasicLSTMCell(size)
+    cell = tf.nn.rnn_cell.LSTMCell(hidden_dim)
 
     # 这里输出的状态我们不需要
     outputs, _ = seq2seq.embedding_attention_seq2seq(
@@ -161,7 +172,7 @@ def get_model(feed_previous=False):
                         cell,
                         num_encoder_symbols=num_encoder_symbols,
                         num_decoder_symbols=num_decoder_symbols,
-                        embedding_size=size,
+                        embedding_size=embedding_size,
                         output_projection=None,
                         feed_previous=feed_previous,
                         dtype=tf.float32)
@@ -182,8 +193,6 @@ def train():
     """
     训练过程
     """
-    # train_set = [[[5, 7, 9], [11, 13, 15, EOS_ID]], [[7, 9, 11], [13, 15, 17, EOS_ID]],
-    #              [[15, 17, 19], [21, 23, 25, EOS_ID]]]
     train_set = get_train_set()
     with tf.Session() as sess:
 
@@ -195,7 +204,7 @@ def train():
         # 训练很多次迭代，每隔10次打印一次loss，可以看情况直接ctrl+c停止
         previous_losses = []
         for step in range(train_round):
-            sample_encoder_inputs, sample_decoder_inputs, sample_target_weights = get_samples(train_set, 1000)
+            sample_encoder_inputs, sample_decoder_inputs, sample_target_weights = get_samples(train_set, batch_size)
             input_feed = {}
             for l in range(input_seq_len):
                 input_feed[encoder_inputs[l].name] = sample_encoder_inputs[l]
@@ -206,7 +215,7 @@ def train():
             [loss_ret, _] = sess.run([loss, update], input_feed)
             if step % 10 == 0:
                 print('[+]step='+str(step)+',loss='+str(loss_ret)+',learning_rate='+str(learning_rate.eval()))
-                with open('lx_bot_v3.log', 'a') as my_logger: 
+                with open('log.train.txt', 'a') as my_logger: 
                     my_logger.write('[+]step='+str(step)+',loss='+str(loss_ret)+',learning_rate='+str(learning_rate.eval())+'\n')
 
                 if len(previous_losses) > 5 and loss_ret > max(previous_losses[-5:]):
@@ -214,7 +223,7 @@ def train():
                 previous_losses.append(loss_ret)
 
                 # 模型持久化
-                saver.save(sess, 'model/lx_bot_v3')
+                saver.save(sess, 'model/seq2seq')
 
 
 def predict():
@@ -223,7 +232,7 @@ def predict():
     """
     with tf.Session() as sess:
         encoder_inputs, decoder_inputs, target_weights, outputs, loss, update, saver, learning_rate_decay_op, learning_rate = get_model(feed_previous=True)
-        saver.restore(sess, 'model/lx_bot_v3')
+        saver.restore(sess, 'model/seq2seq')
         sys.stdout.write("[in:]")
         sys.stdout.flush()
         input_seq = sys.stdin.readline()
