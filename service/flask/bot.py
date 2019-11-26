@@ -36,7 +36,7 @@ train_round = 1000
 wordToken = word_token.WordToken()
 
 # 放在全局的位置，为了动态算出num_encoder_symbols和num_decoder_symbols
-max_token_id = wordToken.load_file_list(['samples/question.txt', 'samples/answer.txt'], min_freq)
+max_token_id = wordToken.load_file_list(['/Users/sunhongchao/Documents/craft/Prototype-Robot/service/flask/samples/question.txt', '/Users/sunhongchao/Documents/craft/Prototype-Robot/service/flask/samples/answer.txt'], min_freq)
 num_encoder_symbols = max_token_id + 5 #表示encoder_inputs中的整数词id的数目
 num_decoder_symbols = max_token_id + 5
 
@@ -214,7 +214,7 @@ def train():
                 previous_losses.append(loss_ret)
 
                 # 模型持久化
-                saver.save(sess, 'model/bot')
+                saver.save(sess, 'model/seq2seq')
 
 
 def predict(input_seq):
@@ -223,7 +223,7 @@ def predict(input_seq):
     """
     with tf.Session() as sess:
         encoder_inputs, decoder_inputs, target_weights, outputs, loss, update, saver, learning_rate_decay_op, learning_rate = get_model(feed_previous=True)
-        saver.restore(sess, 'model/lx_bot_v3')
+        saver.restore(sess, 'model/seq2seq')
         # sys.stdout.write("[in:]")
         # sys.stdout.flush()
         # input_seq = sys.stdin.readline()
