@@ -62,9 +62,6 @@ def post():
     user=flask.session.get('user','anonymous')
     now=datetime.datetime.now().replace(microsecond=0).time()  #日期去掉毫秒，只取时间
     results = predict(message)
-    # clf = Application()
-    # results = clf.run_single(message)
-    # results = clf.run_batch()
 
     r.publish('chat','[{}] {} : {}format_replace[{}] bot : {}'.format(now.isoformat(), user, message, now.isoformat(),results))  #时间设置成ISO标准格式
 
