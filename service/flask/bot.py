@@ -14,9 +14,9 @@ import random
 """
 
 # 输入序列长度
-input_seq_len = 8
+input_seq_len = 16
 # 输出序列长度
-output_seq_len = 8
+output_seq_len = 16
 # 空值填充0
 PAD_ID = 0
 # 输出序列起始标记
@@ -24,19 +24,20 @@ GO_ID = 1
 # 结尾标记
 EOS_ID = 2
 # LSTM神经元size
-size = 8
+size = 32
 # 初始学习率
 init_learning_rate = 1
 # 在样本中出现频率超过这个值才会进入词表
-min_freq = 10
+min_freq = 300
 
 # 训练的轮数
-train_round = 1000
+train_round = 30000
 
 wordToken = word_token.WordToken()
 
 # 放在全局的位置，为了动态算出num_encoder_symbols和num_decoder_symbols
-max_token_id = wordToken.load_file_list(['samples/question.txt', 'samples/answer.txt'], min_freq)
+max_token_id = wordToken.load_file_list(['samples/question.txt-all', 'samples/answer.txt-all'], min_freq)
+print("max_token_id", max_token_id)
 num_encoder_symbols = max_token_id + 5 #表示encoder_inputs中的整数词id的数目
 num_decoder_symbols = max_token_id + 5
 
@@ -192,10 +193,10 @@ def train():
         # 全部变量初始化
         sess.run(tf.global_variables_initializer())
 
-        # 训练很多次迭代，每隔10次打印一次loss，可以看情况直接ctrl+c停止
+        # 训练很多次迭代，每隔100次打印一次loss，可以看情况直接ctrl+c停止
         previous_losses = []
         for step in range(train_round):
-            sample_encoder_inputs, sample_decoder_inputs, sample_target_weights = get_samples(train_set, 8)
+            sample_encoder_inputs, sample_decoder_inputs, sample_target_weights = get_samples(train_set, 1024)
             input_feed = {}
             for l in range(input_seq_len):
                 input_feed[encoder_inputs[l].name] = sample_encoder_inputs[l]
@@ -203,18 +204,20 @@ def train():
                 input_feed[decoder_inputs[l].name] = sample_decoder_inputs[l]
                 input_feed[target_weights[l].name] = sample_target_weights[l]
             input_feed[decoder_inputs[output_seq_len].name] = np.zeros([len(sample_decoder_inputs[0])], dtype=np.int32)
+
             [loss_ret, _] = sess.run([loss, update], input_feed)
-            if step % 10 == 0:
+
+            if step % 100 == 0:
                 print('[+]step='+str(step)+',loss='+str(loss_ret)+',learning_rate='+str(learning_rate.eval()))
                 with open('bot.log', 'a') as my_logger: 
                     my_logger.write('[+]step='+str(step)+',loss='+str(loss_ret)+',learning_rate='+str(learning_rate.eval())+'\n')
 
-                if len(previous_losses) > 5 and loss_ret > max(previous_losses[-5:]):
+                if len(previous_losses) > 10 and loss_ret > max(previous_losses[-10:]):
                     sess.run(learning_rate_decay_op)
                 previous_losses.append(loss_ret)
 
                 # 模型持久化
-                saver.save(sess, 'model/bot')
+                saver.save(sess, 'model/bot-' + str(size) + "-" + str(size) + "-" + str(train_round) + "-" + str(min_freq) )
 
 
 def predict(input_seq):
@@ -271,6 +274,6 @@ if __name__ == "__main__":
         predict()
     end = datetime.datetime.now()
     print("训练{0}轮模型，需要时间约{1}分钟".format(str(train_round),str((end-start).seconds/60.0)))
-    with open('lx_bot_v3.log', 'a') as my_logger: 
+    with open('bot.log', 'a') as my_logger: 
         my_logger.write("训练{0}轮模型，需要时间约{1}分钟".format(str(train_round),str((end-start).seconds/60.0)))
 

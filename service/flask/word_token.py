@@ -1,12 +1,9 @@
 # coding:utf-8
 
-__version__ = '0.1.0'
-__author__ = 'XuJing'
-
-
 import sys
+import os
 import jieba
-
+import pickle
 
 class WordToken(object):
     """
@@ -18,33 +15,47 @@ class WordToken(object):
         self.word2id_dict = {}
         self.id2word_dict = {}
 
+    def check_file():
+        pass
+        # if file exist, load file
 
     def load_file_list(self, file_list, min_freq):
         """
         加载样本文件列表，全部切词后统计词频，按词频由高到低排序后顺次编号
         并存到self.word2id_dict和self.id2word_dict中
         """
-        words_count = {}
-        for file in file_list:
-            with open(file, 'r',encoding='utf-8') as file_object:
-                for line in file_object.readlines():
-                    line = line.strip()
-                    seg_list = jieba.cut(line)
-                    for str in seg_list:
-                        if str in words_count:
-                            words_count[str] = words_count[str] + 1
-                        else:
-                            words_count[str] = 1
+        if os.path.exists("./tokenizer.pkl"):
+            with open("./tokenizer.pkl", 'rb') as f:
+                results = pickle.load(f)
+                self.word2id_dict = results[0]
+                self.id2word_dict = results[1]
+                print("file load done, word length is " , len(results[0]))
+                return len(results[0])
+        else:
+            words_count = {}
+            for file in file_list:
+                with open(file, 'r',encoding='utf-8') as file_object:
+                    for line in file_object.readlines():
+                        line = line.strip()
+                        seg_list = jieba.cut(line)
+                        for str in seg_list:
+                            if str in words_count:
+                                words_count[str] = words_count[str] + 1
+                            else:
+                                words_count[str] = 1
 
-        sorted_list = [[v[1], v[0]] for v in words_count.items()]
-        sorted_list.sort(reverse=True)
-        for index, item in enumerate(sorted_list):
-            word = item[1]
-            if item[0] < min_freq:
-                break
-            self.word2id_dict[word] = self.START_ID + index
-            self.id2word_dict[self.START_ID + index] = word
-        return index
+            sorted_list = [[v[1], v[0]] for v in words_count.items()]
+            sorted_list.sort(reverse=True)
+            for index, item in enumerate(sorted_list):
+                word = item[1]
+                if item[0] < min_freq:
+                    break
+                self.word2id_dict[word] = self.START_ID + index
+                self.id2word_dict[self.START_ID + index] = word
+            
+            with open("./tokenizer.pkl", 'wb') as f:
+                pickle.dump((self.word2id_dict, self.id2word_dict), f)
+            return index
 
     def word2id(self, word):
         # pytho3.x无Unicode
