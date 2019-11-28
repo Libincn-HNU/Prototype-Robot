@@ -217,7 +217,11 @@ def train():
                 previous_losses.append(loss_ret)
 
                 # 模型持久化
+<<<<<<< HEAD
                 saver.save(sess, 'model/bot-' + str(size) + "-" + str(size) + "-" + str(train_round) + "-" + str(min_freq) )
+=======
+                saver.save(sess, 'model/seq2seq')
+>>>>>>> 250e60ddcb41c1ca54c8e3aaac5a6b89facf20b6
 
 
 def predict(input_seq):
@@ -226,7 +230,7 @@ def predict(input_seq):
     """
     with tf.Session() as sess:
         encoder_inputs, decoder_inputs, target_weights, outputs, loss, update, saver, learning_rate_decay_op, learning_rate = get_model(feed_previous=True)
-        saver.restore(sess, 'model/lx_bot_v3')
+        saver.restore(sess, 'model/seq2seq')
         # sys.stdout.write("[in:]")
         # sys.stdout.flush()
         # input_seq = sys.stdin.readline()
