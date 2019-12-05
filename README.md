@@ -81,6 +81,8 @@
         6. [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
         7. [seqGAN](#seqgan)
         8. [CycleGAN](#cyclegan)
+        9. [构建聊天机器人：检索、seq2seq、RL、SeqGAN](#构建聊天机器人检索seq2seqrlseqgan)
+        10. [小姜机器人](#小姜机器人)
 
 <!-- /TOC -->
 
@@ -376,6 +378,10 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 + [transformer-chatbot](https://github.com/atselousov/transformer_chatbot)
     + pytorch
 + [chatbot-MemN2N-tf](https://github.com/vyraun/chatbot-MemN2N-tensorflow)
++ [seq2seqchatbots](https://github.com/ricsinaruto/Seq2seqChatbots)
+    + 有常见的数据集处理的代码
+    + transformer
+    
 
 ### DST
 + [DNN-DST](https://github.com/CallumMain/DNN-DST)
@@ -422,5 +428,14 @@ Attention with Intention for a Neural Network Conversation Model(AWI)
 
 ### seqGAN
 + https://github.com/zhaoyingjun/chatbot/blob/master/seq2seqChatbot/seq2seq_model.py
++ rl 对抗训练
++ https://www.jianshu.com/p/b8c3d2a42ba7
 
 ### CycleGAN
+
+### 构建聊天机器人：检索、seq2seq、RL、SeqGAN
++ https://blog.csdn.net/Young_Gy/article/details/76474939
+
+### 小姜机器人
++ https://blog.csdn.net/rensihui/article/details/89418850
++ 模版/检索/生成
