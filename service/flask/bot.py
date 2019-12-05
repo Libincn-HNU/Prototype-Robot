@@ -1,4 +1,6 @@
 # coding:utf-8
+# 问题:bucket 未定义
+# 问题:每一轮只取一个batch 的数据
 
 import sys
 import numpy as np
@@ -31,7 +33,7 @@ init_learning_rate = 1
 min_freq = 300
 
 # 训练的轮数
-train_round = 30000
+train_round = 300000
 
 wordToken = word_token.WordToken()
 
@@ -61,8 +63,8 @@ def get_train_set():
     """
     global num_encoder_symbols, num_decoder_symbols
     train_set = []
-    with open('samples/question.txt', 'r',encoding='utf-8') as question_file:
-        with open('samples/answer.txt', 'r',encoding='utf-8') as answer_file:
+    with open('samples/question.txt-all', 'r',encoding='utf-8') as question_file:
+        with open('samples/answer.txt-all', 'r',encoding='utf-8') as answer_file:
             while True:
                 question = question_file.readline()
                 answer = answer_file.readline()
@@ -217,11 +219,7 @@ def train():
                 previous_losses.append(loss_ret)
 
                 # 模型持久化
-<<<<<<< HEAD
-                saver.save(sess, 'model/bot-' + str(size) + "-" + str(size) + "-" + str(train_round) + "-" + str(min_freq) )
-=======
-                saver.save(sess, 'model/seq2seq')
->>>>>>> 250e60ddcb41c1ca54c8e3aaac5a6b89facf20b6
+                saver.save(sess, 'model/seq2seq/bot-' + str(size) + "-" + str(size) + "-" + str(train_round) + "-" + str(min_freq) )
 
 
 def predict(input_seq):
