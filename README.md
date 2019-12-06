@@ -446,6 +446,7 @@ Attention with Intention for a Neural Network Conversation Model(AWI)
 + https://github.com/zhaoyingjun/chatbot/blob/master/seq2seqChatbot/seq2seq_model.py
 + rl 对抗训练
 + https://www.jianshu.com/p/b8c3d2a42ba7
++ https://blog.csdn.net/yuuyuhaksho/article/details/87560253
 
 ### CycleGAN
 
