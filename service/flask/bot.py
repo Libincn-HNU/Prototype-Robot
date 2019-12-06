@@ -219,11 +219,7 @@ def train():
                 previous_losses.append(loss_ret)
 
                 # 模型持久化
-<<<<<<< HEAD
                 saver.save(sess, 'model/seq2seq/bot-' + str(size) + "-" + str(size) + "-" + str(train_round) + "-" + str(min_freq) )
-=======
-                saver.save(sess, '/Users/sunhongchao/Documents/craft/Prototype-Robot/service/flask/model/seq2seq/bot-32-32-30000-300')
->>>>>>> ad851221a136b9bf7b2bfe29f150668c606b377c
 
 
 def predict(input_seq):

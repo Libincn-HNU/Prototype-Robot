@@ -65,6 +65,8 @@
         3. [Personalizing Dialogue Agents: I have a dog, do you have pets too?](#personalizing-dialogue-agents-i-have-a-dog-do-you-have-pets-too)
     3. [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
         1. [A Neural Conversation Model](#a-neural-conversation-model)
+        2. [Neural Response Generation via GAN with an APProximate Embedding Layer](#neural-response-generation-via-gan-with-an-approximate-embedding-layer)
+        3. [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
     4. [Projects](#projects)
         1. [JDDC](#jddc-1)
         2. [Chatbot](#chatbot)
@@ -78,7 +80,7 @@
         3. [Pointer Generator](#pointer-generator)
         4. [HERD/VHERD/AMI](#herdvherdami)
         5. [DRL](#drl)
-        6. [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
+        6. [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation-1)
         7. [seqGAN](#seqgan)
         8. [CycleGAN](#cyclegan)
         9. [构建聊天机器人：检索、seq2seq、RL、SeqGAN](#构建聊天机器人检索seq2seqrlseqgan)
@@ -362,6 +364,20 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 ### A Neural Conversation Model
 
 + https://arxiv.org/abs/1506.05869
+
+### Neural Response Generation via GAN with an APProximate Embedding Layer
++ 单轮回答，抑制安全回答
+
++ 实现  
++ https://github.com/lan2720/GAN-AEL
++ https://github.com/deepanshugarg257/Response-Generation-with-AEL
+
+### Deep Reinforcement Learning for Dialogue Generation
++ https://www.cnblogs.com/jiangxinyang/p/10469860.html
+
++ 传统的seq2seq 问题
++ 1> 安全回答
++ 2> 使用MLE 容易死循环
 
 ## Projects
 
