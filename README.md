@@ -1,90 +1,102 @@
 
 <!-- TOC -->
 
-1. [Target](#target)
-2. [Dataset](#dataset)
-    1. [中文数据集](#中文数据集)
-    2. [中文其他数据集](#中文其他数据集)
-    3. [英文其他数据集](#英文其他数据集)
-    4. [JDDC](#jddc)
-    5. [Person-Chat](#person-chat)
-    6. [DSTC](#dstc)
-        1. [DSTC1](#dstc1)
-        2. [DSTC2 and DSTC3](#dstc2-and-dstc3)
-        3. [DSTC4](#dstc4)
-        4. [DSTC5](#dstc5)
-        5. [DSTC6](#dstc6)
-        6. [DSTC7](#dstc7)
-        7. [DSTC8](#dstc8)
-    7. [Ubuntu Dialogue Corpus](#ubuntu-dialogue-corpus)
-    8. [Goal-Oriented Dialogue Corpus](#goal-oriented-dialogue-corpus)
-    9. [Standford](#standford)
-    10. [Frames: A Corpus for Adding Memory to Goal-Oriented Dialogue Systems](#frames-a-corpus-for-adding-memory-to-goal-oriented-dialogue-systems)
-    11. [Multi WOZ](#multi-woz)
-    12. [Stanford Multi-turn Multi-domain](#stanford-multi-turn-multi-domain)
-3. [Resource](#resource)
-4. [Metric](#metric)
-5. [对话系统中的自然语言生成技术](#对话系统中的自然语言生成技术)
-    1. [不是安全回答](#不是安全回答)
-    2. [回答具有连续性](#回答具有连续性)
-    3. [词重叠评价指标](#词重叠评价指标)
-        1. [BLEU](#bleu)
-        2. [ROUGE](#rouge)
-        3. [METEOR](#meteor)
-    4. [词向量评价指标](#词向量评价指标)
-        1. [Greedy Matching](#greedy-matching)
-        2. [Embedding Average](#embedding-average)
-        3. [Vector Extrema](#vector-extrema)
-    5. [perplexity困惑度](#perplexity困惑度)
-6. [Solutions](#solutions)
-    1. [Chat-Bot](#chat-bot)
-        1. [Problem](#problem)
-            1. [个性的一致性](#个性的一致性)
-            2. [安全回答](#安全回答)
-            3. [不能指代消解](#不能指代消解)
-        2. [Rasa_Bot](#rasa_bot)
-        3. [Seq2seq](#seq2seq)
-        4. [bi-Transformer](#bi-transformer)
-    2. [IR-Bot](#ir-bot)
-        1. [SMN](#smn)
-        2. [DMN](#dmn)
-    3. [QA-Bot](#qa-bot)
-        1. [KBQA](#kbqa)
-    4. [Task-Bot](#task-bot)
-    5. [Pipeline](#pipeline)
-        1. [ASR](#asr)
-        2. [NLU](#nlu)
-        3. [DM](#dm)
-        4. [NLG](#nlg)
-        5. [TTS](#tts)
-7. [Reference](#reference)
-    1. [Links](#links)
-    2. [Papers](#papers)
-        1. [Knowledge Aware Conversation Generation with Explainable Reasoing ever Augmented Graphs](#knowledge-aware-conversation-generation-with-explainable-reasoing-ever-augmented-graphs)
-        2. [Vocabulary Pyramid Network: Multi-Pass Encoding and Decoding with Multi-Level Vocabularies for Response Generation](#vocabulary-pyramid-network-multi-pass-encoding-and-decoding-with-multi-level-vocabularies-for-response-generation)
-        3. [Personalizing Dialogue Agents: I have a dog, do you have pets too?](#personalizing-dialogue-agents-i-have-a-dog-do-you-have-pets-too)
-    3. [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
-        1. [A Neural Conversation Model](#a-neural-conversation-model)
-        2. [Neural Response Generation via GAN with an APProximate Embedding Layer](#neural-response-generation-via-gan-with-an-approximate-embedding-layer)
-        3. [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
-    4. [Projects](#projects)
-        1. [JDDC](#jddc-1)
-        2. [Chatbot](#chatbot)
-        3. [DST](#dst)
-        4. [Rasa](#rasa)
-        5. [Task](#task)
-        6. [Others](#others)
-    5. [Tricks](#tricks)
-        1. [More Deep](#more-deep)
-        2. [Beam Search](#beam-search)
-        3. [Pointer Generator](#pointer-generator)
-        4. [HERD/VHERD/AMI](#herdvherdami)
-        5. [DRL](#drl)
-        6. [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation-1)
-        7. [seqGAN](#seqgan)
-        8. [CycleGAN](#cyclegan)
-        9. [构建聊天机器人：检索、seq2seq、RL、SeqGAN](#构建聊天机器人检索seq2seqrlseqgan)
-        10. [小姜机器人](#小姜机器人)
+- [Target](#target)
+- [Dataset](#dataset)
+  - [中文数据集](#%e4%b8%ad%e6%96%87%e6%95%b0%e6%8d%ae%e9%9b%86)
+  - [中文其他数据集](#%e4%b8%ad%e6%96%87%e5%85%b6%e4%bb%96%e6%95%b0%e6%8d%ae%e9%9b%86)
+  - [英文其他数据集](#%e8%8b%b1%e6%96%87%e5%85%b6%e4%bb%96%e6%95%b0%e6%8d%ae%e9%9b%86)
+    - [Cornell Movie Dialogs：电影对话数据集，下载地址：http://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html](#cornell-movie-dialogs%e7%94%b5%e5%bd%b1%e5%af%b9%e8%af%9d%e6%95%b0%e6%8d%ae%e9%9b%86%e4%b8%8b%e8%bd%bd%e5%9c%b0%e5%9d%80httpwwwcscornelleducristiancornellmovie-dialogscorpushtml)
+    - [Ubuntu Dialogue Corpus：Ubuntu日志对话数据，下载地址：https://arxiv.org/abs/1506.08909](#ubuntu-dialogue-corpusubuntu%e6%97%a5%e5%bf%97%e5%af%b9%e8%af%9d%e6%95%b0%e6%8d%ae%e4%b8%8b%e8%bd%bd%e5%9c%b0%e5%9d%80httpsarxivorgabs150608909)
+    - [OpenSubtitles：电影字幕，下载地址：http://opus.lingfil.uu.se/OpenSubtitles.php](#opensubtitles%e7%94%b5%e5%bd%b1%e5%ad%97%e5%b9%95%e4%b8%8b%e8%bd%bd%e5%9c%b0%e5%9d%80httpopuslingfiluuseopensubtitlesphp)
+    - [Twitter：twitter数据集，下载地址：https://github.com/Marsan-Ma/twitter_scraper](#twittertwitter%e6%95%b0%e6%8d%ae%e9%9b%86%e4%b8%8b%e8%bd%bd%e5%9c%b0%e5%9d%80httpsgithubcommarsan-matwitterscraper)
+    - [Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理之后，好像挺干净的，下载链接：https://github.com/bshao001/ChatLearner](#papaya-conversational-data-set%e5%9f%ba%e4%ba%8ecornellreddit%e7%ad%89%e6%95%b0%e6%8d%ae%e9%9b%86%e9%87%8d%e6%96%b0%e6%95%b4%e7%90%86%e4%b9%8b%e5%90%8e%e5%a5%bd%e5%83%8f%e6%8c%ba%e5%b9%b2%e5%87%80%e7%9a%84%e4%b8%8b%e8%bd%bd%e9%93%be%e6%8e%a5httpsgithubcombshao001chatlearner)
+  - [JDDC](#jddc)
+  - [Person-Chat](#person-chat)
+  - [DSTC](#dstc)
+    - [DSTC1](#dstc1)
+    - [DSTC2 and DSTC3](#dstc2-and-dstc3)
+    - [DSTC4](#dstc4)
+    - [DSTC5](#dstc5)
+    - [DSTC6](#dstc6)
+    - [DSTC7](#dstc7)
+    - [DSTC8](#dstc8)
+  - [Ubuntu Dialogue Corpus](#ubuntu-dialogue-corpus)
+  - [Goal-Oriented Dialogue Corpus](#goal-oriented-dialogue-corpus)
+  - [Standford](#standford)
+  - [Frames: A Corpus for Adding Memory to Goal-Oriented Dialogue Systems](#frames-a-corpus-for-adding-memory-to-goal-oriented-dialogue-systems)
+  - [Multi WOZ](#multi-woz)
+  - [Stanford Multi-turn Multi-domain](#stanford-multi-turn-multi-domain)
+- [Metric](#metric)
+  - [不是安全回答](#%e4%b8%8d%e6%98%af%e5%ae%89%e5%85%a8%e5%9b%9e%e7%ad%94)
+  - [回答具有连续性](#%e5%9b%9e%e7%ad%94%e5%85%b7%e6%9c%89%e8%bf%9e%e7%bb%ad%e6%80%a7)
+  - [词重叠评价指标](#%e8%af%8d%e9%87%8d%e5%8f%a0%e8%af%84%e4%bb%b7%e6%8c%87%e6%a0%87)
+    - [BLEU](#bleu)
+    - [ROUGE](#rouge)
+    - [METEOR](#meteor)
+  - [词向量评价指标](#%e8%af%8d%e5%90%91%e9%87%8f%e8%af%84%e4%bb%b7%e6%8c%87%e6%a0%87)
+    - [Greedy Matching](#greedy-matching)
+    - [Embedding Average](#embedding-average)
+    - [Vector Extrema](#vector-extrema)
+  - [perplexity困惑度](#perplexity%e5%9b%b0%e6%83%91%e5%ba%a6)
+- [Solutions](#solutions)
+  - [Pipeline](#pipeline)
+    - [ASR](#asr)
+    - [NLU](#nlu)
+    - [DM](#dm)
+    - [NLG](#nlg)
+    - [TTS](#tts)
+  - [NLG](#nlg-1)
+    - [Problem](#problem)
+      - [个性的一致性](#%e4%b8%aa%e6%80%a7%e7%9a%84%e4%b8%80%e8%87%b4%e6%80%a7)
+      - [安全回答](#%e5%ae%89%e5%85%a8%e5%9b%9e%e7%ad%94)
+      - [不能指代消解](#%e4%b8%8d%e8%83%bd%e6%8c%87%e4%bb%a3%e6%b6%88%e8%a7%a3)
+    - [Seq2seq](#seq2seq)
+    - [Transformer2Transformer](#transformer2transformer)
+    - [SeqGAN](#seqgan)
+    - [CycleGAN](#cyclegan)
+  - [IR-Bot](#ir-bot)
+    - [DSSM](#dssm)
+      - [预处理](#%e9%a2%84%e5%a4%84%e7%90%86)
+      - [表示层](#%e8%a1%a8%e7%a4%ba%e5%b1%82)
+      - [匹配层](#%e5%8c%b9%e9%85%8d%e5%b1%82)
+      - [优缺点](#%e4%bc%98%e7%bc%ba%e7%82%b9)
+    - [ARC-I and ARC-II](#arc-i-and-arc-ii)
+    - [Match Pyramid](#match-pyramid)
+    - [SMN](#smn)
+    - [DMN](#dmn)
+    - [基于检索的闲聊系统的实现](#%e5%9f%ba%e4%ba%8e%e6%a3%80%e7%b4%a2%e7%9a%84%e9%97%b2%e8%81%8a%e7%b3%bb%e7%bb%9f%e7%9a%84%e5%ae%9e%e7%8e%b0)
+  - [FAQ](#faq)
+    - [KBQA](#kbqa)
+  - [Task-Bot](#task-bot)
+- [Reference](#reference)
+  - [Links](#links)
+  - [Papers](#papers)
+    - [Knowledge Aware Conversation Generation with Explainable Reasoing ever Augmented Graphs](#knowledge-aware-conversation-generation-with-explainable-reasoing-ever-augmented-graphs)
+    - [Vocabulary Pyramid Network: Multi-Pass Encoding and Decoding with Multi-Level Vocabularies for Response Generation](#vocabulary-pyramid-network-multi-pass-encoding-and-decoding-with-multi-level-vocabularies-for-response-generation)
+    - [Personalizing Dialogue Agents: I have a dog, do you have pets too?](#personalizing-dialogue-agents-i-have-a-dog-do-you-have-pets-too)
+  - [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
+    - [A Neural Conversation Model](#a-neural-conversation-model)
+    - [Neural Response Generation via GAN with an APProximate Embedding Layer](#neural-response-generation-via-gan-with-an-approximate-embedding-layer)
+    - [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
+  - [Projects](#projects)
+    - [JDDC](#jddc-1)
+    - [Chatbot](#chatbot)
+    - [DST](#dst)
+    - [Rasa](#rasa)
+    - [Task](#task)
+    - [Others](#others)
+  - [Tricks](#tricks)
+    - [More Deep](#more-deep)
+    - [Beam Search](#beam-search)
+    - [Pointer Generator](#pointer-generator)
+    - [HERD/VHERD/AMI](#herdvherdami)
+    - [DRL](#drl)
+    - [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation-1)
+    - [seqGAN](#seqgan)
+    - [构建聊天机器人：检索、seq2seq、RL、SeqGAN](#%e6%9e%84%e5%bb%ba%e8%81%8a%e5%a4%a9%e6%9c%ba%e5%99%a8%e4%ba%ba%e6%a3%80%e7%b4%a2seq2seqrlseqgan)
+    - [小姜机器人](#%e5%b0%8f%e5%a7%9c%e6%9c%ba%e5%99%a8%e4%ba%ba)
+  - [Books](#books)
 
 <!-- /TOC -->
 
@@ -122,11 +134,12 @@ https://link.zhihu.com/?target=http%3A//www.shareditor.com/blogshow/%3FblogId%3D
     
 ## 英文其他数据集
 
-Cornell Movie Dialogs：电影对话数据集，下载地址：http://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html
-Ubuntu Dialogue Corpus：Ubuntu日志对话数据，下载地址：https://arxiv.org/abs/1506.08909
-OpenSubtitles：电影字幕，下载地址：http://opus.lingfil.uu.se/OpenSubtitles.php
-Twitter：twitter数据集，下载地址：https://github.com/Marsan-Ma/twitter_scraper
-Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理之后，好像挺干净的，下载链接：https://github.com/bshao001/ChatLearner
+### Cornell Movie Dialogs：电影对话数据集，下载地址：http://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html
+### Ubuntu Dialogue Corpus：Ubuntu日志对话数据，下载地址：https://arxiv.org/abs/1506.08909
++ UDC 1.0 100W 多轮对话数据
+### OpenSubtitles：电影字幕，下载地址：http://opus.lingfil.uu.se/OpenSubtitles.php
+### Twitter：twitter数据集，下载地址：https://github.com/Marsan-Ma/twitter_scraper
+### Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理之后，好像挺干净的，下载链接：https://github.com/bshao001/ChatLearner
 
 ## JDDC
 
@@ -225,16 +238,8 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
   
 - 把所有的数据集按照不同类别进行分类总结，里面涵盖了很多数据集
  
-# Resource
-
-+ pass
 
 # Metric
-
-
-# 对话系统中的自然语言生成技术
-- https://zhuanlan.zhihu.com/p/49197552
-
 
 ## 不是安全回答
 
@@ -258,39 +263,8 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 
 ## perplexity困惑度
 
+
 # Solutions
-
-## Chat-Bot
-
-### Problem
-#### 个性的一致性
-+ Adversarial Learning for Neural Dialogue Generation 
-    + 李纪为
-#### 安全回答
-#### 不能指代消解
-
-### Rasa_Bot
-+ 
-
-### Seq2seq
-+ https://blog.csdn.net/Irving_zhang/article/details/79088143
-+ https://github.com/qhduan/ConversationalRobotDesign/blob/master/%E5%90%84%E7%A7%8D%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%B9%B3%E5%8F%B0%E8%B0%83%E7%A0%94.md
-+ https://zhuanlan.zhihu.com/p/29075764
-
-### bi-Transformer
- 
-
-## IR-Bot
-
-### SMN
-
-### DMN
-
-## QA-Bot
-
-### KBQA
-
-## Task-Bot
 
 ## Pipeline
 
@@ -316,6 +290,75 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 ### TTS
 
 
+## NLG
+
+### Problem
+#### 个性的一致性
++ Adversarial Learning for Neural Dialogue Generation 
+    + 李纪为
+#### 安全回答
++ 在seq2seq方法中问题尤为明显，
+#### 不能指代消解
+
+### Seq2seq
++ https://blog.csdn.net/Irving_zhang/article/details/79088143
++ https://github.com/qhduan/ConversationalRobotDesign/blob/master/%E5%90%84%E7%A7%8D%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%B9%B3%E5%8F%B0%E8%B0%83%E7%A0%94.md
++ https://zhuanlan.zhihu.com/p/29075764
+
+### Transformer2Transformer
+
+### SeqGAN
+
+### CycleGAN
+
+
+
+## IR-Bot
++ 主流的方法分为两类，一种是弱相关模型，包括DSSM，ARC-I等方法，另一种是强相关模型，包括ARC-II， MatchPyramid，DeepMatch等算法，两种方法最主要的区别在于对句子<X,Y> 的建模不同，前者是单独建模，后者是联合建模
+
+### DSSM
+
+#### 预处理
++ 英文 word hanshing
+  + 以三个字母 切分英文单词，转化后为30k
++ 中文 子向量 15k 个左右常用字
+
+#### 表示层
++ 原始的DSSM　用　BOW ，　后续的其他方法（CNN－DSSM　和　LSTM-DSSM 会有改进）
++ 多层DNN 进行信息表示
+
+#### 匹配层
+
++ https://www.cnblogs.com/wmx24/p/10157154.html
+
+![DSSM-1.PNG](https://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/DSSM-1.PNG)
+
+#### 优缺点
++ 优点：DSSM 用字向量作为输入既可以减少切词的依赖，又可以提高模型的泛化能力，因为每个汉字所能表达的语义是可以复用的。另一方面，传统的输入层是用 Embedding 的方式（如 Word2Vec 的词向量）或者主题模型的方式（如 LDA 的主题向量）来直接做词的映射，再把各个词的向量累加或者拼接起来，由于 Word2Vec 和 LDA 都是无监督的训练，这样会给整个模型引入误差，DSSM 采用统一的有监督训练，不需要在中间过程做无监督模型的映射，因此精准度会比较高。
++ 缺点：上文提到 DSSM 采用词袋模型（BOW），因此丧失了语序信息和上下文信息。另一方面，DSSM 采用弱监督、端到端的模型，预测结果不可控。
+
+### ARC-I and ARC-II
++ https://arxiv.org/pdf/1503.03244.pdf
+
+### Match Pyramid
+
+### SMN
+
+### DMN
+
+### 基于检索的闲聊系统的实现
++ 使用检索引擎（如ES）对所有预料进行粗粒度的排序
+  + 使用Okapi BM２５　算法
+
++ 使用匹配算法对答案进行精排
+
+## FAQ
+
+### KBQA
+
+## Task-Bot
+
+
 # Reference
 
 ## Links
@@ -324,7 +367,6 @@ Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理�
 - [Robot Design](https://github.com/qhduan/ConversationalRobotDesign)
 - [sizhi bot](https://github.com/ownthink/robot]
 - [home assistant](https://github.com/home-assistant/home-assistant)
-- [textClassifier](https://github.com/jiangxinyang227/textClassifier)
 - 评价指标
     - https://blog.csdn.net/liuchonge/article/details/79104045
 
@@ -448,7 +490,6 @@ Attention with Intention for a Neural Network Conversation Model(AWI)
 + https://www.jianshu.com/p/b8c3d2a42ba7
 + https://blog.csdn.net/yuuyuhaksho/article/details/87560253
 
-### CycleGAN
 
 ### 构建聊天机器人：检索、seq2seq、RL、SeqGAN
 + https://blog.csdn.net/Young_Gy/article/details/76474939
@@ -456,3 +497,6 @@ Attention with Intention for a Neural Network Conversation Model(AWI)
 ### 小姜机器人
 + https://blog.csdn.net/rensihui/article/details/89418850
 + 模版/检索/生成
+
+## Books
++ 自然语言处理实践-聊天机器人原理与应用
