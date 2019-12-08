@@ -1,262 +1,52 @@
+<!-- TOC -->
+
+- [Target](#target)
+- [Doing](#doing)
+- [ToDo List](#todo-list)
+- [Reference](#reference)
+  - [Links](#links)
+  - [Papers](#papers)
+    - [Knowledge Aware Conversation Generation with Explainable Reasoing ever Augmented Graphs](#knowledge-aware-conversation-generation-with-explainable-reasoing-ever-augmented-graphs)
+    - [Vocabulary Pyramid Network: Multi-Pass Encoding and Decoding with Multi-Level Vocabularies for Response Generation](#vocabulary-pyramid-network-multi-pass-encoding-and-decoding-with-multi-level-vocabularies-for-response-generation)
+    - [Personalizing Dialogue Agents: I have a dog, do you have pets too?](#personalizing-dialogue-agents-i-have-a-dog-do-you-have-pets-too)
+  - [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
+    - [A Neural Conversation Model](#a-neural-conversation-model)
+    - [Neural Response Generation via GAN with an APProximate Embedding Layer](#neural-response-generation-via-gan-with-an-approximate-embedding-layer)
+    - [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
+    - [Text Geneartion from Knowledge Graphs with Graph Transformers](#text-geneartion-from-knowledge-graphs-with-graph-transformers)
+  - [Projects](#projects)
+    - [JDDC](#jddc)
+    - [Chatbot](#chatbot)
+    - [DST](#dst)
+    - [Rasa](#rasa)
+    - [Task](#task)
+    - [Others](#others)
+  - [Tricks](#tricks)
+    - [More Deep](#more-deep)
+    - [Beam Search](#beam-search)
+    - [Pointer Generator](#pointer-generator)
+    - [HERD/VHERD/AMI](#herdvherdami)
+    - [DRL](#drl)
+    - [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation-1)
+    - [seqGAN](#seqgan)
+    - [构建聊天机器人：检索、seq2seq、RL、SeqGAN](#%e6%9e%84%e5%bb%ba%e8%81%8a%e5%a4%a9%e6%9c%ba%e5%99%a8%e4%ba%ba%e6%a3%80%e7%b4%a2seq2seqrlseqgan)
+    - [小姜机器人](#%e5%b0%8f%e5%a7%9c%e6%9c%ba%e5%99%a8%e4%ba%ba)
+  - [Books](#books)
+
+<!-- /TOC -->
+
 
 # Target
 + Step 1. Collect current papers, corpus and projects
 + Step 2. Pipeline model
 + Step 3. End2End model
 
-# Dataset 
+# Doing
++ seqGan 和其他 生成类方法
++ IR bot KB bot 等其他方法
 
-## 中文数据集
+# ToDo List
 
-语料名称 | 语料数量 | 语料来源说明 | 语料特点 | 语料样例 | 是否已分词
----|---|---|---|---|---
-[chatterbot](https://github.com/gunthercox/chatterbot-corpus/tree/master/chatterbot_corpus/data/chinese) | 560 | 开源项目 | 按类型分类，质量较高  | Q:你会开心的 A:幸福不是真正的可预测的情绪。 | 否
-[douban 豆瓣多轮](https://github.com/MarkWuNLP/MultiTurnResponseSelection ) | 352W | 来自北航和微软的paper, 开源项目 | 噪音相对较少，原本是多轮（平均7.6轮）  | Q:烟台 十一 哪 好玩 A:哪 都 好玩 · · · · | 是
-[ptt PTT八卦语料](https://github.com/zake7749/Gossiping-Chinese-Corpus) | 40W | 开源项目，台湾PTT论坛八卦版 | 繁体，语料较生活化，有噪音  | Q:为什么乡民总是欺负国高中生呢QQ	A:如果以为选好科系就会变成比尔盖兹那不如退学吧  | 否
-qingyun（青云语料） | 10W | 某聊天机器人交流群 | 相对不错，生活化  | Q:看来你很爱钱 	 A:噢是吗？那么你也差不多了 | 否
-[subtitle 电视剧对白语料](https://github.com/fateleak/dgk_lost_conv) | 274W | 开源项目，来自爬取的电影和美剧的字幕 | 有一些噪音，对白不一定是严谨的对话，原本是多轮（平均5.3轮）  | Q:京戏里头的人都是不自由的	A:他们让人拿笼子给套起来了了 | 否
-tieba 贴吧论坛回帖语料 | 232W | 偶然找到的 | 多轮，有噪音 https://pan.baidu.com/s/1mUknfwy1nhSM7XzH8xi7gQ 密码:i4si  | Q:前排，鲁迷们都起床了吧	A:标题说助攻，但是看了那球，真是活生生的讽刺了 | 否
-weibo（微博语料） | 443W | 华为 Noah 实验室 Neural Responding Machine for Short-Text Conversation | 仍有一些噪音  | Q:北京的小纯洁们，周日见。#硬汉摆拍清纯照# A:嗷嗷大湿的左手在干嘛，看着小纯洁撸么。 | 否
-[xiaohuangji（小黄鸡语料）](https://github.com/candlewill/Dialog_Corpus) | 45W | 原人人网项目语料 | 有一些不雅对话，少量噪音 | Q:你谈过恋爱么	A:谈过，哎，别提了，伤心..。 | 否
-
-
-## 中文其他数据集
-- 三千万字幕语料
-https://link.zhihu.com/?target=http%3A//www.shareditor.com/blogshow/%3FblogId%3D112
-
-- 白鹭时代中文问答语料
-    - 白鹭时代论坛问答数据，一个问题对应一个最好的答案。下载链接：https://github.com/Samurais/egret-wenda-corpus
-- 微博数据集
-    - 华为李航实验室发布，也是论文“Neural Responding Machine for Short-Text Conversation”使用的数据集下载链接：http://61.93.89.94/Noah_NRM_Data/
-- 新浪微博数据集
-    - 评论回复短句，下载地址：http://lwc.daanvanesch.nl/openaccess.php
-    
-## 英文其他数据集
-
-### Cornell Movie Dialogs：电影对话数据集，下载地址：http://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html
-### Ubuntu Dialogue Corpus：Ubuntu日志对话数据，下载地址：https://arxiv.org/abs/1506.08909
-+ UDC 1.0 100W 多轮对话数据
-### OpenSubtitles：电影字幕，下载地址：http://opus.lingfil.uu.se/OpenSubtitles.php
-### Twitter：twitter数据集，下载地址：https://github.com/Marsan-Ma/twitter_scraper
-### Papaya Conversational Data Set：基于Cornell、Reddit等数据集重新整理之后，好像挺干净的，下载链接：https://github.com/bshao001/ChatLearner
-
-## JDDC
-
-+ 需要注册才能得到数据集
-+ 有待上传
-
-## Person-Chat
-    + Facebook
-    + 16w 条
-
-## DSTC
-
-  - The Dialog State Tracking Challenge (DSTC) is an on-going series of research community challenge tasks. Each task released dialog data labeled with dialog state information, such as the user’s desired restaurant search query given all of the dialog history up to the current turn. The challenge is to create a “tracker” that can predict the dialog state for new dialogs. In each challenge, trackers are evaluated using held-out dialog data.
-
-### DSTC1
-
-  - DSTC1 used human-computer dialogs in the bus timetable domain. Results were presented in a special session at [SIGDIAL 2013](http://www.sigdial.org/workshops/sigdial2013/). DSTC1 was organized by Jason D. Williams, Alan Black, Deepak Ramachandran, Antoine Raux.
-  - Data : https://www.microsoft.com/en-us/research/event/dialog-state-tracking-challenge/#!dstc1-downloads
-  - Project:
-    - pass
-    - pass
-
-### DSTC2 and DSTC3
-
-- DSTC2/3 used human-computer dialogs in the restaurant information domain. Results were presented in special sessions at [SIGDIAL 2014](http://www.sigdial.org/workshops/conference15/) and [IEEE SLT 2014](http://www.slt2014.org/). DSTC2 and 3 were organized by Matthew Henderson, Blaise Thomson, and Jason D. Williams.
-- Data : http://camdial.org/~mh521/dstc/
-- Project:
-  - pass
-  - pass
-
-### DSTC4
-
-- DSTC4 used human-human dialogs in the tourist information domain. Results were presented at [IWSDS 2015](http://www.iwsds.org/). DSTC4 was organized by Seokhwan Kim, Luis F. D’Haro, Rafael E Banchs, Matthew Henderson, and Jason D. Williams.
-- Data:
-  - http://www.colips.org/workshop/dstc4/data.html
-- Project:
-  - pass
-
-### DSTC5
-
-- DSTC5 used human-human dialogs in the tourist information domain, where training dialogs were provided in one language, and test dialogs were in a different language. Results were presented in a special session at [IEEE SLT 2016](http://www.slt2016.org/). DSTC5 was organized by Seokhwan Kim, Luis F. D’Haro, Rafael E Banchs, Matthew Henderson, Jason D. Williams, and Koichiro Yoshino.
-- Data:
-  - http://workshop.colips.org/dstc5/data.html
-- Project:
-  - Pass
-
-### DSTC6
-
-- DSTC6 consisted of 3 parallel tracks:
-  - End-to-End Goal Oriented Dialog Learning
-  - End-to-End Conversation Modeling
-  - Dialogue Breakdown Detection.
-- Results will be presented at a workshop immediately after NIPS 2017.
-  - DSTC6 is organized by Chiori Hori, Julien Perez, Koichiro Yoshino, and Seokhwan Kim.
-- Tracks were organized by Y-Lan Boureau, Antoine Bordes, Julien Perez, Ryuichi Higashinaka, Chiori Hori, and Takaaki Hori.
-
-### DSTC7
-
-### DSTC8
-
-## Ubuntu Dialogue Corpus
-
-- The Ubuntu Dialogue Corpus : A Large Dataset for Research in Unstructured Multi-Turn Dialogue Systems, 2015 [[paper\]](http://arxiv.org/abs/1506.08909) [[data\]](https://github.com/rkadlec/ubuntu-ranking-dataset-creator)
-  
-## Goal-Oriented Dialogue Corpus
-  
-- **(Frames)** Frames: A Corpus for Adding Memory to Goal-Oriented Dialogue Systems, 2016 [[paper\]](https://arxiv.org/abs/1704.00057) [[data\]](http://datasets.maluuba.com/Frames)
-- **(DSTC 2 & 3)** Dialog State Tracking Challenge 2 & 3, 2013 [[paper\]](http://camdial.org/~mh521/dstc/downloads/handbook.pdf) [[data\]](http://camdial.org/~mh521/dstc/)
-  
-## Standford
-  
-- A New Multi-Turn, Multi-Domain, Task-Oriented Dialogue Dataset
-- Mihail Eric and Lakshmi Krishnan and Francois Charette and Christopher D. Manning. 2017. Key-Value Retrieval Networks for Task-Oriented Dialogue. In Proceedings of the Special Interest Group on Discourse and Dialogue (SIGDIAL). https://arxiv.org/abs/1705.05414. [pdf]
-- https://nlp.stanford.edu/blog/a-new-multi-turn-multi-domain-task-oriented-dialogue-dataset/
-- http://nlp.stanford.edu/projects/kvret/kvret_dataset_public.zip
-  - calendar scheduling
-- weather information retrieval
-  - point-of-interest navigation
-  
-## Frames: A Corpus for Adding Memory to Goal-Oriented Dialogue Systems
-
-- Maluuba 放出的对话数据集。
-- 论文链接：http://www.paperweekly.site/papers/407
-  - 数据集链接：http://datasets.maluuba.com/Frames
-
-## Multi WOZ
-
-- https://www.repository.cam.ac.uk/handle/1810/280608
-  
-## Stanford Multi-turn Multi-domain
-  
-- 包含三个domain（日程，天气，景点信息），可参考下该数据机标注格式：
-  - https://nlp.stanford.edu/blog/a-new-multi-turn-multi-domain-task-oriented-dialogue-dataset/
-- 论文citation
-  - Key-Value Retrieval Networks for Task-Oriented Dialogue https://arxiv.org/abs/1705.05414
-  
-- 把所有的数据集按照不同类别进行分类总结，里面涵盖了很多数据集
- 
-
-# Metric
-
-## 不是安全回答
-
-## 回答具有连续性
-
-## 词重叠评价指标
-
-### BLEU
-
-### ROUGE
-
-### METEOR
-
-## 词向量评价指标
-
-### Greedy Matching
-
-### Embedding Average
-
-### Vector Extrema
-
-## perplexity困惑度
-
-
-# Solutions
-
-## Pipeline
-
-### ASR
-
-- APIs or Tools for free
-
-### NLU
-
-- Domain CLF
-  - context based domain clf
-- Intent Detection
-- Slot Filling
-- Joint Learning and Ranking
-
-### DM
-
-- DST
-- DPL
-
-### NLG
-
-### TTS
-
-
-## NLG
-
-### Problem
-#### 个性的一致性
-+ Adversarial Learning for Neural Dialogue Generation 
-    + 李纪为
-#### 安全回答
-+ 在seq2seq方法中问题尤为明显，
-#### 不能指代消解
-
-### Seq2seq
-+ https://blog.csdn.net/Irving_zhang/article/details/79088143
-+ https://github.com/qhduan/ConversationalRobotDesign/blob/master/%E5%90%84%E7%A7%8D%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%B9%B3%E5%8F%B0%E8%B0%83%E7%A0%94.md
-+ https://zhuanlan.zhihu.com/p/29075764
-
-### Transformer2Transformer
-
-### SeqGAN
-![seqGAN-1.png](https://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/seqGAN-1.png)
-
-### CycleGAN
-
-
-
-## IR-Bot
-+ 主流的方法分为两类，一种是弱相关模型，包括DSSM，ARC-I等方法，另一种是强相关模型，包括ARC-II， MatchPyramid，DeepMatch等算法，两种方法最主要的区别在于对句子<X,Y> 的建模不同，前者是单独建模，后者是联合建模
-
-### DSSM
-
-#### 预处理
-+ 英文 word hanshing
-  + 以三个字母 切分英文单词，转化后为30k
-+ 中文 子向量 15k 个左右常用字
-
-#### 表示层
-+ 原始的DSSM　用　BOW ，　后续的其他方法（CNN－DSSM　和　LSTM-DSSM 会有改进）
-+ 多层DNN 进行信息表示
-
-#### 匹配层
-
-+ https://www.cnblogs.com/wmx24/p/10157154.html
-
-![DSSM-1.PNG](https://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/DSSM-1.PNG)
-
-#### 优缺点
-+ 优点：DSSM 用字向量作为输入既可以减少切词的依赖，又可以提高模型的泛化能力，因为每个汉字所能表达的语义是可以复用的。另一方面，传统的输入层是用 Embedding 的方式（如 Word2Vec 的词向量）或者主题模型的方式（如 LDA 的主题向量）来直接做词的映射，再把各个词的向量累加或者拼接起来，由于 Word2Vec 和 LDA 都是无监督的训练，这样会给整个模型引入误差，DSSM 采用统一的有监督训练，不需要在中间过程做无监督模型的映射，因此精准度会比较高。
-+ 缺点：上文提到 DSSM 采用词袋模型（BOW），因此丧失了语序信息和上下文信息。另一方面，DSSM 采用弱监督、端到端的模型，预测结果不可控。
-
-### ARC-I and ARC-II
-+ https://arxiv.org/pdf/1503.03244.pdf
-
-### Match Pyramid
-
-### SMN
-
-### DMN
-
-### 基于检索的闲聊系统的实现
-+ 使用检索引擎（如ES）对所有预料进行粗粒度的排序
-  + 使用Okapi BM２５　算法
-
-+ 使用匹配算法对答案进行精排
-
-## FAQ
-
-### KBQA
-
-## Task-Bot
 
 
 # Reference

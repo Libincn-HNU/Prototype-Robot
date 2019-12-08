@@ -1,4 +1,3 @@
-__author__ = 'liuyuemaicha'
 import os
 
 class disc_config(object):
@@ -46,27 +45,6 @@ class gen_config(object):
     max_train_data_size = 100000
     steps_per_checkpoint = 20
     buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
-    buckets_concat = [(5, 10), (10, 15), (20, 25), (40, 50), (100, 50)]
-
-
-
-
-class GSTConfig(object):
-    beam_size = 7
-    learning_rate = 0.5
-    learning_rate_decay_factor = 0.99
-    max_gradient_norm = 5.0
-    batch_size = 256
-    emb_dim = 1024
-    num_layers = 2
-    vocab_size = 2500
-    train_dir = "./gst_data/"
-    name_model = "st_model"
-    tensorboard_dir = "./tensorboard/gst_log/"
-    name_loss = "gst_loss"
-    max_train_data_size = 0
-    steps_per_checkpoint = 200
-    buckets =        [(5, 10), (10, 15), (20, 25), (40, 50)]
     buckets_concat = [(5, 10), (10, 15), (20, 25), (40, 50), (100, 50)]
 
 class source_data_utils(object):
