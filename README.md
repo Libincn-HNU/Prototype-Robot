@@ -1,3 +1,9 @@
+---
+noteId: "0260868019a511eabcd5bf51d3f5c99a"
+tags: []
+
+---
+
 
 <!-- TOC -->
 
@@ -79,6 +85,7 @@
     - [A Neural Conversation Model](#a-neural-conversation-model)
     - [Neural Response Generation via GAN with an APProximate Embedding Layer](#neural-response-generation-via-gan-with-an-approximate-embedding-layer)
     - [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
+    - [Text Geneartion from Knowledge Graphs with Graph Transformers](#text-geneartion-from-knowledge-graphs-with-graph-transformers)
   - [Projects](#projects)
     - [JDDC](#jddc-1)
     - [Chatbot](#chatbot)
@@ -105,7 +112,7 @@
 + Step 2. Pipeline model
 + Step 3. End2End model
 
-# Dataset
+# Dataset 
 
 ## 中文数据集
 
@@ -308,6 +315,7 @@ https://link.zhihu.com/?target=http%3A//www.shareditor.com/blogshow/%3FblogId%3D
 ### Transformer2Transformer
 
 ### SeqGAN
+![seqGAN-1.png](https://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/seqGAN-1.png)
 
 ### CycleGAN
 
@@ -369,6 +377,7 @@ https://link.zhihu.com/?target=http%3A//www.shareditor.com/blogshow/%3FblogId%3D
 - [home assistant](https://github.com/home-assistant/home-assistant)
 - 评价指标
     - https://blog.csdn.net/liuchonge/article/details/79104045
+- GAN + 文本生成的一些论文
 
 ## Papers
 
@@ -420,6 +429,9 @@ https://link.zhihu.com/?target=http%3A//www.shareditor.com/blogshow/%3FblogId%3D
 + 传统的seq2seq 问题
 + 1> 安全回答
 + 2> 使用MLE 容易死循环
+
+### Text Geneartion from Knowledge Graphs with Graph Transformers
++ https://blog.csdn.net/TgqDT3gGaMdkHasLZv/article/details/100190240
 
 ## Projects
 
