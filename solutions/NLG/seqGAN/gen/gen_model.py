@@ -129,28 +129,20 @@ class Seq2SeqModel(object):
                 for b in xrange(len(self.buckets)):
                     #R =  tf.sub(self.reward[b], self.reward_bias)
                     self.reward[b] = tf.cast(tf.subtract(tf.cast(self.reward[b],tf.float32) , self.reward_bias),tf.int32)
-                    
 
                     #tf.cond 条件判断语句
-                    adjusted_loss = tf.cond(self.up_reward,
-                                              lambda:tf.multiply(self.losses[b], tf.cast(self.reward[b],tf.float32)),
-                                              lambda: self.losses[b])
+                    adjusted_loss = tf.cond(self.up_reward, lambda:tf.multiply(self.losses[b], tf.cast(self.reward[b],tf.float32)), lambda: self.losses[b])
 
-                    # adjusted_loss =  tf.cond(self.up_reward,
-                    #                           lambda: tf.mul(self.losses[b], R),
-                    #                           lambda: self.losses[b])
                     self.aj_losses.append(adjusted_loss)
                     gradients = tf.gradients(adjusted_loss, self.gen_params)
                     clipped_gradients, norm = tf.clip_by_global_norm(gradients, self.max_gradient_norm)
                     self.gradient_norms.append(norm)
-                    self.updates.append(opt.apply_gradients(
-                        zip(clipped_gradients, self.gen_params), global_step=self.global_step))
+                    self.updates.append(opt.apply_gradients(zip(clipped_gradients, self.gen_params), global_step=self.global_step))
 
         self.gen_variables = [k for k in tf.global_variables() if name_scope in k.name]
         self.saver = tf.train.Saver(self.gen_variables)
 
-    def step(self, session, encoder_inputs, decoder_inputs, target_weights,
-           bucket_id, forward_only=True, reward=1, mc_search=False, up_reward=False, debug=True):
+    def step(self, session, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True, reward=1, mc_search=False, up_reward=False, debug=True):
         # Check if the sizes match.
         encoder_size, decoder_size = self.buckets[bucket_id]
         if len(encoder_inputs) != encoder_size:
@@ -184,20 +176,22 @@ class Seq2SeqModel(object):
 
         # Output feed: depends on whether we do a backward step or not.
         if not forward_only: # normal training
+            # 极大似然估计
             output_feed = [self.updates[bucket_id],  # Update Op that does SGD.
                        self.aj_losses[bucket_id],  # Gradient norm.
                        self.losses[bucket_id]]  # Loss for this batch.
-        else: # testing or reinforcement learning
+        else:
+            # testing or reinforcement learning
             output_feed = [self.encoder_state[bucket_id], self.losses[bucket_id]]  # Loss for this batch.
             for l in xrange(decoder_size):  # Output logits.
                 output_feed.append(self.outputs[bucket_id][l])
 
-    
-
         outputs = session.run(output_feed, input_feed)
         if not forward_only:
+            # 极大似然估计
             return outputs[1], outputs[2], outputs[0]  # Gradient norm, loss, no outputs.
         else:
+            # RL
             return outputs[0], outputs[1], outputs[2:]  # encoder_state, loss, outputs.
 
     def get_batch(self, train_data, bucket_id, batch_size, type=0):

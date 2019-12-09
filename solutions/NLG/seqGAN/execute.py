@@ -56,7 +56,7 @@ def gen_test():
 
 
 # 
-def disc_train_data(sess, gen_model, vocab, source_inputs, source_outputs,
+def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
                     encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False):
     train_query, train_answer = [], []
     query_len = gen_config.buckets[bucket_id][0]
@@ -111,12 +111,9 @@ def softmax(x):
     prob = np.exp(x) / np.sum(np.exp(x), axis=0)
     return prob
 
-# 识别器的API接口
-def disc_step(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False):
+def get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False):
     feed_dict={}
-
     for i in xrange(len(train_query)):
-
         feed_dict[disc_model.query[i].name] = train_query[i]
 
     for i in xrange(len(train_answer)):
@@ -125,11 +122,18 @@ def disc_step(sess, bucket_id, disc_model, train_query, train_answer, train_labe
     feed_dict[disc_model.target.name]=train_labels
 
     loss = 0.0
+    """
+    参数更新
+    """
     if forward_only:  #更新G的时候设置为true，更新D的时候设置为false
+        # 产生 reward
+        # 更新 生成器
         fetches = [disc_model.b_logits[bucket_id]]
         logits = sess.run(fetches, feed_dict)
         logits = logits[0]  
     else:
+        # disc_model.b_train_op 更新 识别器的参数
+        # update disc
         fetches = [disc_model.b_train_op[bucket_id], disc_model.b_loss[bucket_id], disc_model.b_logits[bucket_id]]
         train_op, loss, logits = sess.run(fetches,feed_dict)
 
@@ -149,25 +153,22 @@ def disc_step(sess, bucket_id, disc_model, train_query, train_answer, train_labe
 # 对抗训练模块
 def al_train():
     with tf.Session() as sess:
-
+        # 将数据处理成 不同bucket
         vocab, rev_vocab, dev_set, train_set = gens.prepare_data(gen_config)
         for set in train_set:
             print("al train len: ", len(set))
-
+        # bucket 信息
         train_bucket_sizes = [len(train_set[b]) for b in xrange(len(gen_config.buckets))]
         train_total_size = float(sum(train_bucket_sizes))
         train_buckets_scale = [sum(train_bucket_sizes[:i + 1]) / train_total_size
                                for i in xrange(len(train_bucket_sizes))]
+        # 创建模型
         disc_model = disc.create_model(sess, disc_config, disc_config.name_model)
         gen_model = gens.create_model(sess, gen_config, forward_only=False, name_scope="genModel")
 
         current_step = 0
         step_time, disc_loss, gen_loss, t_loss, batch_reward = 0.0, 0.0, 0.0, 0.0, 0.0
-        gen_loss_summary = tf.Summary()
-        disc_loss_summary = tf.Summary()
 
-        gen_writer = tf.summary.FileWriter(gen_config.tensorboard_dir, sess.graph)
-        disc_writer = tf.summary.FileWriter(disc_config.tensorboard_dir, sess.graph)
 
         while True:
             current_step += 1
@@ -177,20 +178,19 @@ def al_train():
                          if train_buckets_scale[i] > random_number_01])
             # disc_config.max_len = gen_config.buckets[bucket_id][0] + gen_config.buckets[bucket_id][1]
 
-            print("==================Update Discriminator: %d=====================" % current_step)
+            print("==================Updating Discriminator: %d=====================" % current_step)
             # 1.Sample (X,Y) from real disc_data
-            # print("bucket_id: %d" %bucket_id)
+            print("bucket_id: %d" %bucket_id)
             encoder_inputs, decoder_inputs, target_weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size)
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
-            train_query, train_answer, train_labels = disc_train_data(sess, gen_model, vocab, source_inputs, source_outputs,
-                                                        encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
-            print("==============================mc_search: False===================================")
-            if current_step % 200 == 0:
+            train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
+            if current_step % 20 == 0:
                 print("train_query: ", len(train_query))
                 print("train_answer: ", len(train_answer))
                 print("train_labels: ", len(train_labels))
-                for i in xrange(len(train_query)):
+                for i in xrange(10):
+                    print("&" * 50)
                     print("lable: ", train_labels[i])
                     print("train_answer_sentence: ", train_answer[i])
                     print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
@@ -199,20 +199,18 @@ def al_train():
             train_answer = np.transpose(train_answer)
 
             # 3.Update D using (X, Y ) as positive examples and(X, ^Y) as negative examples
-            _, disc_step_loss = disc_step(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False)
+            _, disc_step_loss = get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False)
             disc_loss += disc_step_loss / disc_config.steps_per_checkpoint
             
-            print("==================Update Generator: %d=========================" % current_step)
+            print("==================Updating Generator: %d=========================" % current_step)
             # 1.Sample (X,Y) from real disc_data
             update_gen_data = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size)
             encoder, decoder, weights, source_inputs, source_outputs = update_gen_data
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X) with Monte Carlo search
-            train_query, train_answer, train_labels = disc_train_data(sess, gen_model, vocab, source_inputs, source_outputs,
-                                                                encoder, decoder, weights, bucket_id, mc_search=True)
+            train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
 
-            print("=============================mc_search: True====================================")
-            if current_step % 200 == 0:
+            if current_step % 20 == 0:
                 for i in xrange(len(train_query)):
                     print("lable: ", train_labels[i])
                     print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
@@ -221,13 +219,12 @@ def al_train():
             train_answer = np.transpose(train_answer)
 
             # 3.Compute Reward r for (X, ^Y ) using D.---based on Monte Carlo search
-            reward, _ = disc_step(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=True)
+            reward, _ = get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=True)
             batch_reward += reward / gen_config.steps_per_checkpoint
             print("step_reward: ", reward)
 
             # 4.Update G on (X, ^Y ) using reward r   #用poliy gradient更新G
-            gan_adjusted_loss, gen_step_loss, _ =gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False,
-                                           reward=reward, up_reward=True, debug=True)
+            gan_adjusted_loss, gen_step_loss, _ =gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False, reward=reward, up_reward=True, debug=True)
             gen_loss += gen_step_loss / gen_config.steps_per_checkpoint
 
             print("gen_step_loss: ", gen_step_loss)
@@ -247,37 +244,20 @@ def al_train():
                 print("current_steps: %d, step time: %.4f, disc_loss: %.3f, gen_loss: %.3f, t_loss: %.3f, reward: %.3f"
                       %(current_step, step_time, disc_loss, gen_loss, t_loss, batch_reward))
 
-                disc_loss_value = disc_loss_summary.value.add()
-                disc_loss_value.tag = disc_config.name_loss
-                disc_loss_value.simple_value = float(disc_loss)
-                disc_writer.add_summary(disc_loss_summary, int(sess.run(disc_model.global_step)))
 
-                gen_global_steps = sess.run(gen_model.global_step)
-                gen_loss_value = gen_loss_summary.value.add()
-                gen_loss_value.tag = gen_config.name_loss
-                gen_loss_value.simple_value = float(gen_loss)
-                t_loss_value = gen_loss_summary.value.add()
-                t_loss_value.tag = gen_config.teacher_loss
-                t_loss_value.simple_value = float(t_loss)
-                batch_reward_value = gen_loss_summary.value.add()
-                batch_reward_value.tag = gen_config.reward_name
-                batch_reward_value.simple_value = float(batch_reward)
-                gen_writer.add_summary(gen_loss_summary, int(gen_global_steps))
+                print("current_steps: %d, save disc model" % current_step)
+                disc_ckpt_dir = os.path.abspath(os.path.join(disc_config.train_dir, "checkpoints"))
+                if not os.path.exists(disc_ckpt_dir):
+                    os.makedirs(disc_ckpt_dir)
+                disc_model_path = os.path.join(disc_ckpt_dir, "disc.model")
+                disc_model.saver.save(sess, disc_model_path, global_step=disc_model.global_step)
 
-                if current_step % (gen_config.steps_per_checkpoint ) == 0:
-                    print("current_steps: %d, save disc model" % current_step)
-                    disc_ckpt_dir = os.path.abspath(os.path.join(disc_config.train_dir, "checkpoints"))
-                    if not os.path.exists(disc_ckpt_dir):
-                        os.makedirs(disc_ckpt_dir)
-                    disc_model_path = os.path.join(disc_ckpt_dir, "disc.model")
-                    disc_model.saver.save(sess, disc_model_path, global_step=disc_model.global_step)
-
-                    print("current_steps: %d, save gen model" % current_step)
-                    gen_ckpt_dir = os.path.abspath(os.path.join(gen_config.train_dir, "checkpoints"))
-                    if not os.path.exists(gen_ckpt_dir):
-                        os.makedirs(gen_ckpt_dir)
-                    gen_model_path = os.path.join(gen_ckpt_dir, "gen.model")
-                    gen_model.saver.save(sess, gen_model_path, global_step=gen_model.global_step)
+                print("current_steps: %d, save gen model" % current_step)
+                gen_ckpt_dir = os.path.abspath(os.path.join(gen_config.train_dir, "checkpoints"))
+                if not os.path.exists(gen_ckpt_dir):
+                    os.makedirs(gen_ckpt_dir)
+                gen_model_path = os.path.join(gen_ckpt_dir, "gen.model")
+                gen_model.saver.save(sess, gen_model_path, global_step=gen_model.global_step)
 
                 step_time, disc_loss, gen_loss, t_loss, batch_reward = 0.0, 0.0, 0.0, 0.0, 0.0
                 sys.stdout.flush()
