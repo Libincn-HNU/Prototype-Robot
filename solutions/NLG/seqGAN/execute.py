@@ -33,8 +33,6 @@ disc_pre_train()
 4、开始轮询训练（1：200）
 al_train()
 
-
-
 """
 
 
