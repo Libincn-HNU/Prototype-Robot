@@ -145,7 +145,9 @@ def hier_train(config_disc, config_evl):
         step_loss_summary = tf.Summary()
         disc_writer = tf.summary.FileWriter(config_disc.tensorboard_dir, session.graph)
 
-        while current_step<300: # 先训练 300 个 step
+        while current_step<10000: # 先训练 10000 个 step
+            if current_step % 100 == 0:
+                print("current step is ", current_step)
             random_number_01 = np.random.random_sample()
             bucket_id = min([i for i in xrange(len(train_buckets_scale))
                              if train_buckets_scale[i] > random_number_01])

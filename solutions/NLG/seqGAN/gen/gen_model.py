@@ -16,14 +16,7 @@ sys.path.append('../utils')
 """
 embedding_attention_seq2seq
 
-
-
 model_with_buckets
-
-
-这两个接和正常的接口是不一样的，我们本次也主要一起看一下这个接口代码有什么不一样的地方
-
-其他的代码结构以及知识点和我们第二课的内容几乎一样，但是我们还是一起过一下
 
 """
 

@@ -186,10 +186,13 @@ def al_train():
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
             if current_step % 20 == 0:
-                print("train_query: ", len(train_query))
-                print("train_answer: ", len(train_answer))
-                print("train_labels: ", len(train_labels))
                 for i in xrange(10):
+                    print("&" * 50)
+                    print("lable: ", train_labels[i])
+                    print("train_answer_sentence: ", train_answer[i])
+                    print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
+
+                for i in xrange(len(train_labels) - 10, len(train_labels), 1):
                     print("&" * 50)
                     print("lable: ", train_labels[i])
                     print("train_answer_sentence: ", train_answer[i])
@@ -212,6 +215,10 @@ def al_train():
 
             if current_step % 20 == 0:
                 for i in xrange(10):
+                    print("lable: ", train_labels[i])
+                    print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
+
+                for i in xrange(len(train_labels)-10, len(train_labels), 1):
                     print("lable: ", train_labels[i])
                     print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
 
@@ -313,7 +320,7 @@ def main(_):
     #print("*****请注释掉本行代码，以及上行代码gen_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
     # step_2 gen training data for disc
-    # gen_disc()
+    gen_disc()
 
     #print("*****请注释掉本行代码，以及上行代码gen_disc()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
@@ -323,7 +330,7 @@ def main(_):
     #print("*****请注释掉本行代码，以及上行代码disc_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
     # step_4 training al model
-    al_train()
+    # al_train()
 
 
 if __name__ == "__main__":

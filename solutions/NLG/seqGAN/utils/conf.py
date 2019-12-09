@@ -42,7 +42,7 @@ class gen_config(object):
     name_loss = "gen_loss"
     teacher_loss = "teacher_loss"
     reward_name = "reward"
-    max_train_data_size = 100000
+    max_train_data_size = 2000000
     steps_per_checkpoint = 20
     buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
     buckets_concat = [(5, 10), (10, 15), (20, 25), (40, 50), (100, 50)]
@@ -55,6 +55,6 @@ class source_data_utils(object):
     test_dec =  "./gen_data/test.answer"
     resource_data = "/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/merge-chat.txt-all"
 
-    TEST_SIZE=400
+    TEST_SIZE=100000
     e = "E"
     m = "M"

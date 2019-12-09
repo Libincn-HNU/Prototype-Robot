@@ -231,8 +231,9 @@ def decoder(gen_config):
         disc_train_gen = open("disc_data/train.gen", "w")
 
         num_step = 0
-        while num_step < 100:
-            print("generating num_step: ", num_step)
+        while num_step < 10000:
+            if num_step % 100 == 0:
+                print("generating num_step: ", num_step)
             random_number_01 = np.random.random_sample()
             bucket_id = min([i for i in xrange(len(train_buckets_scale))
                              if train_buckets_scale[i] > random_number_01])
