@@ -53,7 +53,7 @@ class source_data_utils(object):
     train_dec = "./gen_data/train.answer"
     test_enc =  "./gen_data/test.query"
     test_dec =  "./gen_data/test.answer"
-    resource_data = "./data_source/conv.txt"
+    resource_data = "/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/merge-chat.txt-all"
 
     TEST_SIZE=400
     e = "E"

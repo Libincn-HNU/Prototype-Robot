@@ -211,7 +211,7 @@ def al_train():
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
 
             if current_step % 20 == 0:
-                for i in xrange(len(train_query)):
+                for i in xrange(10):
                     print("lable: ", train_labels[i])
                     print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
 
@@ -308,18 +308,18 @@ def decoder_online(sess,gen_config, model, vocab,rev_vocab, inputs):
 
 def main(_):
     # step_1 training gen model
-    #gen_pre_train()
+    # gen_pre_train()
 
     #print("*****请注释掉本行代码，以及上行代码gen_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
     # step_2 gen training data for disc
-    #gen_disc()
+    # gen_disc()
 
     #print("*****请注释掉本行代码，以及上行代码gen_disc()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
 
     # step_3 training disc model
-    #disc_pre_train()
+    # disc_pre_train()
     #print("*****请注释掉本行代码，以及上行代码disc_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
     # step_4 training al model
