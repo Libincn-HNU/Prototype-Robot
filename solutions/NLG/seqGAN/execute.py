@@ -221,10 +221,10 @@ def al_train():
             start_time = time.time()
             random_number_01 = np.random.random_sample()
             bucket_id = min([i for i in xrange(len(train_buckets_scale)) if train_buckets_scale[i] > random_number_01])
+            print("bucket_id: %d" %bucket_id)
 
             print("==================Updating Discriminator: %d=====================" % current_step)
             # 1.Sample (X,Y) from real disc_data
-            # print("bucket_id: %d" %bucket_id)
             encoder_inputs, decoder_inputs, target_weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size)
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
