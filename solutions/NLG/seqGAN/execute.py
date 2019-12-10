@@ -190,9 +190,8 @@ def get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, t
             real_num += 1
     reward = reward / gen_num
 
-    print(" 生成数据 被 认为 是 生成数据的概率 和")
-    print( "生成数据的总数，gen_num is ", gen_num)
-    print( "真实数据的总数，real_num is ", real_num)
+    # print( "生成数据的总数，gen_num is ", gen_num)
+    # print( "真实数据的总数，real_num is ", real_num)
 
     return reward, loss
 
@@ -221,15 +220,16 @@ def al_train():
             start_time = time.time()
             random_number_01 = np.random.random_sample()
             bucket_id = min([i for i in xrange(len(train_buckets_scale)) if train_buckets_scale[i] > random_number_01])
-            print("bucket_id: %d" %bucket_id)
+            # print("bucket_id: %d" %bucket_id)
 
-            print("==================Updating Discriminator: %d=====================" % current_step)
+            # print("==================Updating Discriminator: %d=====================" % current_step)
             # 1.Sample (X,Y) from real disc_data
             encoder_inputs, decoder_inputs, target_weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size)
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
-            print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            # print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            # 2 * batch_size
             # if current_step % 100 == 0:
             #     for i in xrange(10):
             #         print("&" * 50)
@@ -250,15 +250,15 @@ def al_train():
             _, disc_step_loss = get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False)
             disc_loss += disc_step_loss / disc_config.steps_per_checkpoint
             
-            print("==================Updating Generator: %d=========================" % current_step)
+            # print("==================Updating Generator: %d=========================" % current_step)
             # 1.Sample (X,Y) from real disc_data
             update_gen_data = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size)
             encoder, decoder, weights, source_inputs, source_outputs = update_gen_data
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X) with Monte Carlo search
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
-            print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
-
+            # print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            # (1 + beam_size ) * batch_size vi
             if current_step %  (5 * gen_config.steps_per_checkpoint) == 0:
                 for i in xrange(5):
                     print("tmp query is ", train_query[i])
@@ -297,7 +297,7 @@ def al_train():
                 step_time += (time.time() - start_time) / gen_config.steps_per_checkpoint
 
                 print("*" * 50) 
-                print("* " * 30 + " show results ", "*" * 30 )
+                print(" show results ")
                 print("*" * 50) 
                 print("current_steps: %d, step time: %.4f, disc_loss: %.3f, gen_loss: %.3f, t_loss: %.3f, reward: %.3f"
                       %(current_step, step_time, disc_loss, gen_loss, t_loss, batch_reward))

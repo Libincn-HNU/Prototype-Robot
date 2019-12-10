@@ -5,7 +5,7 @@ class disc_config(object):
     lr = 0.2
     lr_decay = 0.9
     vocab_size = 2500
-    embed_dim = 64
+    embed_dim = 128 # 64
     steps_per_checkpoint = 20
     #hidden_neural_size = 128
     num_layers = 2
@@ -24,15 +24,15 @@ class disc_config(object):
     #num_epoch = 60
     #max_decay_epoch = 30
     max_grad_norm = 5
-    buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
+    buckets = [(5, 10), (10, 15), (20, 25), (25, 50)]
 
 
 class gen_config(object):
-    beam_size = 7
-    learning_rate = 0.5
+    beam_size = 14 # 7
+    learning_rate = 1 # 0.5
     learning_rate_decay_factor = 0.99
     max_gradient_norm = 5.0
-    batch_size = 64
+    batch_size = 128 # 64
     emb_dim = 64
     num_layers = 2
     vocab_size = 2500
@@ -42,10 +42,10 @@ class gen_config(object):
     name_loss = "gen_loss"
     teacher_loss = "teacher_loss"
     reward_name = "reward"
-    max_train_data_size = 2000000
+    max_train_data_size = 5000000 # 2000000
     steps_per_checkpoint = 20
-    buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
-    buckets_concat = [(5, 10), (10, 15), (20, 25), (40, 50), (100, 50)]
+    buckets = [(5, 10), (10, 15), (20, 25), (25, 50)] # (40, 50)
+    buckets_concat = [(5, 10), (10, 15), (20, 25), (25, 50), (100, 50)]
 
 class source_data_utils(object):
 
