@@ -21,7 +21,6 @@ model_with_buckets
 """
 
 
-
 class Seq2SeqModel(object):
 
     def __init__(self, config, name_scope, forward_only=False, num_samples=512, dtype=tf.float32):
@@ -152,7 +151,7 @@ class Seq2SeqModel(object):
 
         input_feed = {
             self.forward_only.name: forward_only,
-            self.up_reward.name:  up_reward,
+            self.up_reward.name: up_reward,
             self.mc_search.name: mc_search
         }
         for l in xrange(len(self.buckets)):

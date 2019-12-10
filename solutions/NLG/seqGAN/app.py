@@ -25,13 +25,6 @@ def heartbeat():
 timer = threading.Timer(60, heartbeat)
 timer.start()
 
-"""
-ElementTree在 Python 标准库中有两种实现。
-一种是纯 Python 实现例如 xml.etree.ElementTree ，
-另外一种是速度快一点的 xml.etree.cElementTree 。
- 尽量使用 C 语言实现的那种，因为它速度更快，而且消耗的内存更少
-"""
-
 
 app = Flask(__name__,static_url_path="/static") 
 

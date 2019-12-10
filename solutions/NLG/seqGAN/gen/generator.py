@@ -61,19 +61,31 @@ def create_model(session, gen_config, forward_only, name_scope, initializer=None
 
 
 def prepare_data(gen_config):
+    """
+    功能:
+        产生 生成器 需要的数据
+    输入: 
+        gen_config
+    输出:
+        vacab : [(word1,idx1), (word2, idx2), ...]
+        revacab : [(idx1, word1), (idx2, word2), ...]
+        dev_set : [[], [], [], []] bucket1 到 bucket4 的数据
+        train_set : [[], [], [], []] bucket1 到 bucket4 的数据 
+    """
     train_path = os.path.join(gen_config.train_dir, "train")
     voc_file_path = [train_path+".answer", train_path+".query"]
     vocab_path = os.path.join(gen_config.train_dir, "vocab%d.all" % gen_config.vocab_size)
+    # 读取 输入文本，按字切分，统计字出现的次数，并将前 vocab_size 的 写入到文件
     data_utils.create_vocabulary(vocab_path, voc_file_path, gen_config.vocab_size)
+    # 读取写入到 文件的 top vocab_size 的数据，创建 两种格式 的 字典
     vocab, rev_vocab = data_utils.initialize_vocabulary(vocab_path)
 
+    # 读取 训练数据 和 验证数据，并转化为 token index
     print("Preparing Chitchat gen_data in %s" % gen_config.train_dir)
-    train_query, train_answer, dev_query, dev_answer = data_utils.prepare_chitchat_data(
-        gen_config.train_dir, vocab, gen_config.vocab_size)
+    train_query, train_answer, dev_query, dev_answer = data_utils.prepare_chitchat_data(gen_config.train_dir, vocab, gen_config.vocab_size)
 
     # Read disc_data into buckets and compute their sizes.
-    print ("Reading development and training gen_data (limit: %d)."
-               % gen_config.max_train_data_size)
+    print ("Reading development and training gen_data (limit: %d)." % gen_config.max_train_data_size)
     dev_set = read_data(gen_config, dev_query, dev_answer)
     #数据格式：train_set[[ [[source],[target]],[[source],[target]] ],....]  最外层的维度为bucket的个数
     train_set = read_data(gen_config, train_query, train_answer, gen_config.max_train_data_size)
@@ -87,13 +99,14 @@ def softmax(x):
 
 
 def train(gen_config):
+    "pretrain for generator"
+    print("*" * 50, " Generator Pretrain: begin", "*"*50)
     vocab, rev_vocab, dev_set, train_set = prepare_data(gen_config)
+
     for b_set in train_set:
-        print("b_set: ", len(b_set))
+        print("bucket name is ", str(b_set), " length is ", len(b_set))
 
     with tf.Session() as sess:
-    #with tf.device("/gpu:1"):
-        # Create model.
         print("Creating %d layers of %d units." % (gen_config.num_layers, gen_config.emb_dim))
         model = create_model(sess,gen_config,forward_only=False,name_scope="genModel")
 
@@ -107,9 +120,7 @@ def train(gen_config):
         current_step = 0
         #previous_losses = []
 
-        gen_loss_summary = tf.Summary()
-        gen_writer = tf.summary.FileWriter(gen_config.tensorboard_dir, sess.graph)
-
+        print("*" * 50, " Generator Pretrain: train 1000 step ", "*"*50)
         while current_step<1000:
             # Choose a bucket according to disc_data distribution. We pick a random number
             # in [0, 1] and use the corresponding interval in train_buckets_scale.
@@ -118,8 +129,8 @@ def train(gen_config):
 
             # Get a batch and make a step.
             start_time = time.time()
-            encoder_inputs, decoder_inputs, target_weights, batch_source_encoder, batch_source_decoder = model.get_batch(
-                train_set, bucket_id, gen_config.batch_size)
+            # encoder_inputs, decoder_inputs, target_weights, batch_source_encoder, batch_source_decoder = model.get_batch(train_set, bucket_id, gen_config.batch_size)
+            encoder_inputs, decoder_inputs, target_weights, _, _ = model.get_batch(train_set, bucket_id, gen_config.batch_size)
 
             _, step_loss, _ = model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=False)
 
@@ -130,23 +141,8 @@ def train(gen_config):
             # Once in a while, we save checkpoint, print statistics, and run evals.
             if current_step % gen_config.steps_per_checkpoint == 0:
 
-                bucket_value = gen_loss_summary.value.add()
-                bucket_value.tag = gen_config.name_loss
-                bucket_value.simple_value = float(loss)
-                gen_writer.add_summary(gen_loss_summary, int(model.global_step.eval()))
-
-                # Print statistics for the previous epoch.
                 perplexity = math.exp(loss) if loss < 300 else float('inf')
-                print ("global step %d learning rate %.4f step-time %.2f perplexity "
-                       "%.2f" % (model.global_step.eval(), model.learning_rate.eval(),
-                                 step_time, perplexity))
-                # Decrease learning rate if no improvement was seen over last 3 times.
-                # if len(previous_losses) > 2 and loss > max(previous_losses[-3:]):
-                #     sess.run(model.learning_rate_decay_op)
-                # previous_losses.append(loss)
-                # Save checkpoint and zero timer and loss.
-
-                #if current_step % (gen_config.steps_per_checkpoint) == 0:
+                print("global step %d learning rate %.4f step-time %.2f perplexity " "%.2f" % (model.global_step.eval(), model.learning_rate.eval(), step_time, perplexity))
                 print("current_step: %d, save model" %(current_step))
                 gen_ckpt_dir = os.path.abspath(os.path.join(gen_config.train_dir, "checkpoints"))
                 if not os.path.exists(gen_ckpt_dir):
@@ -154,17 +150,10 @@ def train(gen_config):
                 checkpoint_path = os.path.join(gen_ckpt_dir, "chitchat.model")
                 model.saver.save(sess, checkpoint_path, global_step=model.global_step)
 
-
                 step_time, loss = 0.0, 0.0
-                # Run evals on development set and print their perplexity.
-                # for bucket_id in xrange(len(gen_config.buckets)):
-                #   encoder_inputs, decoder_inputs, target_weights = model.get_batch(
-                #       dev_set, bucket_id)
-                #   _, eval_loss, _ = model.step(sess, encoder_inputs, decoder_inputs,
-                #                                target_weights, bucket_id, True)
-                #   eval_ppx = math.exp(eval_loss) if eval_loss < 300 else float('inf')
-                #   print("  eval: bucket %d perplexity %.2f" % (bucket_id, eval_ppx))
                 sys.stdout.flush()
+
+    print("*" * 50, " Generator : end", "*"*50)
 
 
 def test_decoder(gen_config):

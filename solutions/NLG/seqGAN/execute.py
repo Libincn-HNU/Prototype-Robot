@@ -21,47 +21,66 @@ _buckets=gen_config.buckets
 """
 代码结构：
 
- 1、训练生成模型
+1、训练生成模型
 gen_pre_train()
 2、利用训练的模型生成数据，作为识别器的训练数据
-
 gen_disc()
-
 3、训练识别器
 disc_pre_train()
-
 4、开始轮询训练（1：200）
 al_train()
 
 """
 
-
-# 定义一个函数，用来预先训练一个识别器
-def disc_pre_train():
-    #discs.train_step(disc_config, evl_config)
-    disc.hier_train(disc_config, evl_config)
-
-
-# 定义一个函数，用来训练一个生成器
+#  step1 定义一个函数，用来训练一个生成器
 def gen_pre_train():
     gens.train(gen_config)
 
-# 用生成器生成数据，用于训练识别器
+# step2 用生成器生成数据，用于训练识别器
 def gen_disc():
     gens.decoder(gen_config)
+
+# step3 定义一个函数，用来预先训练一个识别器
+def disc_pre_train():
+    #discs.train_step(disc_config, evl_config)
+    disc.hier_train(disc_config, evl_config)
 
 # 测试生成器的模型
 def gen_test():
     gens.test_decoder(gen_config)
 
+#  合并 
+def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False):
+    """
+    功能：
+        Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
 
-# 
-def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
-                    encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False):
+    参数：
+        gen_model: 生成模型
+        vocab : 字典，当前未使用
+        source_inputs: 原始的 query token list, 大小为 batch_size
+        source_outputs: 原始的 answer token list, 大小为 batch_size 
+        encoder_inputs: gen_model encoder 使用的数据， 
+        decoder_inputs: gen_model decoder 使用的数据
+        target_weights:  暂时不了解 ？？？
+        bucket_id: 选择的 bucket
+        mc_search: 是否进行 蒙特卡洛 搜索
+
+    返回：
+        合并后的 train_query, train_answer, train_labels， 大小为 （1 + 1） * batch_size 或者 （1 + beam_size) * batch_size
+        
+        两者的 train query 相同
+        两者的 train answer 不同， 前 batch_size 个 为 source 真实数据， 后 batch size 个 为 gen model 生成的数据
+        两者的 train lable 不同， 前 batch_size 个 为 1， 后 batch size 个 为 0
+        
+    """
     train_query, train_answer = [], []
     query_len = gen_config.buckets[bucket_id][0]
     answer_len = gen_config.buckets[bucket_id][1]
-
+    """
+     获得 原始 数据的 query， answer， label
+     label 为1 
+    """
     for query, answer in zip(source_inputs, source_outputs):
         query = query[:query_len] + [int(data_utils.PAD_ID)] * (query_len - len(query) if query_len > len(query) else 0)
         train_query.append(query)
@@ -72,19 +91,25 @@ def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
 
     def decoder(num_roll):
         for _ in xrange(num_roll):
-            _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id,
-                                                 forward_only=True)
+
+            # encoder_state, loss, outputs.
+            # 猜测  output_logits 大小为
+            #  [seq_len, vocab_size]
+            _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
+
             seq_tokens = []
             resps = []
-            for seq in output_logits:
-                row_token = []
-                for t in seq:
-                    row_token.append(int(np.argmax(t, axis=0)))
-                seq_tokens.append(row_token)
 
+            for seq in output_logits: # 遍历 所有 sequence
+                row_token = []
+                for t in seq: # 遍历当前sequence
+                    row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
+                seq_tokens.append(row_token) # 返回当前 sequence 的 最佳解码结果
+
+            # 格式转化 与结果处理
             seq_tokens_t = []
-            for col in range(len(seq_tokens[0])):
-                seq_tokens_t.append([seq_tokens[row][col] for row in range(len(seq_tokens))])
+            for col in range(len(seq_tokens[0])): # len(seq_tokens[0]) 为 一个 sequence 的长度
+                seq_tokens_t.append([seq_tokens[row][col] for row in range(len(seq_tokens))])  # len(seq_tokens) 
 
             for seq in seq_tokens_t:
                 if data_utils.EOS_ID in seq:
@@ -92,6 +117,7 @@ def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
                 else:
                     resps.append(seq[:gen_config.buckets[bucket_id][1]])
 
+            # 数据 append 到 之前的  train_query, train_answer, train_labels
             for i, output in enumerate(resps):
                 output = output[:answer_len] + [data_utils.PAD_ID] * (answer_len - len(output) if answer_len > len(output) else 0)
                 train_query.append(train_query[i])
@@ -101,8 +127,10 @@ def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
         return train_query, train_answer, train_labels
 
     if mc_search:
+        # 进行 蒙特卡洛搜索, decodde beam_size 次
         train_query, train_answer, train_labels = decoder(gen_config.beam_size)
     else:
+        # 不进行 蒙特卡洛 搜索, decode 一次
         train_query, train_answer, train_labels = decoder(1)
 
     return train_query, train_answer, train_labels
@@ -112,6 +140,17 @@ def softmax(x):
     return prob
 
 def get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False):
+    """
+    功能：
+        获得 reward 或者 loss
+    输入：
+        bucket_id :
+        disc_model : 
+        train_query : 
+        train_answer :
+        train_labels : 
+        forward_only : 为 True 时 更新  Gen， 为 False 时 更新 Disc 
+    """
     feed_dict={}
     for i in xrange(len(train_query)):
         feed_dict[disc_model.query[i].name] = train_query[i]
@@ -127,26 +166,33 @@ def get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, t
     """
     if forward_only:  #更新G的时候设置为true，更新D的时候设置为false
         # 产生 reward
-        # 更新 生成器
+        # 更新 生成器 gen
         fetches = [disc_model.b_logits[bucket_id]]
         logits = sess.run(fetches, feed_dict)
         logits = logits[0]  
     else:
         # disc_model.b_train_op 更新 识别器的参数
-        # update disc
+        # update 识别器 disc 
         fetches = [disc_model.b_train_op[bucket_id], disc_model.b_loss[bucket_id], disc_model.b_logits[bucket_id]]
-        train_op, loss, logits = sess.run(fetches,feed_dict)
+        # train_op, loss, logits = sess.run(fetches,feed_dict)
+        _, loss, logits = sess.run(fetches,feed_dict)
 
     # softmax operation
     logits = np.transpose(softmax(np.transpose(logits)))
 
-    reward, gen_num = 0.0, 0
+    reward, gen_num, real_num = 0.0, 0, 0
     for logit, label in zip(logits, train_labels):
         #只算负类的reward
         if int(label) == 0:
             reward += logit[1]  #logit[1] 表示只取负类的概率
             gen_num += 1
+        else:
+            real_num += 1
     reward = reward / gen_num
+
+    print(" 生成数据 被 认为 是 生成数据的概率 和")
+    print( "生成数据的总数，gen_num is ", gen_num)
+    print( "真实数据的总数，real_num is ", real_num)
 
     return reward, loss
 
@@ -174,29 +220,28 @@ def al_train():
             current_step += 1
             start_time = time.time()
             random_number_01 = np.random.random_sample()
-            bucket_id = min([i for i in xrange(len(train_buckets_scale))
-                         if train_buckets_scale[i] > random_number_01])
-            # disc_config.max_len = gen_config.buckets[bucket_id][0] + gen_config.buckets[bucket_id][1]
+            bucket_id = min([i for i in xrange(len(train_buckets_scale)) if train_buckets_scale[i] > random_number_01])
 
             print("==================Updating Discriminator: %d=====================" % current_step)
             # 1.Sample (X,Y) from real disc_data
-            print("bucket_id: %d" %bucket_id)
+            # print("bucket_id: %d" %bucket_id)
             encoder_inputs, decoder_inputs, target_weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size)
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
-            if current_step % 20 == 0:
-                for i in xrange(10):
-                    print("&" * 50)
-                    print("lable: ", train_labels[i])
-                    print("train_answer_sentence: ", train_answer[i])
-                    print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
+            print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            # if current_step % 100 == 0:
+            #     for i in xrange(10):
+            #         print("&" * 50)
+            #         print("lable: ", train_labels[i])
+            #         print("train_answer_sentence: ", train_answer[i])
+            #         print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
 
-                for i in xrange(len(train_labels) - 10, len(train_labels), 1):
-                    print("&" * 50)
-                    print("lable: ", train_labels[i])
-                    print("train_answer_sentence: ", train_answer[i])
-                    print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
+            #     for i in xrange(len(train_labels) - 10, len(train_labels), 1):
+            #         print("&" * 50)
+            #         print("lable: ", train_labels[i])
+            #         print("train_answer_sentence: ", train_answer[i])
+            #         print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
 
             train_query = np.transpose(train_query)
             train_answer = np.transpose(train_answer)
@@ -212,15 +257,17 @@ def al_train():
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X) with Monte Carlo search
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
+            print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
 
-            if current_step % 20 == 0:
-                for i in xrange(10):
+            if current_step %  (5 * gen_config.steps_per_checkpoint) == 0:
+                for i in xrange(5):
+                    print("tmp query is ", train_query[i])
                     print("lable: ", train_labels[i])
                     print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
 
-                for i in xrange(len(train_labels)-10, len(train_labels), 1):
-                    print("lable: ", train_labels[i])
-                    print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
+                    for idx in range(1, gen_config.beam_size):
+                        print("lable: ", train_labels[ idx * gen_config.batch_size + i])
+                        print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[ idx * gen_config.batch_size + i]]))
 
             train_query = np.transpose(train_query)
             train_answer = np.transpose(train_answer)
@@ -235,23 +282,25 @@ def al_train():
             gan_adjusted_loss, gen_step_loss, _ =gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False, reward=reward, up_reward=True, debug=True)
             gen_loss += gen_step_loss / gen_config.steps_per_checkpoint
 
-            print("gen_step_loss: ", gen_step_loss)
-            print("gen_step_adjusted_loss: ", gan_adjusted_loss)
+            # print("gen_step_loss: ", gen_step_loss)
+            # print("gen_step_adjusted_loss: ", gan_adjusted_loss)
 
             # 5.Teacher-Forcing: Update G on (X, Y )   #用极大似然法更新G
             t_adjusted_loss, t_step_loss, a = gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False)
             t_loss += t_step_loss / gen_config.steps_per_checkpoint
            
-            print("t_step_loss: ", t_step_loss)
-            print("t_adjusted_loss", t_adjusted_loss)           # print("normal: ", a)
+            # print("t_step_loss: ", t_step_loss)
+            # print("t_adjusted_loss", t_adjusted_loss)           # print("normal: ", a)
 
             if current_step % gen_config.steps_per_checkpoint == 0:
 
                 step_time += (time.time() - start_time) / gen_config.steps_per_checkpoint
 
+                print("*" * 50) 
+                print("* " * 30 + " show results ", "*" * 30 )
+                print("*" * 50) 
                 print("current_steps: %d, step time: %.4f, disc_loss: %.3f, gen_loss: %.3f, t_loss: %.3f, reward: %.3f"
                       %(current_step, step_time, disc_loss, gen_loss, t_loss, batch_reward))
-
 
                 print("current_steps: %d, save disc model" % current_step)
                 disc_ckpt_dir = os.path.abspath(os.path.join(disc_config.train_dir, "checkpoints"))
