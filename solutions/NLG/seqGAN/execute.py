@@ -227,6 +227,7 @@ def al_train():
 
             # 3.Compute Reward r for (X, ^Y ) using D.---based on Monte Carlo search
             reward, _ = get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=True)
+            reward = reward - 0.5
             batch_reward += reward / gen_config.steps_per_checkpoint
             print("step_reward: ", reward)
 
@@ -314,13 +315,15 @@ def decoder_online(sess,gen_config, model, vocab,rev_vocab, inputs):
 
 
 def main(_):
+    import os
+    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
     # step_1 training gen model
     # gen_pre_train()
 
     #print("*****请注释掉本行代码，以及上行代码gen_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
     # step_2 gen training data for disc
-    gen_disc()
+    # gen_disc()
 
     #print("*****请注释掉本行代码，以及上行代码gen_disc()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
@@ -330,7 +333,7 @@ def main(_):
     #print("*****请注释掉本行代码，以及上行代码disc_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
     # step_4 training al model
-    # al_train()
+    al_train()
 
 
 if __name__ == "__main__":
