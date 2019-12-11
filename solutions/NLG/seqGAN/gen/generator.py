@@ -104,7 +104,7 @@ def train(gen_config):
     vocab, rev_vocab, dev_set, train_set = prepare_data(gen_config)
 
     for b_set in train_set:
-        print("bucket name is ", str(b_set), " length is ", len(b_set))
+        print("length is ", len(b_set))
 
     with tf.Session() as sess:
         print("Creating %d layers of %d units." % (gen_config.num_layers, gen_config.emb_dim))

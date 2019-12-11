@@ -261,13 +261,12 @@ def al_train():
             # (1 + beam_size ) * batch_size vi
             if current_step %  (5 * gen_config.steps_per_checkpoint) == 0:
                 for i in xrange(5):
-                    print("tmp query is ", train_query[i])
+                    print("tmp query is ", " ".join([tf.compat.as_str(rev_vocab[output]) for output in train_query[i]]))
                     print("lable: ", train_labels[i])
-                    print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i]]))
+                    print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i] if output != 0]))
 
                     for idx in range(1, gen_config.beam_size):
-                        print("lable: ", train_labels[ idx * gen_config.batch_size + i])
-                        print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[ idx * gen_config.batch_size + i]]))
+                        print("lable: ", train_labels[ idx * gen_config.batch_size + i],  " text is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[ idx * gen_config.batch_size + i] if output != 0]))
 
             train_query = np.transpose(train_query)
             train_answer = np.transpose(train_answer)
@@ -276,7 +275,7 @@ def al_train():
             reward, _ = get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=True)
             reward = reward - 0.5
             batch_reward += reward / gen_config.steps_per_checkpoint
-            print("step_reward: ", reward)
+            # print("step_reward: ", reward)
 
             # 4.Update G on (X, ^Y ) using reward r   #用poliy gradient更新G
             gan_adjusted_loss, gen_step_loss, _ =gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False, reward=reward, up_reward=True, debug=True)
@@ -296,9 +295,7 @@ def al_train():
 
                 step_time += (time.time() - start_time) / gen_config.steps_per_checkpoint
 
-                print("*" * 50) 
-                print(" show results ")
-                print("*" * 50) 
+                print("*" * 20 + " show results " + "*" * 20)
                 print("current_steps: %d, step time: %.4f, disc_loss: %.3f, gen_loss: %.3f, t_loss: %.3f, reward: %.3f"
                       %(current_step, step_time, disc_loss, gen_loss, t_loss, batch_reward))
 

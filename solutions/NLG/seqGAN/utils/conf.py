@@ -1,7 +1,7 @@
 import os
 
 class disc_config(object):
-    batch_size = 64
+    batch_size = 1024 # 64
     lr = 0.2
     lr_decay = 0.9
     vocab_size = 2500
@@ -28,12 +28,12 @@ class disc_config(object):
 
 
 class gen_config(object):
-    beam_size = 14 # 7
+    beam_size = 7 # 7
     learning_rate = 1 # 0.5
     learning_rate_decay_factor = 0.99
     max_gradient_norm = 5.0
-    batch_size = 128 # 64
-    emb_dim = 64
+    batch_size = 1024 # 64
+    emb_dim = 128 # 64
     num_layers = 2
     vocab_size = 2500
     train_dir = "./gen_data/"
