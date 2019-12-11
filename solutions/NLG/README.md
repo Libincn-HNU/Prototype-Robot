@@ -35,6 +35,13 @@
 + Tourist Information Dataset
 + Restaurant in San Francisco Dataset
 
+# Experiments
+	前10W 数据	全数据
+seq2seq	语句不通顺	安全回答居多（图片已经保存）
+seqGAN-19600		答案错误，需要调试
+GAN-AEL		
+GAN-RL		
+
 # Reference
 
 ## Views
