@@ -11,9 +11,15 @@
         7. [微博语料](#微博语料)
         8. [新浪微博数据集](#新浪微博数据集)
         9. [小黄鸡语料](#小黄鸡语料)
-        10. [三千万字幕语料](#三千万字幕语料)
-        11. [白鹭时代中文问答语料](#白鹭时代中文问答语料)
-        12. [JDDC](#jddc)
+        10. [中文电影对白语料](#中文电影对白语料)
+        11. [The NUS SMS Corpus](#the-nus-sms-corpus)
+        12. [Datasets for Natural Language Processing](#datasets-for-natural-language-processing)
+        13. [白鹭时代中文问答语料](#白鹭时代中文问答语料)
+        14. [Chat corpus repository](#chat-corpus-repository)
+        15. [保险行业QA语料库](#保险行业qa语料库)
+        16. [三千万字幕语料](#三千万字幕语料)
+        17. [白鹭时代中文问答语料](#白鹭时代中文问答语料-1)
+        18. [JDDC](#jddc)
     2. [英文其他数据集](#英文其他数据集)
         1. [Cornell Movie Dialogs](#cornell-movie-dialogs)
         2. [OpenSubtitles](#opensubtitles)
@@ -35,6 +41,7 @@
         5. [DSTC6](#dstc6)
         6. [DSTC7](#dstc7)
         7. [DSTC8](#dstc8)
+2. [Reference](#reference)
 
 <!-- /TOC -->
 
@@ -43,7 +50,7 @@
 ## 中文数据集
 ### chatterbot
 + https://github.com/gunthercox/chatterbot-corpus/tree/master/chatterbot_corpus/data/chinese
-+ 数据大小 : 560 
++ 数据大小 : 560, 数量量很小，无法使用
 + 来源 : 开源项目 
 + 特点 : 按类型分类，质量较高
 + 未分词
@@ -54,7 +61,10 @@
 ### 豆瓣多轮
 + https://github.com/MarkWuNLP/MultiTurnResponseSelection
 + 大小 : 352W 
-+ 来源 : 来自北航和微软的paper, 开源项目
++ 来源 : 
+    + 来自北航和微软的paper, 开源项目
+    + A New Archtechture for Multi-turn Response Selection in Retrieval-based Chatbots.
+    + https://arxiv.org/pdf/1612.01627.pdf
 + 特点 : 噪音相对较少，原本是多轮（平均7.6轮）  
 + 已经分词
 + 样例
@@ -97,7 +107,7 @@
 + 未分词
 + 样例 
     + Q:前排，鲁迷们都起床了吧	
-    + A:标题说助攻，但是看了那球，真是活生生的讽刺了 | 否
+    + A:标题说助攻，但是看了那球，真是活生生的讽刺了
 
 ### 微博语料
 + 华为李航实验室发布，也是论文“Neural Responding Machine for Short-Text Conversation”使用的数据集下载链接：http://61.93.89.94/Noah_NRM_Data/， 此链接似乎已经失效
@@ -110,10 +120,11 @@
     + A:嗷嗷大湿的左手在干嘛，看着小纯洁撸么。
 
 ### 新浪微博数据集
-- 评论回复短句，下载地址：http://lwc.daanvanesch.nl/openaccess.php
+- 评论回复短句
+- 下载地址：http://lwc.daanvanesch.nl/openaccess.php
 
 ### 小黄鸡语料
-+ https://github.com/candlewill/Dialog_Corpus) 
++ https://github.com/candlewill/Dialog_Corpus
 + 数据大小 : 45W 
 + 来源 : 原人人网项目语料
 + 特点 : 有一些不雅对话，少量噪音 
@@ -121,13 +132,41 @@
 + 样例
     + Q:你谈过恋爱么	
     + A:谈过，哎，别提了，伤心..。 
+    
+    dgk_shooter_min.conv.zip
+    
+### 中文电影对白语料
++ https://github.com/candlewill/Dialog_Corpus
++ 噪音比较大，许多对白问答关系没有对应好
+
+### The NUS SMS Corpus
++ https://github.com/candlewill/Dialog_Corpus
++ 包含中文和英文短信息语料，据说是世界最大公开的短消息语料
+
+###  Datasets for Natural Language Processing
++ https://github.com/candlewill/Dialog_Corpus
++ 这是他人收集的自然语言处理相关数据集，主要包含Question Answering，Dialogue Systems， Goal-Oriented Dialogue Systems三部分，都是英文文本。可以使用机器翻译为中文，供中文对话使用
+
+### 白鹭时代中文问答语料
++ https://github.com/candlewill/Dialog_Corpus
++ 由白鹭时代官方论坛问答板块10,000+ 问题中，选择被标注了“最佳答案”的纪录汇总而成。人工review raw data，给每一个问题，一个可以接受的答案。目前，语料库只包含2907个问答。(备份)
+
+### Chat corpus repository
++ https://github.com/candlewill/Dialog_Corpus
++ chat corpus collection from various open sources
++ 包括：开放字幕、英文电影字幕、中文歌词、英文推文
+
+### 保险行业QA语料库
++ https://github.com/candlewill/Dialog_Corpus
++ 通过翻译 insuranceQA产生的数据集。train_data含有问题12,889条，数据 141779条，正例：负例 = 1:10； test_data含有问题2,000条，数据 22000条，正例：负例 = 1:10；valid_data含有问题2,000条，数据 22000条，正例：负例 = 1:10
 
 
 ### 三千万字幕语料
 + https://link.zhihu.com/?target=http%3A//www.shareditor.com/blogshow/%3FblogId%3D112
 
 ### 白鹭时代中文问答语料
-- 白鹭时代论坛问答数据，一个问题对应一个最好的答案。下载链接：https://github.com/Samurais/egret-wenda-corpus
+- 白鹭时代论坛问答数据，一个问题对应一个最好的答案
+- 下载链接：https://github.com/Samurais/egret-wenda-corpus
 
 ### JDDC
 + 需要注册才能得到数据集
@@ -242,3 +281,19 @@
 ### DSTC7
 
 ### DSTC8
+
+
+# Reference
+
++ https://github.com/candlewill/Dialog_Corpus
+
++ https://github.com/codemayq/chinese_chatbot_corpus
+    + 常见的中文语料，并附带网盘链接和预处理脚本
+    + https://pan.baidu.com/s/1szmNZQrwh9y994uO8DFL_A 提取码：f2ex
+    + 已经存储到百度云盘 /闲聊语料/raw_chat_corpus.zip
+
++ 单轮数据
+    + https://chatbot-dataset.oss-cn-beijing.aliyuncs.com/single_round.zip
+
++ 多轮数据
+    + https://chatbot-dataset.oss-cn-beijing.aliyuncs.com/multi_round.zip

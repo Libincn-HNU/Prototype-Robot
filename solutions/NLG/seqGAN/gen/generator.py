@@ -19,11 +19,11 @@ from tensorflow.python.platform import gfile
 
 sys.path.append('../utils')
 
-# We use a number of buckets and pad to the closest one for efficiency.
-# See seq2seq_model.Seq2SeqModel for details of how they work.
 
-
-def read_data(config, source_path, target_path, max_size=None):
+def read_data_from_file(config, source_path, target_path, max_size=None):
+    """
+    读取数据，用于产生训练集和测试集， 产生带有 bucket 的数据
+    """
     data_set = [[] for _ in config.buckets]
     with gfile.GFile(source_path, mode="r") as source_file:
         with gfile.GFile(target_path, mode="r") as target_file:
@@ -45,25 +45,33 @@ def read_data(config, source_path, target_path, max_size=None):
     return data_set
 
 def create_model(session, gen_config, forward_only, name_scope, initializer=None):
-    """Create translation model and initialize or load parameters in session."""
+    """
+    加载 ckpt 并 产生模型
+
+    注意: 在不同的机器上，需要修改 ckpt 所在的路径 和 其中的 checkpoint 文件中的模型路径
+    """
     with tf.variable_scope(name_or_scope=name_scope, initializer=initializer):
         model = seq2seq_model.Seq2SeqModel(gen_config,  name_scope=name_scope, forward_only=forward_only)
-        gen_ckpt_dir = os.path.abspath(os.path.join(gen_config.train_dir, "checkpoints"))
-        ckpt = tf.train.get_checkpoint_state(gen_ckpt_dir)
+        # gen_ckpt_dir = os.path.abspath(os.path.join(gen_config.train_dir, "checkpoints"))
+        # gen_ckpt_dir = os.path.abspath(os.path.join("/Users/sunhongchao/Documents/craft/Prototype-Robot/solutions/NLG/seqGAN/gen_data/", "checkpoints"))
+        ckpt = tf.train.get_checkpoint_state("/Users/sunhongchao/Documents/craft/Prototype-Robot/solutions/NLG/seqGAN/gen_data/checkpoints/")
         if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
+            print(" * " * 50)
             print("Reading Gen model parameters from %s" % ckpt.model_checkpoint_path)
+            print(" * " * 50)
             model.saver.restore(session, ckpt.model_checkpoint_path)
         else:
+            print(" * " * 50)
             print("Created Gen model with fresh parameters.")
+            print(" * " * 50)
             gen_global_variables = [gv for gv in tf.global_variables() if name_scope in gv.name]
             session.run(tf.variables_initializer(gen_global_variables))
         return model
 
-
 def prepare_data(gen_config):
     """
     功能:
-        产生 生成器 需要的数据
+        创建字典 和 训练集 测试集
     输入: 
         gen_config
     输出:
@@ -75,30 +83,28 @@ def prepare_data(gen_config):
     train_path = os.path.join(gen_config.train_dir, "train")
     voc_file_path = [train_path+".answer", train_path+".query"]
     vocab_path = os.path.join(gen_config.train_dir, "vocab%d.all" % gen_config.vocab_size)
-    # 读取 输入文本，按字切分，统计字出现的次数，并将前 vocab_size 的 写入到文件
-    data_utils.create_vocabulary(vocab_path, voc_file_path, gen_config.vocab_size)
-    # 读取写入到 文件的 top vocab_size 的数据，创建 两种格式 的 字典
-    vocab, rev_vocab = data_utils.initialize_vocabulary(vocab_path)
+    data_utils.create_vocabulary(vocab_path, voc_file_path, gen_config.vocab_size) # 读取 输入文本，按字切分，统计字出现的次数，并将前 vocab_size 的 写入到文件
+    vocab, rev_vocab = data_utils.initialize_vocabulary(vocab_path) # 读取写入到 文件的 top vocab_size 的数据，创建 两种格式 的 字典
 
     # 读取 训练数据 和 验证数据，并转化为 token index
-    print("Preparing Chitchat gen_data in %s" % gen_config.train_dir)
+    print("Data Tokenizer : Preparing Chitchat gen_data in %s" % gen_config.train_dir)
     train_query, train_answer, dev_query, dev_answer = data_utils.prepare_chitchat_data(gen_config.train_dir, vocab, gen_config.vocab_size)
 
-    # Read disc_data into buckets and compute their sizes.
     print ("Reading development and training gen_data (limit: %d)." % gen_config.max_train_data_size)
-    dev_set = read_data(gen_config, dev_query, dev_answer)
-    #数据格式：train_set[[ [[source],[target]],[[source],[target]] ],....]  最外层的维度为bucket的个数
-    train_set = read_data(gen_config, train_query, train_answer, gen_config.max_train_data_size)
+    dev_set = read_data_from_file(gen_config, dev_query, dev_answer)
+    train_set = read_data_from_file(gen_config, train_query, train_answer, gen_config.max_train_data_size) #数据格式：train_set[[ [[source],[target]],[[source],[target]] ],....]  最外层的维度为bucket的个数
 
     return vocab, rev_vocab, dev_set, train_set
-
 
 def softmax(x):
     prob = np.exp(x) / np.sum(np.exp(x), axis=0)
     return prob
 
+def pretrain(gen_config):
+    """
+    生成器 预训练
+    """
 
-def train(gen_config):
     "pretrain for generator"
     print("*" * 50, " Generator Pretrain: begin", "*"*50)
     vocab, rev_vocab, dev_set, train_set = prepare_data(gen_config)
@@ -120,8 +126,8 @@ def train(gen_config):
         current_step = 0
         #previous_losses = []
 
-        print("*" * 50, " Generator Pretrain: train 1000 step ", "*"*50)
-        while current_step<1000:
+        print("*" * 50, " Generator Pretrain: train 10000 step ", "*"*50)
+        while current_step<10000:
             # Choose a bucket according to disc_data distribution. We pick a random number
             # in [0, 1] and use the corresponding interval in train_buckets_scale.
             random_number_01 = np.random.random_sample()
@@ -139,7 +145,7 @@ def train(gen_config):
             current_step += 1
 
             # Once in a while, we save checkpoint, print statistics, and run evals.
-            if current_step % gen_config.steps_per_checkpoint == 0:
+            if current_step % gen_config.steps_per_checkpoint * 50 == 0:
 
                 perplexity = math.exp(loss) if loss < 300 else float('inf')
                 print("global step %d learning rate %.4f step-time %.2f perplexity " "%.2f" % (model.global_step.eval(), model.learning_rate.eval(), step_time, perplexity))
@@ -154,7 +160,6 @@ def train(gen_config):
                 sys.stdout.flush()
 
     print("*" * 50, " Generator : end", "*"*50)
-
 
 def test_decoder(gen_config):
     with tf.Session() as sess:
@@ -205,12 +210,11 @@ def test_decoder(gen_config):
 
 # gen data for disc training
 def decoder(gen_config):
-    vocab, rev_vocab, dev_set, train_set = prepare_data(gen_config)
+    _, rev_vocab, _, train_set = prepare_data(gen_config)
 
     train_bucket_sizes = [len(train_set[b]) for b in xrange(len(gen_config.buckets))]
     train_total_size = float(sum(train_bucket_sizes))
-    train_buckets_scale = [sum(train_bucket_sizes[:i + 1]) / train_total_size
-                           for i in xrange(len(train_bucket_sizes))]
+    train_buckets_scale = [sum(train_bucket_sizes[:i + 1]) / train_total_size for i in xrange(len(train_bucket_sizes))]
 
     with tf.Session() as sess:
         model = create_model(sess, gen_config,name_scope="genModel",forward_only=True)
@@ -224,15 +228,11 @@ def decoder(gen_config):
             if num_step % 100 == 0:
                 print("generating num_step: ", num_step)
             random_number_01 = np.random.random_sample()
-            bucket_id = min([i for i in xrange(len(train_buckets_scale))
-                             if train_buckets_scale[i] > random_number_01])
+            bucket_id = min([i for i in xrange(len(train_buckets_scale)) if train_buckets_scale[i] > random_number_01])
 
-            encoder_inputs, decoder_inputs, target_weights, batch_source_encoder, batch_source_decoder = \
-                model.get_batch(train_set, bucket_id, gen_config.batch_size)
-          
+            encoder_inputs, decoder_inputs, target_weights, batch_source_encoder, batch_source_decoder = model.get_batch(train_set, bucket_id, gen_config.batch_size)
+            _, _, out_logits = model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
 
-            _, _, out_logits = model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id,
-                                          forward_only=True)
             tokens = []
             resps = []
             for seq in out_logits:
@@ -246,20 +246,17 @@ def decoder(gen_config):
 
             for seq in tokens_t:
                 if data_utils.EOS_ID in seq:
-                    
                     resps.append(seq[:seq.index(data_utils.EOS_ID)][:gen_config.buckets[bucket_id][1]])
                 else:
                     resps.append(seq[:gen_config.buckets[bucket_id][1]])
 
             for query, answer, resp in zip(batch_source_encoder, batch_source_decoder, resps):
-                #answer][:-1]表示要舍弃最后一个单词，因为他是EOS标志
                 answer_str = " ".join([str(rev_vocab[an]) for an in answer[:-1]])
                 disc_train_answer.write(answer_str)
                 disc_train_answer.write("\n")
                 query_str = " ".join([str(rev_vocab[qu]) for qu in query])
                 disc_train_query.write(query_str)
                 disc_train_query.write("\n")
-                #output是一个数字？ 答案是yes  从这里看出token.append(int(np.argmax(t, axis=0)))
                 resp_str = " ".join([tf.compat.as_str(rev_vocab[output]) for output in resp])
 
                 disc_train_gen.write(resp_str)
@@ -270,9 +267,10 @@ def decoder(gen_config):
         disc_train_query.close()
         disc_train_answer.close()
     
-
-def get_predicted_sentence(sess, input_sentence, vocab, model,
-                           beam_size, buckets, mc_search=False,debug=False):
+def get_predicted_sentence(sess, input_sentence, vocab, model, beam_size, buckets, mc_search=False,debug=False):
+    """
+    decoder online 中使用
+    """
     def model_step(enc_inp, dec_inp, dptr, target_weights, bucket_id):
         
         _, _, logits = model.step(sess, enc_inp, dec_inp, target_weights, bucket_id, True)
@@ -348,7 +346,6 @@ def get_predicted_sentence(sess, input_sentence, vocab, model,
       res_cands.append(cand)
     return res_cands
 
-
 def gen_sample(sess ,gen_config, model, vocab, source_inputs, source_outputs, mc_search=True):
     sample_inputs = []
     sample_labels =[]
@@ -376,23 +373,24 @@ def gen_sample(sess ,gen_config, model, vocab, source_inputs, source_outputs, mc
 
     return sample_inputs, sample_labels, rep
 
-
 def decoder_online(sess,gen_config, model, vocab, inputs, mc_search=True):
-  
-        rep = []
+    """
+    线上输入处理，解码
 
-  
-        responses = get_predicted_sentence(sess, inputs, vocab,
-                                           model, gen_config.beam_size, gen_config.buckets, mc_search)
-        for resp in responses:
-            if gen_config.beam_size == 1 or (not mc_search):
-                dec_inp = [dec for dec in resp['dec_inp']]
-                rep.append(dec_inp)
-                dec_inp = dec_inp[:]
-            else:
-                dec_inp = [dec.tolist()[0] for dec in resp['dec_inp'][:]]
-                rep.append(dec_inp)
-                dec_inp = dec_inp[1:]
+    ToDo : 返回最佳结果的同时，也返回次佳的结果，这块要和 MC 那里联合调试
+    """
+
+    rep = []
+
+    responses = get_predicted_sentence(sess, inputs, vocab, model, gen_config.beam_size, gen_config.buckets, mc_search)
+    for resp in responses:
+        if gen_config.beam_size == 1 or (not mc_search):
+            dec_inp = [dec for dec in resp['dec_inp']]
+            rep.append(dec_inp)
+            dec_inp = dec_inp[:]
+        else:
+            dec_inp = [dec.tolist()[0] for dec in resp['dec_inp'][:]]
+            rep.append(dec_inp)
+            dec_inp = dec_inp[1:]
             
-
-        return rep
+    return rep

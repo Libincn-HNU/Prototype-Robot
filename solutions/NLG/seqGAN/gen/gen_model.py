@@ -15,11 +15,8 @@ sys.path.append('../utils')
 
 """
 embedding_attention_seq2seq
-
 model_with_buckets
-
 """
-
 
 class Seq2SeqModel(object):
 
@@ -138,14 +135,11 @@ class Seq2SeqModel(object):
         # Check if the sizes match.
         encoder_size, decoder_size = self.buckets[bucket_id]
         if len(encoder_inputs) != encoder_size:
-            raise ValueError("Encoder length must be equal to the one in bucket,"
-                         " %d != %d." % (len(encoder_inputs), encoder_size))
+            raise ValueError("Encoder length must be equal to the one in bucket, %d != %d." % (len(encoder_inputs), encoder_size))
         if len(decoder_inputs) != decoder_size:
-            raise ValueError("Decoder length must be equal to the one in bucket,"
-                         " %d != %d." % (len(decoder_inputs), decoder_size))
+            raise ValueError("Decoder length must be equal to the one in bucket, %d != %d." % (len(decoder_inputs), decoder_size))
         if len(target_weights) != decoder_size:
-            raise ValueError("Weights length must be equal to the one in bucket,"
-                         " %d != %d." % (len(target_weights), decoder_size))
+            raise ValueError("Weights length must be equal to the one in bucket, %d != %d." % (len(target_weights), decoder_size))
 
         # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
 

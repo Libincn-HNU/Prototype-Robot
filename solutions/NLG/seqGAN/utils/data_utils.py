@@ -37,7 +37,6 @@ def basic_tokenizer(sentence):
     words.extend(space_separated_fragment)
   return [w for w in words if w]
 
-
 def create_vocabulary(vocabulary_path, data_path_list, max_vocabulary_size,
                       tokenizer=None, normalize_digits=True):
   """Create vocabulary file (if it does not exist yet) from disc_data file.
@@ -89,7 +88,6 @@ def create_vocabulary(vocabulary_path, data_path_list, max_vocabulary_size,
       for w in vocab_list:
         vocab_file.write(str(w) + "\n")
 
-
 def initialize_vocabulary(vocabulary_path):
   """Initialize vocabulary from file.
 
@@ -119,7 +117,6 @@ def initialize_vocabulary(vocabulary_path):
   else:
     raise ValueError("Vocabulary file %s not found.", vocabulary_path)
 
-
 def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits=True):
   """Convert a string to list of integers representing token-ids.
 
@@ -148,9 +145,7 @@ def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits
   return [vocabulary.get(_DIGIT_RE.sub("0", w), UNK_ID) for w in words]
   # return [vocabulary.get(w) for w in words]
 
-
-def data_to_token_ids(data_path, target_path, vocabulary,
-                      tokenizer=None, normalize_digits=True):
+def data_to_token_ids(data_path, target_path, vocabulary, tokenizer=None, normalize_digits=True):
   """Tokenize disc_data file and turn into token-ids using given vocabulary file.
 
   This function loads disc_data line-by-line from data_path, calls the above
@@ -176,13 +171,12 @@ def data_to_token_ids(data_path, target_path, vocabulary,
           counter += 1
           if counter % 1000000 == 0:
             print("tokenizing line %d" % counter)
-          token_ids = sentence_to_token_ids(line, vocabulary, tokenizer,
-                                            normalize_digits)
+          token_ids = sentence_to_token_ids(line, vocabulary, tokenizer, normalize_digits)
           tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
-
 
 def prepare_chitchat_data(data_dir, vocabulary, vocabulary_size, tokenizer=None):
   """
+  将 文本转化成 token
   """
  
   train_path = os.path.join(data_dir, "train")
@@ -200,8 +194,7 @@ def prepare_chitchat_data(data_dir, vocabulary, vocabulary_size, tokenizer=None)
   data_to_token_ids(dev_path + ".answer", answer_dev_ids_path, vocabulary, tokenizer)
   data_to_token_ids(dev_path + ".query", query_dev_ids_path, vocabulary, tokenizer)
 
-  return (query_train_ids_path, answer_train_ids_path,
-          query_dev_ids_path, answer_dev_ids_path)
+  return (query_train_ids_path, answer_train_ids_path, query_dev_ids_path, answer_dev_ids_path)
 
 def hier_prepare_disc_data(data_dir, vocabulary, vocabulary_size, tokenizer=None):
   """Get WMT disc_data into data_dir, create vocabularies and tokenize disc_data.
@@ -259,8 +252,6 @@ def prepare_disc_data(data_dir, vocabulary, vocabulary_size, tokenizer=None):
 
   return (query_train_ids_path, answer_train_ids_path,
           query_dev_ids_path, answer_dev_ids_path)
-
-
 
 def prepare_defined_data(data_path, vocabulary, vocabulary_size, tokenizer=None):
   #vocab_path = os.path.join(data_dir, "vocab%d.all" %vocabulary_size)

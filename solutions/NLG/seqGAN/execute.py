@@ -34,7 +34,7 @@ al_train()
 
 #  step1 定义一个函数，用来训练一个生成器
 def gen_pre_train():
-    gens.train(gen_config)
+    gens.pretrain(gen_config)
 
 # step2 用生成器生成数据，用于训练识别器
 def gen_disc():
@@ -92,9 +92,7 @@ def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, e
     def decoder(num_roll):
         for _ in xrange(num_roll):
 
-            # encoder_state, loss, outputs.
-            # 猜测  output_logits 大小为
-            #  [seq_len, vocab_size]
+            # encoder_state, loss, outputs. 猜测  output_logits 大小为 [seq_len, vocab_size]
             _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
 
             seq_tokens = []
@@ -103,6 +101,7 @@ def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, e
             for seq in output_logits: # 遍历 所有 sequence
                 row_token = []
                 for t in seq: # 遍历当前sequence
+                    # row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
                     row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
                 seq_tokens.append(row_token) # 返回当前 sequence 的 最佳解码结果
 
@@ -262,11 +261,11 @@ def al_train():
             if current_step %  (5 * gen_config.steps_per_checkpoint) == 0:
                 for i in xrange(5):
                     print("tmp query is ", " ".join([tf.compat.as_str(rev_vocab[output]) for output in train_query[i]]))
-                    print("lable: ", train_labels[i])
+                    print("label: ", train_labels[i])
                     print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i] if output != 0]))
 
                     for idx in range(1, gen_config.beam_size):
-                        print("lable: ", train_labels[ idx * gen_config.batch_size + i],  " text is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[ idx * gen_config.batch_size + i] if output != 0]))
+                        print("label: ", train_labels[ idx * gen_config.batch_size + i],  " text is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[ idx * gen_config.batch_size + i] if output != 0]))
 
             train_query = np.transpose(train_query)
             train_answer = np.transpose(train_answer)
@@ -317,11 +316,14 @@ def al_train():
                 sys.stdout.flush()
 
 def init_session(sess,gen_config):
-
-    model=gens.create_model(sess,gen_config,forward_only=True,name_scope="genModel")
-    vocab_path = os.path.join(gen_config.train_dir, "vocab%d.all" % gen_config.vocab_size)
-    vocab, rev_vocab=data_utils.initialize_vocabulary(vocab_path)
-    return sess ,model,vocab, rev_vocab
+    """
+    decode online 中使用
+    """
+    model = gens.create_model(sess, gen_config, forward_only=True, name_scope="genModel")
+    vocab_path = os.path.join('/Users/sunhongchao/Documents/craft/Prototype-Robot/solutions/NLG/seqGAN/gen_data', "vocab%d.all" % gen_config.vocab_size)
+    # vocab_path = os.path.join('/Users/sunhongchao/Documents/craft/Prototype-Robot/solutions/NLG/seqGAN', gen_config.train_dir, "vocab%d.all" % gen_config.vocab_size)
+    vocab, rev_vocab = data_utils.initialize_vocabulary(vocab_path)
+    return sess ,model, vocab, rev_vocab
 
 
 def decoder_online(sess,gen_config, model, vocab,rev_vocab, inputs):
@@ -383,6 +385,5 @@ def main(_):
 
 
 if __name__ == "__main__":
-
 
     tf.app.run()

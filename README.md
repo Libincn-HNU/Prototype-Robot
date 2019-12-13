@@ -19,8 +19,7 @@
         2. [Chatbot](#chatbot)
         3. [DST](#dst)
         4. [Rasa](#rasa)
-        5. [Task](#task)
-        6. [Others](#others)
+        5. [Others](#others)
     4. [Tricks](#tricks)
         1. [More Deep](#more-deep)
         2. [Beam Search](#beam-search)
@@ -31,6 +30,8 @@
         7. [Seq2seq 方法如何使用embedding](#seq2seq-方法如何使用embedding)
         8. [限制回复字数](#限制回复字数)
     5. [Books](#books)
+    6. [Others](#others-1)
+        1. [tf load and save model](#tf-load-and-save-model)
 
 <!-- /TOC -->
 
@@ -45,7 +46,7 @@
 + IR bot KB bot 等其他方法
 
 # ToDo List
-
++ A New Archtechture for Multi-turn Response Selection in Retrieval-based Chatbots
 
 
 # Reference
@@ -92,7 +93,6 @@
 - https://github.com/facebookresearch/ParlAI/tree/master/parlai/tasks/personachat
 
 - Related Work 梳理的很好
-+ 
 
 ### A Survey of Available Corpora for Building Data-Driven Dialogue Systems
 
@@ -158,9 +158,6 @@
 + [_rasa_chatbot](https://github.com/zqhZY/_rasa_chatbot)
 + [rasa_chatbot](https://github.com/zqhZY/_rasa_chatbot)
 
-### Task
-+ [Task-Oriented-Dialogue-Dataset-Survey](https://github.com/AtmaHou/Task-Oriented-Dialogue-Dataset-Survey)
-
 ### Others
 + [TC-bot](https://github.com/MiuLab/TC-Bot)
 
@@ -197,3 +194,7 @@ Attention with Intention for a Neural Network Conversation Model(AWI)
 
 ## Books
 + 自然语言处理实践-聊天机器人原理与应用
+
+## Others
+### tf load and save model
++ https://blog.csdn.net/john_kai/article/details/72861009
