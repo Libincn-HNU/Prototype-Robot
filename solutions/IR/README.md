@@ -27,7 +27,27 @@
 
 ### Match Pyramid
 
+### Multi-view Response Selection
+
 ### SMN
++ Sequential Match Network: A New Architecture for Multi-turn Response Selection in Retrieval-based Ch
++ https://arxiv.org/pdf/1612.01627.pdf
++ https://github.com/MarkWuNLP/MultiTurnResponseSelection.git
+
+![smn-architecture-2019-12-11-17-25-47](https://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/smn-architecture-2019-12-11-17-25-47)
+
++ 多轮对话的难点主要有两点
+    + 如何明确上下文的关键信息（关键词，关键短语或关键句）
+    + 在上下文中如何模拟多轮对话间的关系。
++ 现有检索模型的缺陷：在上下文中容易丢失重要信息，因为它们首先将整个上下文表示为向量，然后将该上下文向量与响应sentence向量进行匹配
+
++ 为了避免信息丢失，SMN在开始时将候选回复sentence与上下文中的每条语句进行匹配，并将匹配的每对中重要信息编码入匹配向量（注：这是CNN阶段，解决上上述难点1）；然后按照话语的时间顺序，对匹配向量进行堆积，以对其关系进行建模（注：即构建GRU2，解决上述难点2）。 最后的匹配阶段就是计算这些堆积的匹配向量。
+
++ 具体流程说明：
+    + 1、首先通过tf-idf抽取出前n-1轮的关键词，通过关键词检索出候选responses
+    + 2、将每条response和 utterance的每条 sentence做匹配：通过模型GRU1分别构造word2word和sentence2sentence的向量矩阵。这两个矩阵会在word级别和segment级别获取重要的匹配信息。
+    + 3、获取到的两个矩阵通过连续的convolution和pooling操作得到一个matching vector。通过这种方式，可以将上下文进行多个粒度级别的supervision识别并获取重要信息，再通过最小损失matching计算。
+    + 4、获取到的matching vector再通过GRU2计算得到context和response的分数。
 
 ### DMN
 

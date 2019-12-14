@@ -6,38 +6,38 @@ tags: []
 
 <!-- TOC -->
 
-- [Target](#target)
-- [Doing](#doing)
-- [ToDo List](#todo-list)
-- [Reference](#reference)
-  - [Links](#links)
-  - [Papers](#papers)
-    - [Knowledge Aware Conversation Generation with Explainable Reasoing ever Augmented Graphs](#knowledge-aware-conversation-generation-with-explainable-reasoing-ever-augmented-graphs)
-    - [Vocabulary Pyramid Network: Multi-Pass Encoding and Decoding with Multi-Level Vocabularies for Response Generation](#vocabulary-pyramid-network-multi-pass-encoding-and-decoding-with-multi-level-vocabularies-for-response-generation)
-    - [Personalizing Dialogue Agents: I have a dog, do you have pets too?](#personalizing-dialogue-agents-i-have-a-dog-do-you-have-pets-too)
-  - [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
-    - [A Neural Conversation Model](#a-neural-conversation-model)
-    - [Neural Response Generation via GAN with an APProximate Embedding Layer](#neural-response-generation-via-gan-with-an-approximate-embedding-layer)
-    - [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
-    - [Text Geneartion from Knowledge Graphs with Graph Transformers](#text-geneartion-from-knowledge-graphs-with-graph-transformers)
-  - [Projects](#projects)
-    - [JDDC](#jddc)
-    - [Chatbot](#chatbot)
-    - [DST](#dst)
-    - [Rasa](#rasa)
-    - [Task](#task)
-    - [Others](#others)
-  - [Tricks](#tricks)
-    - [More Deep](#more-deep)
-    - [Beam Search](#beam-search)
-    - [Pointer Generator](#pointer-generator)
-    - [HERD/VHERD/AMI](#herdvherdami)
-    - [DRL](#drl)
-    - [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation-1)
-    - [seqGAN](#seqgan)
-    - [构建聊天机器人：检索、seq2seq、RL、SeqGAN](#%e6%9e%84%e5%bb%ba%e8%81%8a%e5%a4%a9%e6%9c%ba%e5%99%a8%e4%ba%ba%e6%a3%80%e7%b4%a2seq2seqrlseqgan)
-    - [小姜机器人](#%e5%b0%8f%e5%a7%9c%e6%9c%ba%e5%99%a8%e4%ba%ba)
-  - [Books](#books)
+1. [Target](#target)
+2. [Doing](#doing)
+3. [ToDo List](#todo-list)
+4. [Reference](#reference)
+    1. [Links](#links)
+    2. [Papers](#papers)
+        1. [Knowledge Aware Conversation Generation with Explainable Reasoing ever Augmented Graphs](#knowledge-aware-conversation-generation-with-explainable-reasoing-ever-augmented-graphs)
+        2. [Vocabulary Pyramid Network: Multi-Pass Encoding and Decoding with Multi-Level Vocabularies for Response Generation](#vocabulary-pyramid-network-multi-pass-encoding-and-decoding-with-multi-level-vocabularies-for-response-generation)
+        3. [Personalizing Dialogue Agents: I have a dog, do you have pets too?](#personalizing-dialogue-agents-i-have-a-dog-do-you-have-pets-too)
+        4. [A Survey of Available Corpora for Building Data-Driven Dialogue Systems](#a-survey-of-available-corpora-for-building-data-driven-dialogue-systems)
+        5. [A Neural Conversation Model](#a-neural-conversation-model)
+        6. [Neural Response Generation via GAN with an APProximate Embedding Layer](#neural-response-generation-via-gan-with-an-approximate-embedding-layer)
+        7. [Deep Reinforcement Learning for Dialogue Generation](#deep-reinforcement-learning-for-dialogue-generation)
+        8. [Text Geneartion from Knowledge Graphs with Graph Transformers](#text-geneartion-from-knowledge-graphs-with-graph-transformers)
+    3. [Projects](#projects)
+        1. [JDDC](#jddc)
+        2. [Chatbot](#chatbot)
+        3. [DST](#dst)
+        4. [Rasa](#rasa)
+        5. [Others](#others)
+    4. [Tricks](#tricks)
+        1. [More Deep](#more-deep)
+        2. [Beam Search](#beam-search)
+        3. [Pointer Generator](#pointer-generator)
+        4. [HERD/VHERD/AMI](#herdvherdami)
+        5. [构建聊天机器人：检索、seq2seq、RL、SeqGAN](#构建聊天机器人检索seq2seqrlseqgan)
+        6. [小姜机器人](#小姜机器人)
+        7. [Seq2seq 方法如何使用embedding](#seq2seq-方法如何使用embedding)
+        8. [限制回复字数](#限制回复字数)
+    5. [Books](#books)
+    6. [Others](#others-1)
+        1. [tf load and save model](#tf-load-and-save-model)
 
 <!-- /TOC -->
 
@@ -52,7 +52,7 @@ tags: []
 + IR bot KB bot 等其他方法
 
 # ToDo List
-
++ A New Archtechture for Multi-turn Response Selection in Retrieval-based Chatbots
 
 
 # Reference
@@ -87,16 +87,20 @@ tags: []
 + 论文链接：https://www.aclweb.org/anthology/P19-1367/ 
 
 ### Personalizing Dialogue Agents: I have a dog, do you have pets too?
+- https://www.jianshu.com/p/189cba8f2069
 
 - 本文是 Facebook AI Research 发表于 NIPS 2018 的工作。论文根据一个名为 PERSONA-CHAT 的对话数据集来训练基于 Profile 的聊天机器人，该数据集包含超过 16 万条对话。
 - 本文致力于解决以下问题：
 - 聊天机器人缺乏一致性格特征
   - 聊天机器人缺乏长期记忆
   - 聊天机器人经常给出模糊的回应，例如 I don't know
+  
 - 数据集链接
 - https://github.com/facebookresearch/ParlAI/tree/master/parlai/tasks/personachat
 
-## A Survey of Available Corpora for Building Data-Driven Dialogue Systems
+- Related Work 梳理的很好
+
+### A Survey of Available Corpora for Building Data-Driven Dialogue Systems
 
 - (https://arxiv.org/pdf/1512.05742.pdf
 
@@ -118,17 +122,27 @@ tags: []
 + 1> 安全回答
 + 2> 使用MLE 容易死循环
 
++ 首先使用Seq-to-Seq模型预训练一个基础模型，然后根据作者提出的三种Reward来计算每次生成的对话的好坏，并使用policy network的方法提升对话响应的多样性、连贯性和对话轮次。文章最大的亮点就在于定义了三种reward（Ease of answering、Information Flow、Semantic Coherence），分别用于解决dull response、repetitive response、ungrammatical response
++ https://zhuanlan.zhihu.com/p/21587758
+
 ### Text Geneartion from Knowledge Graphs with Graph Transformers
++ ACL 2019
 + https://blog.csdn.net/TgqDT3gGaMdkHasLZv/article/details/100190240
+
++ 提出了一种Graph Transformer编码方法用于知识图谱表示学习
++ 提出一种将IE输出转换为图结构用于编码的过程
++ 构建了一个可复用的大型“图谱-文本”对数据集
 
 ## Projects
 
 ### JDDC
 + [2018 JDDC对话大赛亚军解决方案 Dialog-System-with-Task-Retrieval-and-Seq2seq](https://github.com/Dikea/Dialog-System-with-Task-Retrieval-and-Seq2seq)
-+ [seq2seq chatbot](https://github.com/lc222/seq2seq_chatbot)
 + [jddc_solution_4th](https://github.com/zengbin93/jddc_solution_4th)
++ [seq2seq chatbot](https://github.com/lc222/seq2seq_chatbot)
+  + 使用 seq2seq 构建简单系统
+  + embedding、attention、beam_search等功能，数据集是Cornell Movie Dialogs
 + [jddc_baseline_tfidf](https://github.com/SimonJYang/JDDC-Baseline-TFIDF)
-+ [jddc_baseline_seq2seq](https://github.com/SimonJYang/JDDC-Baseline-TFIDF)
+  + 首先计算用户的问题与问题库中的问题的相似度并选出top15的相似问题，然后去问题库对应的答案库中找出这15个问题对应的答案， 以此作为回答用户问题的候选答案
 
 ### Chatbot
 + [Seq2Seq_Chatbot_QA](https://github.com/qhduan/Seq2Seq_Chatbot_QA)
@@ -149,9 +163,6 @@ tags: []
 + [rasa_chatbot_cn](https://github.com/GaoQ1/rasa_chatbot_cn)
 + [_rasa_chatbot](https://github.com/zqhZY/_rasa_chatbot)
 + [rasa_chatbot](https://github.com/zqhZY/_rasa_chatbot)
-
-### Task
-+ [Task-Oriented-Dialogue-Dataset-Survey](https://github.com/AtmaHou/Task-Oriented-Dialogue-Dataset-Survey)
 
 ### Others
 + [TC-bot](https://github.com/MiuLab/TC-Bot)
@@ -176,21 +187,6 @@ Building End-To-End Dialogue Systems Using Generative Hierarchical Neural Networ
 A Hierarchical Latent Variable Encoder-Decoder Model for Generating Dialogues(VHRED)
 Attention with Intention for a Neural Network Conversation Model(AWI)
 
-### DRL
-+ https://blog.csdn.net/liuchonge/article/details/78749623
-+ https://zhuanlan.zhihu.com/p/21587758
-
-### Deep Reinforcement Learning for Dialogue Generation
-
-+ https://zhuanlan.zhihu.com/p/21587758
-
-### seqGAN
-+ https://github.com/zhaoyingjun/chatbot/blob/master/seq2seqChatbot/seq2seq_model.py
-+ rl 对抗训练
-+ https://www.jianshu.com/p/b8c3d2a42ba7
-+ https://blog.csdn.net/yuuyuhaksho/article/details/87560253
-
-
 ### 构建聊天机器人：检索、seq2seq、RL、SeqGAN
 + https://blog.csdn.net/Young_Gy/article/details/76474939
 
@@ -198,5 +194,13 @@ Attention with Intention for a Neural Network Conversation Model(AWI)
 + https://blog.csdn.net/rensihui/article/details/89418850
 + 模版/检索/生成
 
+### Seq2seq 方法如何使用embedding
+
+### 限制回复字数
+
 ## Books
 + 自然语言处理实践-聊天机器人原理与应用
+
+## Others
+### tf load and save model
++ https://blog.csdn.net/john_kai/article/details/72861009

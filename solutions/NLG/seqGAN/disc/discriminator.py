@@ -69,7 +69,9 @@ def hier_get_batch(config, max_set, query_set, answer_set, gen_set):
     train_query = []
     train_answer = []
     train_labels = []
-    half_size = batch_size // 2
+    half_size = batch_size // 2 # 除法取整
+
+    # 一个batch 中 一个 真实数据，一个生成数据，交替存入
     for _ in range(half_size):
         index = random.randint(0, max_set)
         train_query.append(query_set[index])
@@ -143,7 +145,9 @@ def hier_train(config_disc, config_evl):
         step_loss_summary = tf.Summary()
         disc_writer = tf.summary.FileWriter(config_disc.tensorboard_dir, session.graph)
 
-        while current_step<300:
+        while current_step<1000: # 先训练 1000 个 step
+            if current_step % 100 == 0:
+                print("current step is ", current_step)
             random_number_01 = np.random.random_sample()
             bucket_id = min([i for i in xrange(len(train_buckets_scale))
                              if train_buckets_scale[i] > random_number_01])

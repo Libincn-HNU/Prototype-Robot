@@ -15,19 +15,8 @@ sys.path.append('../utils')
 
 """
 embedding_attention_seq2seq
-
-
-
 model_with_buckets
-
-
-这两个接和正常的接口是不一样的，我们本次也主要一起看一下这个接口代码有什么不一样的地方
-
-其他的代码结构以及知识点和我们第二课的内容几乎一样，但是我们还是一起过一下
-
 """
-
-
 
 class Seq2SeqModel(object):
 
@@ -129,45 +118,34 @@ class Seq2SeqModel(object):
                 for b in xrange(len(self.buckets)):
                     #R =  tf.sub(self.reward[b], self.reward_bias)
                     self.reward[b] = tf.cast(tf.subtract(tf.cast(self.reward[b],tf.float32) , self.reward_bias),tf.int32)
-                    
 
                     #tf.cond 条件判断语句
-                    adjusted_loss = tf.cond(self.up_reward,
-                                              lambda:tf.multiply(self.losses[b], tf.cast(self.reward[b],tf.float32)),
-                                              lambda: self.losses[b])
+                    adjusted_loss = tf.cond(self.up_reward, lambda:tf.multiply(self.losses[b], tf.cast(self.reward[b],tf.float32)), lambda: self.losses[b])
 
-                    # adjusted_loss =  tf.cond(self.up_reward,
-                    #                           lambda: tf.mul(self.losses[b], R),
-                    #                           lambda: self.losses[b])
                     self.aj_losses.append(adjusted_loss)
                     gradients = tf.gradients(adjusted_loss, self.gen_params)
                     clipped_gradients, norm = tf.clip_by_global_norm(gradients, self.max_gradient_norm)
                     self.gradient_norms.append(norm)
-                    self.updates.append(opt.apply_gradients(
-                        zip(clipped_gradients, self.gen_params), global_step=self.global_step))
+                    self.updates.append(opt.apply_gradients(zip(clipped_gradients, self.gen_params), global_step=self.global_step))
 
         self.gen_variables = [k for k in tf.global_variables() if name_scope in k.name]
         self.saver = tf.train.Saver(self.gen_variables)
 
-    def step(self, session, encoder_inputs, decoder_inputs, target_weights,
-           bucket_id, forward_only=True, reward=1, mc_search=False, up_reward=False, debug=True):
+    def step(self, session, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True, reward=1, mc_search=False, up_reward=False, debug=True):
         # Check if the sizes match.
         encoder_size, decoder_size = self.buckets[bucket_id]
         if len(encoder_inputs) != encoder_size:
-            raise ValueError("Encoder length must be equal to the one in bucket,"
-                         " %d != %d." % (len(encoder_inputs), encoder_size))
+            raise ValueError("Encoder length must be equal to the one in bucket, %d != %d." % (len(encoder_inputs), encoder_size))
         if len(decoder_inputs) != decoder_size:
-            raise ValueError("Decoder length must be equal to the one in bucket,"
-                         " %d != %d." % (len(decoder_inputs), decoder_size))
+            raise ValueError("Decoder length must be equal to the one in bucket, %d != %d." % (len(decoder_inputs), decoder_size))
         if len(target_weights) != decoder_size:
-            raise ValueError("Weights length must be equal to the one in bucket,"
-                         " %d != %d." % (len(target_weights), decoder_size))
+            raise ValueError("Weights length must be equal to the one in bucket, %d != %d." % (len(target_weights), decoder_size))
 
         # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
 
         input_feed = {
             self.forward_only.name: forward_only,
-            self.up_reward.name:  up_reward,
+            self.up_reward.name: up_reward,
             self.mc_search.name: mc_search
         }
         for l in xrange(len(self.buckets)):
@@ -184,20 +162,22 @@ class Seq2SeqModel(object):
 
         # Output feed: depends on whether we do a backward step or not.
         if not forward_only: # normal training
+            # 极大似然估计
             output_feed = [self.updates[bucket_id],  # Update Op that does SGD.
                        self.aj_losses[bucket_id],  # Gradient norm.
                        self.losses[bucket_id]]  # Loss for this batch.
-        else: # testing or reinforcement learning
+        else:
+            # testing or reinforcement learning
             output_feed = [self.encoder_state[bucket_id], self.losses[bucket_id]]  # Loss for this batch.
             for l in xrange(decoder_size):  # Output logits.
                 output_feed.append(self.outputs[bucket_id][l])
 
-    
-
         outputs = session.run(output_feed, input_feed)
         if not forward_only:
+            # 极大似然估计
             return outputs[1], outputs[2], outputs[0]  # Gradient norm, loss, no outputs.
         else:
+            # RL
             return outputs[0], outputs[1], outputs[2:]  # encoder_state, loss, outputs.
 
     def get_batch(self, train_data, bucket_id, batch_size, type=0):

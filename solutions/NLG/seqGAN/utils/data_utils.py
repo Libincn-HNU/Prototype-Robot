@@ -1,19 +1,3 @@
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-
-"""Utilities for downloading disc_data from WMT, tokenizing, vocabularies."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -22,6 +6,7 @@ import gzip
 import os
 import re
 import tarfile
+import jieba
 
 from six.moves import urllib
 
@@ -29,10 +14,10 @@ from tensorflow.python.platform import gfile
 import tensorflow as tf
 
 # Special vocabulary symbols - we always put them at the start.
-_PAD = b"_PAD"
-_GO = b"_GO"
-_EOS = b"_EOS"
-_UNK = b"_UNK"
+_PAD = "_PAD"
+_GO = "_GO"
+_EOS = "_EOS"
+_UNK = "_UNK"
 _START_VOCAB = [_PAD, _GO, _EOS, _UNK]
 
 PAD_ID = 0
@@ -41,17 +26,16 @@ EOS_ID = 2
 UNK_ID = 3
 
 # Regular expressions used to tokenize.
-_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
-_DIGIT_RE = re.compile(br"\d")
+_WORD_SPLIT = re.compile(r"([.,!?\"':;)(])")
+#_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")
+_DIGIT_RE = re.compile(r"\d")
 
 def basic_tokenizer(sentence):
-  """Very basic tokenizer: split the sentence into a list of tokens."""
+  """用空格切分句子，返回list"""
   words = []
-  #sentence = tf.compat.as_bytes(sentence)
   for space_separated_fragment in sentence.strip().split():
-    words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
+    words.extend(space_separated_fragment)
   return [w for w in words if w]
-
 
 def create_vocabulary(vocabulary_path, data_path_list, max_vocabulary_size,
                       tokenizer=None, normalize_digits=True):
@@ -79,24 +63,30 @@ def create_vocabulary(vocabulary_path, data_path_list, max_vocabulary_size,
           counter = 0
           for line in f:
             counter += 1
-            if counter % 100000 == 0:
-              print("  processing line %d" % counter)
-            line = tf.compat.as_bytes(line)
-            tokens = basic_tokenizer(line)
-            for w in tokens:
-              word = _DIGIT_RE.sub(b"0", w) if normalize_digits else w
-              if word in vocab:
-                vocab[word] += 1
-              else:
-                vocab[word] = 1
-
+            if counter % 1000000 == 0:
+                print("  processing line %d" % counter)
+            line = tf.compat.as_str(line)
+            cut_list = list(line)
+            for w in cut_list:
+                word = w.strip()
+                if len(word) > 0 :
+                    if word in vocab:
+                        vocab[word] += 1
+                    else:   
+                        vocab[word] = 1
+    
     vocab_list = _START_VOCAB + sorted(vocab, key=vocab.get, reverse=True)
+
+    print('vocab list length', len(vocab_list))
+    print('vocab list top 100', vocab_list[:100])
+    print('vocab list tail 100', vocab_list[-100:])
+
     if len(vocab_list) > max_vocabulary_size:
-      vocab_list = vocab_list[:max_vocabulary_size]
+        print("vocab list length > mas_vacab size, cut vocab list ")
+        vocab_list = vocab_list[:max_vocabulary_size] # [0, max_vacablary_size]
     with open(vocabulary_path, mode="w") as vocab_file:
       for w in vocab_list:
-        vocab_file.write(w + "\n")
-
+        vocab_file.write(str(w) + "\n")
 
 def initialize_vocabulary(vocabulary_path):
   """Initialize vocabulary from file.
@@ -120,16 +110,14 @@ def initialize_vocabulary(vocabulary_path):
   if gfile.Exists(vocabulary_path):
     rev_vocab = []
     with open(vocabulary_path, mode="r") as f:
-      rev_vocab.extend(f.readlines())
+        rev_vocab.extend(f.readlines())
     rev_vocab = [line.strip() for line in rev_vocab]
     vocab = dict([(x, y) for (y, x) in enumerate(rev_vocab)])
     return vocab, rev_vocab
   else:
     raise ValueError("Vocabulary file %s not found.", vocabulary_path)
 
-
-def sentence_to_token_ids(sentence, vocabulary,
-                          tokenizer=None, normalize_digits=True):
+def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits=True):
   """Convert a string to list of integers representing token-ids.
 
   For example, a sentence "I have a dog" may become tokenized into
@@ -154,11 +142,10 @@ def sentence_to_token_ids(sentence, vocabulary,
   if not normalize_digits:
     return [vocabulary.get(w, UNK_ID) for w in words]
   # Normalize digits by 0 before looking words up in the vocabulary.
-  return [vocabulary.get(_DIGIT_RE.sub(b"0", w), UNK_ID) for w in words]
+  return [vocabulary.get(_DIGIT_RE.sub("0", w), UNK_ID) for w in words]
+  # return [vocabulary.get(w) for w in words]
 
-
-def data_to_token_ids(data_path, target_path, vocabulary,
-                      tokenizer=None, normalize_digits=True):
+def data_to_token_ids(data_path, target_path, vocabulary, tokenizer=None, normalize_digits=True):
   """Tokenize disc_data file and turn into token-ids using given vocabulary file.
 
   This function loads disc_data line-by-line from data_path, calls the above
@@ -182,15 +169,14 @@ def data_to_token_ids(data_path, target_path, vocabulary,
         counter = 0
         for line in data_file:
           counter += 1
-          if counter % 100000 == 0:
-            print("  tokenizing line %d" % counter)
-          token_ids = sentence_to_token_ids(line, vocabulary, tokenizer,
-                                            normalize_digits)
+          if counter % 1000000 == 0:
+            print("tokenizing line %d" % counter)
+          token_ids = sentence_to_token_ids(line, vocabulary, tokenizer, normalize_digits)
           tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
-
 
 def prepare_chitchat_data(data_dir, vocabulary, vocabulary_size, tokenizer=None):
   """
+  将 文本转化成 token
   """
  
   train_path = os.path.join(data_dir, "train")
@@ -208,8 +194,7 @@ def prepare_chitchat_data(data_dir, vocabulary, vocabulary_size, tokenizer=None)
   data_to_token_ids(dev_path + ".answer", answer_dev_ids_path, vocabulary, tokenizer)
   data_to_token_ids(dev_path + ".query", query_dev_ids_path, vocabulary, tokenizer)
 
-  return (query_train_ids_path, answer_train_ids_path,
-          query_dev_ids_path, answer_dev_ids_path)
+  return (query_train_ids_path, answer_train_ids_path, query_dev_ids_path, answer_dev_ids_path)
 
 def hier_prepare_disc_data(data_dir, vocabulary, vocabulary_size, tokenizer=None):
   """Get WMT disc_data into data_dir, create vocabularies and tokenize disc_data.
@@ -267,8 +252,6 @@ def prepare_disc_data(data_dir, vocabulary, vocabulary_size, tokenizer=None):
 
   return (query_train_ids_path, answer_train_ids_path,
           query_dev_ids_path, answer_dev_ids_path)
-
-
 
 def prepare_defined_data(data_path, vocabulary, vocabulary_size, tokenizer=None):
   #vocab_path = os.path.join(data_dir, "vocab%d.all" %vocabulary_size)

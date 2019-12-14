@@ -1,11 +1,11 @@
 import os
 
 class disc_config(object):
-    batch_size = 64
+    batch_size = 1024 # 64
     lr = 0.2
     lr_decay = 0.9
     vocab_size = 2500
-    embed_dim = 64
+    embed_dim = 128 # 64
     steps_per_checkpoint = 20
     #hidden_neural_size = 128
     num_layers = 2
@@ -24,16 +24,16 @@ class disc_config(object):
     #num_epoch = 60
     #max_decay_epoch = 30
     max_grad_norm = 5
-    buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
+    buckets = [(5, 10), (10, 15), (20, 25), (25, 50)]
 
 
 class gen_config(object):
-    beam_size = 7
-    learning_rate = 0.5
+    beam_size = 7 # 7
+    learning_rate = 1 # 0.5
     learning_rate_decay_factor = 0.99
     max_gradient_norm = 5.0
-    batch_size = 64
-    emb_dim = 64
+    batch_size = 1024 # 64
+    emb_dim = 128 # 64
     num_layers = 2
     vocab_size = 2500
     train_dir = "./gen_data/"
@@ -42,10 +42,10 @@ class gen_config(object):
     name_loss = "gen_loss"
     teacher_loss = "teacher_loss"
     reward_name = "reward"
-    max_train_data_size = 100000
+    max_train_data_size = 5000000 # 2000000
     steps_per_checkpoint = 20
-    buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
-    buckets_concat = [(5, 10), (10, 15), (20, 25), (40, 50), (100, 50)]
+    buckets = [(5, 10), (10, 15), (20, 25), (25, 50)] # (40, 50)
+    buckets_concat = [(5, 10), (10, 15), (20, 25), (25, 50), (100, 50)]
 
 class source_data_utils(object):
 
@@ -53,8 +53,8 @@ class source_data_utils(object):
     train_dec = "./gen_data/train.answer"
     test_enc =  "./gen_data/test.query"
     test_dec =  "./gen_data/test.answer"
-    resource_data = "./data_source/conv.txt"
+    resource_data = "/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/merge-chat.txt-all"
 
-    TEST_SIZE=400
+    TEST_SIZE=100000
     e = "E"
     m = "M"
