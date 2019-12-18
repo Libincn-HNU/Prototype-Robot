@@ -67,7 +67,7 @@ def convert_seq2seq_files(questions, answers, TESTSET_SIZE):
         else:
             train_enc.write(questions[i]+'\n')
             train_dec.write(answers[i]+ '\n' )
-        if i % 1000000 == 0:
+        if i % 100000 == 0:
             print(len(range(len(questions))), '处理进度：', i)
  
     train_enc.close()
