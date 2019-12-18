@@ -7,7 +7,7 @@ class Search(object):
     def __init__(self, ip='127.0.0.1'):
         self.es = Elasticsearch([ip], port=9200)
 
-    def create_index(self, index_name='new', index_type='ott_date'):
+    def create_index(self, index_name='corpus_chat_1', index_type='ott_date'):
         """
         创建索引
         """
@@ -44,15 +44,15 @@ class ElasticObj(object):
         :return:
         '''
 
-        if len(input_list) is not 0:
+        if len(input_list) is  0:
             print("input list is none, use demo list")
             input_list = [
                 {'query':'你好','answer':'你好啊'},
                 {'query':'hello', 'answer':'hi'},
                 {'query':'天气不错啊','answer':'是的啊，情况万里，天气很好'},
-                {'query':'心情不错啊','answer':'AAA'},
-                {'query':'心情好','answer':'BBB'},
-                {'query':'今天开心','answer':'CCC'}]
+                {'query':'心情不错啊','answer':'是的，心情特别好'},
+                {'query':'心情好','answer':'今天真高兴'},
+                {'query':'今天开心','answer':'今天真高兴'}]
 
         ACTIONS=[]
         i = 1
@@ -89,6 +89,25 @@ if __name__ == '__main__':
     search = Search()
     search.create_index()
     
+    input_list = []
+
+    query_list, answer_list = [], []
+    with open('../../corpus/dialogue/merge-all.txt', mode='r', encoding='utf-8') as f:
+        lines = f.readlines()
+        for idx in range(0, len(lines) - 3, 3):
+            query_list.append(lines[idx+1][2:].strip())
+            answer_list.append(lines[idx+2][2:].strip())
+
+    print(query_list[:10])
+    print(answer_list[:10])
+
+    for tmp_query, tmp_answer in zip(query_list, answer_list):
+        input_list.append({'query':tmp_query,'answer':tmp_answer})
+
+    print("build input list done")
+
+    print(input_list[:10])
+
     obj = ElasticObj('qa_info', 'qa_detail')
-    obj.bulk_Index_Data()
+    obj.bulk_Index_Data(input_list)
     obj.Get_Data_By_Body(sys.argv[1])
