@@ -7,7 +7,7 @@ class Search(object):
     def __init__(self, ip='127.0.0.1'):
         self.es = Elasticsearch([ip], port=9200)
 
-    def create_index(self, index_name='corpus_chat_1', index_type='ott_date'):
+    def create_index(self, index_name='chat_corspu_1', index_type='ott_date'):
         """
         创建索引
         """
@@ -83,31 +83,48 @@ class ElasticObj(object):
 
         print('_searched', _searched)
         for hit in _searched['hits']['hits']:
-            print('key is : ', hit['_source']['query'], ' query is :', hit['_source']['answer'])
+            print('query is : ', hit['_source']['query'], ' answer is :', hit['_source']['answer'])
 
 if __name__ == '__main__':
     search = Search()
     search.create_index()
-    
-    input_list = []
-
-    query_list, answer_list = [], []
-    with open('../../corpus/dialogue/merge-all.txt', mode='r', encoding='utf-8') as f:
-        lines = f.readlines()
-        for idx in range(0, len(lines) - 3, 3):
-            query_list.append(lines[idx+1][2:].strip())
-            answer_list.append(lines[idx+2][2:].strip())
-
-    print(query_list[:10])
-    print(answer_list[:10])
-
-    for tmp_query, tmp_answer in zip(query_list, answer_list):
-        input_list.append({'query':tmp_query,'answer':tmp_answer})
-
-    print("build input list done")
-
-    print(input_list[:10])
 
     obj = ElasticObj('qa_info', 'qa_detail')
-    obj.bulk_Index_Data(input_list)
+    
+    tmp_count = 0
+
+    if False:
+        input_list = []
+
+        query_list, answer_list = [], []
+        with open('../../corpus/dialogue/new_corpus.txt', mode='r', encoding='utf-8') as f:
+            lines = f.readlines()
+            print('all corpus length is :', len(lines))
+            for idx in range(0, len(lines) - 3, 3):
+
+                if lines[idx].startswith('M') and lines[idx+1].startswith("M") and lines[idx+2].startswith('E'):
+
+                    tmp_query = lines[idx][2:].strip()
+                    tmp_answer = lines[idx+1][2:].strip()
+                    if len(tmp_query) is 0 or len(tmp_answer) is 0:
+                        print('tmp_query is : ', tmp_query)
+                        print('tmp_answer is :', tmp_answer)
+                        
+                        print(idx)
+                        tmp_count += 1 
+                    else:
+                        query_list.append(tmp_query)
+                        answer_list.append(tmp_answer)
+                else:
+                    print('error in ', idx)
+                    break
+
+        for tmp_query, tmp_answer in zip(query_list, answer_list):
+            input_list.append({'query':tmp_query,'answer':tmp_answer})
+
+        print("all tmp count is ", tmp_count)
+        print("build input list done")
+
+
+        obj.bulk_Index_Data(input_list)
     obj.Get_Data_By_Body(sys.argv[1])

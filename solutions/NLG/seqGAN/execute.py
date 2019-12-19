@@ -366,7 +366,7 @@ def main(_):
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = "2"
     # step_1 training gen model
-    gen_pre_train()
+    # gen_pre_train()
 
     #print("*****请注释掉本行代码，以及上行代码gen_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
@@ -381,7 +381,7 @@ def main(_):
     #print("*****请注释掉本行代码，以及上行代码disc_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
     # step_4 training al model
-    # al_train()
+    al_train()
 
 
 if __name__ == "__main__":
