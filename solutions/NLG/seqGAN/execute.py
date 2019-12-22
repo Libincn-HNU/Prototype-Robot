@@ -90,38 +90,36 @@ def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, e
         train_labels = [1 for _ in source_inputs]
 
     def decoder(num_roll):
-        for _ in xrange(num_roll):
+        # encoder_state, loss, outputs. 猜测  output_logits 大小为 [seq_len, vocab_size]
+        _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
 
-            # encoder_state, loss, outputs. 猜测  output_logits 大小为 [seq_len, vocab_size]
-            _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
+        seq_tokens = []
+        resps = []
 
-            seq_tokens = []
-            resps = []
+        for seq in output_logits: # 遍历 所有 sequence
+            row_token = []
+            for t in seq: # 遍历当前sequence
+                # row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
+                row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
+            seq_tokens.append(row_token) # 返回当前 sequence 的 最佳解码结果
 
-            for seq in output_logits: # 遍历 所有 sequence
-                row_token = []
-                for t in seq: # 遍历当前sequence
-                    # row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
-                    row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
-                seq_tokens.append(row_token) # 返回当前 sequence 的 最佳解码结果
+        # 格式转化 与结果处理
+        seq_tokens_t = []
+        for col in range(len(seq_tokens[0])): # len(seq_tokens[0]) 为 一个 sequence 的长度
+            seq_tokens_t.append([seq_tokens[row][col] for row in range(len(seq_tokens))])  # len(seq_tokens) 
 
-            # 格式转化 与结果处理
-            seq_tokens_t = []
-            for col in range(len(seq_tokens[0])): # len(seq_tokens[0]) 为 一个 sequence 的长度
-                seq_tokens_t.append([seq_tokens[row][col] for row in range(len(seq_tokens))])  # len(seq_tokens) 
+        for seq in seq_tokens_t:
+            if data_utils.EOS_ID in seq:
+                resps.append(seq[:seq.index(data_utils.EOS_ID)][:gen_config.buckets[bucket_id][1]])
+            else:
+                resps.append(seq[:gen_config.buckets[bucket_id][1]])
 
-            for seq in seq_tokens_t:
-                if data_utils.EOS_ID in seq:
-                    resps.append(seq[:seq.index(data_utils.EOS_ID)][:gen_config.buckets[bucket_id][1]])
-                else:
-                    resps.append(seq[:gen_config.buckets[bucket_id][1]])
-
-            # 数据 append 到 之前的  train_query, train_answer, train_labels
-            for i, output in enumerate(resps):
-                output = output[:answer_len] + [data_utils.PAD_ID] * (answer_len - len(output) if answer_len > len(output) else 0)
-                train_query.append(train_query[i])
-                train_answer.append(output)
-                train_labels.append(0)
+        # 数据 append 到 之前的  train_query, train_answer, train_labels
+        for i, output in enumerate(resps):
+            output = output[:answer_len] + [data_utils.PAD_ID] * (answer_len - len(output) if answer_len > len(output) else 0)
+            train_query.append(train_query[i])
+            train_answer.append(output)
+            train_labels.append(0)
 
         return train_query, train_answer, train_labels
 
@@ -366,7 +364,7 @@ def main(_):
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = "2"
     # step_1 training gen model
-    # gen_pre_train()
+    gen_pre_train()
 
     #print("*****请注释掉本行代码，以及上行代码gen_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
@@ -381,7 +379,7 @@ def main(_):
     #print("*****请注释掉本行代码，以及上行代码disc_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
     # step_4 training al model
-    al_train()
+    # al_train()
 
 
 if __name__ == "__main__":
