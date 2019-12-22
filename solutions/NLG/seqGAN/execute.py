@@ -201,12 +201,11 @@ def al_train():
             print("al train len: ", len(set))
         # bucket 信息
         train_bucket_sizes = [len(train_set[b]) for b in xrange(len(gen_config.buckets))]
-        train_total_size = float(sum(train_bucket_sizes))
-        train_buckets_scale = [sum(train_bucket_sizes[:i + 1]) / train_total_size
-                               for i in xrange(len(train_bucket_sizes))]
+        train_total_size = float(sum(train_bucket_sizes)) # 所有bucket的大小
+        train_buckets_scale = [sum(train_bucket_sizes[:i + 1]) / train_total_size for i in xrange(len(train_bucket_sizes))] # 各个 bucket 所占的比例 [0.1, 0.34, 0.67, 0.81, 1.0]
         # 创建模型
         disc_model = disc.create_model(sess, disc_config, disc_config.name_model)
-        gen_model = gens.create_model(sess, gen_config, forward_only=False, name_scope="genModel")
+        gen_model = gens.create_model(sess, gen_config, forward_only=False, name_scope="genModel") # 默认的 forward_only 是 false
 
         current_step = 0
         step_time, disc_loss, gen_loss, t_loss, batch_reward = 0.0, 0.0, 0.0, 0.0, 0.0
@@ -215,13 +214,13 @@ def al_train():
         while True:
             current_step += 1
             start_time = time.time()
-            random_number_01 = np.random.random_sample()
-            bucket_id = min([i for i in xrange(len(train_buckets_scale)) if train_buckets_scale[i] > random_number_01])
+            random_number_01 = np.random.random_sample() # 返回一个 0到1 之间的数
+            bucket_id = min([i for i in xrange(len(train_buckets_scale)) if train_buckets_scale[i] > random_number_01]) # 找到大于 random_number_01 的那个最小的 bucket_id
             # print("bucket_id: %d" %bucket_id)
 
             # print("==================Updating Discriminator: %d=====================" % current_step)
             # 1.Sample (X,Y) from real disc_data
-            encoder_inputs, decoder_inputs, target_weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size)
+            encoder_inputs, decoder_inputs, target_weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size) # 获得所有batch 之后的数据
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
