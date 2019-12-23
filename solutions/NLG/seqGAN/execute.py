@@ -234,7 +234,7 @@ def al_train():
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
-            print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            print(" Disc : train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
             train_query = np.transpose(train_query)
             train_answer = np.transpose(train_answer)
 
@@ -251,7 +251,7 @@ def al_train():
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X) with Monte Carlo search
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
-            print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            print(" Gen : train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
 
             if current_step %  (5 * gen_config.steps_per_checkpoint) == 0:
                 for i in xrange(5): # 输出5条样本进行查看
