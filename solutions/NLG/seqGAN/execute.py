@@ -253,15 +253,16 @@ def al_train():
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X) with Monte Carlo search
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
-            # print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            print(" train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
             # (1 + beam_size ) * batch_size vi
             if current_step %  (5 * gen_config.steps_per_checkpoint) == 0:
-                for i in xrange(5):
-                    print("tmp query is ", " ".join([tf.compat.as_str(rev_vocab[output]) for output in train_query[i]]))
-                    print("label: ", train_labels[i])
+                for i in xrange(5): # 输出5条样本进行查看
+                    print("tmp query is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_query[i]])) # 打印当前的query 
+                    print("label: ", train_labels[i]) # 打印ground truth label 1
                     print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i] if output != 0]))
 
                     for idx in range(1, gen_config.beam_size):
+                        print('i', i, "idx", idx, 'beam_size', gen_config.beam_size, 'tmp', idx*gen_config.batch_size + i)
                         print("label: ", train_labels[ idx * gen_config.batch_size + i],  " text is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[ idx * gen_config.batch_size + i] if output != 0]))
 
             train_query = np.transpose(train_query)
@@ -363,7 +364,7 @@ def main(_):
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = "2"
     # step_1 training gen model
-    gen_pre_train()
+    # gen_pre_train()
 
     #print("*****请注释掉本行代码，以及上行代码gen_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
@@ -378,7 +379,7 @@ def main(_):
     #print("*****请注释掉本行代码，以及上行代码disc_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
     #sys.exit(0)
     # step_4 training al model
-    # al_train()
+    al_train()
 
 
 if __name__ == "__main__":
