@@ -12,7 +12,7 @@ results = pickle.load(load_file)
 load_file.close()
 
 emb_file = open('embedding.pkl', 'rb')
-embedding = pickle.load(load_file)
+embeddings = pickle.load(load_file)
 emb_file.close()
 
 class SCN():
@@ -116,10 +116,6 @@ class SCN():
             writer = tf.summary.FileWriter("output2", sess.graph)
             train_writer = tf.summary.FileWriter('output2', sess.graph)
 
-            # embeddings
-
-            embeddings = []
-
             """
             history 结构
             [
@@ -145,7 +141,7 @@ class SCN():
             ]
 
             """
-            history, true_utt ,actions = [], [], [] 
+            history, true_utt ,actions = results['history'], results['true_utt'], results['false_utt']
 
             history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
             true_utt_len = np.array(utils.get_sequences_length(true_utt, maxlen=self.max_sentence_len))
