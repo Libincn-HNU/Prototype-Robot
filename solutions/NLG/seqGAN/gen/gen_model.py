@@ -35,12 +35,12 @@ class Seq2SeqModel(object):
         self.mc_search = tf.placeholder(tf.bool, name="mc_search") # 是否进行 蒙特卡洛搜索
         self.forward_only = tf.placeholder(tf.bool, name="forward_only") # 为 ture 时，更新参数并输出结果， 为false时，更新参数并且不输出结果 
         self.up_reward = tf.placeholder(tf.bool, name="up_reward") # 是否更新reward
-        self.reward_bias = tf.get_variable("reward_bias", [1], dtype=tf.float32) # reward 的偏置项
+        self.reward_bias = tf.get_variable("reward_bias", [0], dtype=tf.float32) # reward 的偏置项, 默认是 1, new_add 改为0
         # If we use sampled softmax, we need an output projection.
         output_projection = None # 
         softmax_loss_function = None
         # Sampled softmax only makes sense if we sample less than vocabulary size.
-        if num_samples > 0 and num_samples < target_vocab_size:  # 样本数大于0 同时 样本数小于 生成序列的字典数
+        if num_samples > 0 and num_samples < target_vocab_size:  # 样本数大于0 同时 样本数小于 生成序列的字典数时，产生一个计算样本loss 的函数 sampled_loss
             w_t = tf.get_variable("proj_w", [target_vocab_size, emb_dim], dtype=dtype)  # 从 生成序列的字典数 映射到 embedding dim
             w = tf.transpose(w_t)
             b = tf.get_variable("proj_b", [target_vocab_size], dtype=dtype)
@@ -93,7 +93,7 @@ class Seq2SeqModel(object):
         for b in xrange(len(self.buckets)): # ???
             self.outputs[b] = [ tf.cond( self.forward_only, lambda: tf.matmul(output, output_projection[0]) + output_projection[1], lambda: output) for output in self.outputs[b] ]
         
-        if not forward_only:
+        if not forward_only: # 初始化时 不是 forward_only 时， 更新参数， 当前初始化为False
             with tf.name_scope("gradient_descent"):
                 self.gradient_norms = []
                 self.updates = []
