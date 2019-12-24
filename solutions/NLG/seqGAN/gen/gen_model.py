@@ -9,7 +9,7 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 from tensorflow.python.ops import control_flow_ops
 import utils.data_utils as data_utils
-# import gen.seq2seq as rl_seq2seq
+import gen.seq2seq as rl_seq2seq
 from tensorflow.python.ops import variable_scope
 sys.path.append('../utils')
 

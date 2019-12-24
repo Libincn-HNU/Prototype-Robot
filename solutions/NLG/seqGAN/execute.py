@@ -218,9 +218,10 @@ def al_train():
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X) with Monte Carlo search
             train_query, train_answer, train_labels = __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
             train_query = np.transpose(train_query)
-            train_answer = np.transpose(train_answer
+            train_answer = np.transpose(train_answer)
 
             # 3.Compute Reward r for (X, ^Y ) using D.---based on Monte Carlo search
+            
             reward, _ = __get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=True)
             reward = reward - 0.5
             batch_reward += reward / gen_config.steps_per_checkpoint
