@@ -17,40 +17,7 @@ evl_config = conf.disc_config
 
 _buckets=gen_config.buckets
 
-
-"""
-代码结构：
-
-1、训练生成模型
-gen_pre_train()
-2、利用训练的模型生成数据，作为识别器的训练数据
-gen_disc()
-3、训练识别器
-disc_pre_train()
-4、开始轮询训练（1：200）
-al_train()
-
-"""
-
-#  step1 定义一个函数，用来训练一个生成器
-def gen_pre_train():
-    gens.pretrain(gen_config)
-
-# step2 用生成器生成数据，用于训练识别器
-def gen_disc():
-    gens.decoder(gen_config)
-
-# step3 定义一个函数，用来预先训练一个识别器
-def disc_pre_train():
-    #discs.train_step(disc_config, evl_config)
-    disc.hier_train(disc_config, evl_config)
-
-# 测试生成器的模型
-def gen_test():
-    gens.test_decoder(gen_config)
-
-#  合并 
-def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False):
+def __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False):
     """
     功能：
         Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
@@ -81,7 +48,10 @@ def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, e
      获得 原始 数据的 query， answer， label
      label 为1 
     """
-    for query, answer in zip(source_inputs, source_outputs):
+    for query, answer in zip(source_inputs, source_outputs): 
+        """
+        query 和 answer 倒转加padding
+        """
         query = query[:query_len] + [int(data_utils.PAD_ID)] * (query_len - len(query) if query_len > len(query) else 0)
         train_query.append(query)
         answer = answer[:-1] # del tag EOS
@@ -98,7 +68,7 @@ def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, e
         for _ in range(num_roll):
             # encoder_state, loss, outputs. 猜测  output_logits 大小为 [seq_len, vocab_size]
             # for _ in range(5):
-            #    _, _, _ = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True) # 只迭代执行一个step 时 所有蒙特卡洛检索的结果均一致，尝试加大generator 迭代次数，看看结果 如何？？？，是否如此操作有待确认
+            #    _, _, _ = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=False) # 只迭代执行一个step 时 所有蒙特卡洛检索的结果均一致，尝试加大generator 迭代次数，看看结果 如何？？？，是否如此操作有待确认
             _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
 
             seq_tokens = []
@@ -144,7 +114,7 @@ def softmax(x):
     prob = np.exp(x) / np.sum(np.exp(x), axis=0)
     return prob
 
-def get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False):
+def __get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False):
     """
     功能：
         获得 reward 或者 loss
@@ -233,13 +203,12 @@ def al_train():
             encoder_inputs, decoder_inputs, target_weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size) # 获得所有batch 之后的数据
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
-            train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
-            # print(" Disc : train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            train_query, train_answer, train_labels = __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
             train_query = np.transpose(train_query)
             train_answer = np.transpose(train_answer)
 
             # 3.Update D using (X, Y ) as positive examples and(X, ^Y) as negative examples
-            _, disc_step_loss = get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False)
+            _, disc_step_loss = __get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=False)
             disc_loss += disc_step_loss / disc_config.steps_per_checkpoint
 
             # 
@@ -250,11 +219,26 @@ def al_train():
             encoder, decoder, weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size)
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X) with Monte Carlo search
-            train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
-            # print(" Gen : train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            train_query, train_answer, train_labels = __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
+            train_query = np.transpose(train_query)
+            train_answer = np.transpose(train_answer
 
-            if current_step %  (gen_config.steps_per_checkpoint) == 0:
-                for i in xrange(5): # 输出5条样本进行查看
+            # 3.Compute Reward r for (X, ^Y ) using D.---based on Monte Carlo search
+            reward, _ = __get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=True)
+            reward = reward - 0.5
+            batch_reward += reward / gen_config.steps_per_checkpoint
+
+            # 4.Update G on (X, ^Y ) using reward r   #用poliy gradient更新G
+            gan_adjusted_loss, gen_step_loss, _ =gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False, reward=reward, up_reward=True, debug=True)
+            gen_loss += gen_step_loss / gen_config.steps_per_checkpoint
+
+            # 5.Teacher-Forcing: Update G on (X, Y )   #用极大似然法更新G
+            t_adjusted_loss, t_step_loss, a = gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False)
+            t_loss += t_step_loss / gen_config.steps_per_checkpoint
+           
+            if current_step % gen_config.steps_per_checkpoint == 0:
+
+                for i in xrange(3): # 输出3条样本进行查看
                     print("tmp query is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_query[i]])) # 打印当前的query 
                     print("label: ", train_labels[i]) # 打印ground truth label 1
                     print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i] if output != 0]))
@@ -262,31 +246,7 @@ def al_train():
                     for idx in range(1, gen_config.beam_size):
                         print('i', i, "idx", idx, 'beam_size', gen_config.beam_size, 'tmp', idx*gen_config.batch_size + i)
                         print("label: ", train_labels[ idx * gen_config.batch_size + i],  " text is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[ idx * gen_config.batch_size + i] if output != 0]))
-
-            train_query = np.transpose(train_query)
-            train_answer = np.transpose(train_answer)
-
-            # 3.Compute Reward r for (X, ^Y ) using D.---based on Monte Carlo search
-            reward, _ = get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=True)
-            reward = reward - 0.5
-            batch_reward += reward / gen_config.steps_per_checkpoint
-            # print("step_reward: ", reward)
-
-            # 4.Update G on (X, ^Y ) using reward r   #用poliy gradient更新G
-            gan_adjusted_loss, gen_step_loss, _ =gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False, reward=reward, up_reward=True, debug=True)
-            gen_loss += gen_step_loss / gen_config.steps_per_checkpoint
-
-            # print("gen_step_loss: ", gen_step_loss)
-            # print("gen_step_adjusted_loss: ", gan_adjusted_loss)
-
-            # 5.Teacher-Forcing: Update G on (X, Y )   #用极大似然法更新G
-            t_adjusted_loss, t_step_loss, a = gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False)
-            t_loss += t_step_loss / gen_config.steps_per_checkpoint
-           
-            # print("t_step_loss: ", t_step_loss)
-            # print("t_adjusted_loss", t_adjusted_loss)           # print("normal: ", a)
-
-            if current_step % gen_config.steps_per_checkpoint == 0:
+ 
 
                 step_time += (time.time() - start_time) / gen_config.steps_per_checkpoint
 
@@ -311,71 +271,19 @@ def al_train():
                 step_time, disc_loss, gen_loss, t_loss, batch_reward = 0.0, 0.0, 0.0, 0.0, 0.0
                 sys.stdout.flush()
 
-def init_session(sess,gen_config):
-    """
-    decode online 中使用
-    """
-    model = gens.create_model(sess, gen_config, forward_only=True, name_scope="genModel")
-    vocab_path = os.path.join('/Users/sunhongchao/Documents/craft/Prototype-Robot/solutions/NLG/seqGAN/gen_data', "vocab%d.all" % gen_config.vocab_size)
-    # vocab_path = os.path.join('/Users/sunhongchao/Documents/craft/Prototype-Robot/solutions/NLG/seqGAN', gen_config.train_dir, "vocab%d.all" % gen_config.vocab_size)
-    vocab, rev_vocab = data_utils.initialize_vocabulary(vocab_path)
-    return sess ,model, vocab, rev_vocab
-
-
-def decoder_online(sess,gen_config, model, vocab,rev_vocab, inputs):
-    
-    token_ids = data_utils.sentence_to_token_ids(inputs, vocab)
-
-    # Which bucket does it belong to?
-    bucket_id = min([b for b in xrange(len(_buckets)) if _buckets[b][0] > len(token_ids)])
-    #bucket_id = min([i for i in xrange(len(train_buckets_scale))
-       #             if train_buckets_scale[i] > random_number_01])
-    # Get a 1-element batch to feed the sentence to the model.
-    encoder_inputs, decoder_inputs, target_weights ,_,_ = model.get_batch({bucket_id: [(token_ids, [])]}, bucket_id,gen_config.batch_size)
-
-    # Get output logits for the sentence.
-    _, _, output_logits = model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, True)
-    
-    # If there is an EOS symbol in outputs, cut them at that point.
-    tokens = []
-    resps = []
-    for seq in output_logits:
-        token = []
-        for t in seq:
-            token.append(int(np.argmax(t, axis=0)))
-        tokens.append(token)
-        tokens_t = []
-        for col in range(len(tokens[0])):
-            tokens_t.append([tokens[row][col] for row in range(len(tokens))])
-
-        for seq in tokens_t:
-            if data_utils.EOS_ID in seq:
-                resps.append(seq[:seq.index(data_utils.EOS_ID)][:gen_config.buckets[bucket_id][1]])
-            else:
-                resps.append(seq[:gen_config.buckets[bucket_id][1]])
-    for resp in resps:
-        resq_str= " ".join([tf.compat.as_str(rev_vocab[output]) for output in resp])
-    return resq_str
-
-
 def main(_):
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+
     # step_1 training gen model
-    # gen_pre_train()
+    # gens.pretrain(gen_config)
 
-    #print("*****请注释掉本行代码，以及上行代码gen_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
-    #sys.exit(0)
     # step_2 gen training data for disc
-    # gen_disc()
-
-    #print("*****请注释掉本行代码，以及上行代码gen_disc()，下行代码sys.exit(0)然后继续执行execute.py********")
-    #sys.exit(0)
+    # gens.decoder(gen_config)
 
     # step_3 training disc model
-    # disc_pre_train()
-    #print("*****请注释掉本行代码，以及上行代码disc_pre_train()，下行代码sys.exit(0)然后继续执行execute.py********")
-    #sys.exit(0)
+    # disc.hier_train(disc_config, evl_config)
+
     # step_4 training al model
     al_train()
 

@@ -9,7 +9,7 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 from tensorflow.python.ops import control_flow_ops
 import utils.data_utils as data_utils
-import gen.seq2seq as rl_seq2seq
+# import gen.seq2seq as rl_seq2seq
 from tensorflow.python.ops import variable_scope
 sys.path.append('../utils')
 
@@ -137,14 +137,9 @@ class Seq2SeqModel(object):
         if len(target_weights) != decoder_size:
             raise ValueError("Weights length must be equal to the one in bucket, %d != %d." % (len(target_weights), decoder_size))
 
-        # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
+        input_feed = { self.forward_only.name: forward_only, self.up_reward.name: up_reward, self.mc_search.name: mc_search}
 
-        input_feed = {
-            self.forward_only.name: forward_only,
-            self.up_reward.name: up_reward,
-            self.mc_search.name: mc_search
-        }
-        for l in xrange(len(self.buckets)):
+        for l in xrange(len(self.buckets)): # 遍历所有bucket， 为所有bucket 设置初始 reward
             input_feed[self.reward[l].name] = reward
         for l in xrange(encoder_size):
             input_feed[self.encoder_inputs[l].name] = encoder_inputs[l]
