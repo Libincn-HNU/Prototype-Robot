@@ -33,7 +33,7 @@ class Seq2SeqModel(object):
         self.num_layers = config.num_layers
         self.max_gradient_norm = config.max_gradient_norm
         self.mc_search = tf.placeholder(tf.bool, name="mc_search") # 是否进行 蒙特卡洛搜索
-        self.forward_only = tf.placeholder(tf.bool, name="forward_only") # 
+        self.forward_only = tf.placeholder(tf.bool, name="forward_only") # 为 ture 时，更新参数并输出结果， 为false时，更新参数并且不输出结果 
         self.up_reward = tf.placeholder(tf.bool, name="up_reward") # 是否更新reward
         self.reward_bias = tf.get_variable("reward_bias", [1], dtype=tf.float32) # reward 的偏置项
         # If we use sampled softmax, we need an output projection.
@@ -63,27 +63,18 @@ class Seq2SeqModel(object):
         cell = single_cell
         if self.num_layers > 1:
             cell = tf.nn.rnn_cell.MultiRNNCell([single_cell] * self.num_layers)
+            cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=0.5) # new add 添加 dropout, 为了蒙特卡洛产生新的结果
 
         # 使用 seq2seq 的函数， 从 seq2seq 的文件中 导入，当前使用 embedding seq2seq, 并且使用attention
         def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
-            return rl_seq2seq.embedding_attention_seq2seq(
-                encoder_inputs,
-                decoder_inputs,
-                cell,
-                num_encoder_symbols= source_vocab_size,
-                num_decoder_symbols= target_vocab_size,
-                embedding_size= emb_dim,
-                output_projection=output_projection,
-                feed_previous=do_decode,
-                mc_search=self.mc_search,
-                dtype=tf.float32)
+            return rl_seq2seq.embedding_attention_seq2seq(encoder_inputs, decoder_inputs, cell, num_encoder_symbols= source_vocab_size,
+            num_decoder_symbols= target_vocab_size,embedding_size= emb_dim,output_projection=output_projection, feed_previous=do_decode,mc_search=self.mc_search,dtype=tf.float32)
 
         # Feeds for inputs.
         self.encoder_inputs = []
         self.decoder_inputs = []
         self.target_weights = []
 
-        # [[], [], []]
         for i in xrange(self.buckets[-1][0]):  # Last bucket is the biggest one.
             self.encoder_inputs.append(tf.placeholder(tf.int32, shape=[None], name="encoder{0}".format(i)))  # 大小是 35
         for i in xrange(self.buckets[-1][1] + 1):

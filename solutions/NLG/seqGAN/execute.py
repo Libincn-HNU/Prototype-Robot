@@ -66,9 +66,7 @@ def __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
     def decoder(num_roll):
 
         for _ in range(num_roll):
-            # encoder_state, loss, outputs. 猜测  output_logits 大小为 [seq_len, vocab_size]
-            # for _ in range(5):
-            #    _, _, _ = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=False) # 只迭代执行一个step 时 所有蒙特卡洛检索的结果均一致，尝试加大generator 迭代次数，看看结果 如何？？？，是否如此操作有待确认
+            # encoder_state, loss, outputs. 猜测  output_logits 大小为 [seq_len, batch_size]
             _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
 
             seq_tokens = []
@@ -77,7 +75,6 @@ def __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
             for seq in output_logits: # 遍历 所有 sequence 的 位置
                 row_token = []
                 for t in seq: # 遍历当前位置中的所有的词
-                    # row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
                     row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
                 seq_tokens.append(row_token) # 返回当前 sequence 的 最佳解码结果
 
