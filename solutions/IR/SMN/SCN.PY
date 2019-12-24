@@ -11,9 +11,11 @@ load_file = open("results.pkl","rb")
 results = pickle.load(load_file)
 load_file.close()
 
-emb_file = open('embedding.pkl', 'rb')
-embeddings = pickle.load(load_file)
+emb_file = open('embedding_matrix.pkl', 'rb')
+emb = pickle.load(emb_file)
 emb_file.close()
+
+embeddings = emb['embedding_matrix']
 
 class SCN():
     def __init__(self):

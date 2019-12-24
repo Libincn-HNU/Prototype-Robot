@@ -97,8 +97,8 @@ def merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, e
 
         for _ in range(num_roll):
             # encoder_state, loss, outputs. 猜测  output_logits 大小为 [seq_len, vocab_size]
-            for _ in range(10):
-                _, _, _ = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True) # 只迭代执行一个step 时 所有蒙特卡洛检索的结果均一致，尝试加大generator 迭代次数，看看结果 如何？？？，是否如此操作有待确认
+            # for _ in range(5):
+            #    _, _, _ = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True) # 只迭代执行一个step 时 所有蒙特卡洛检索的结果均一致，尝试加大generator 迭代次数，看看结果 如何？？？，是否如此操作有待确认
             _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
 
             seq_tokens = []
@@ -234,7 +234,7 @@ def al_train():
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
-            print(" Disc : train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            # print(" Disc : train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
             train_query = np.transpose(train_query)
             train_answer = np.transpose(train_answer)
 
@@ -251,9 +251,9 @@ def al_train():
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X) with Monte Carlo search
             train_query, train_answer, train_labels = merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
-            print(" Gen : train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
+            # print(" Gen : train_query length is ", len(train_query), " train_answer length is ", len(train_answer), "train_labels length is ", len(train_labels))
 
-            if current_step %  (5 * gen_config.steps_per_checkpoint) == 0:
+            if current_step %  (gen_config.steps_per_checkpoint) == 0:
                 for i in xrange(5): # 输出5条样本进行查看
                     print("tmp query is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_query[i]])) # 打印当前的query 
                     print("label: ", train_labels[i]) # 打印ground truth label 1

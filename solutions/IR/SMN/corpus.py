@@ -5,6 +5,11 @@ import numpy as np
 vocab = open('/export/home/sunhongchao1/Prototype-Robot/solutions/NLG/seqGAN/gen_data/vocab5000.all', 'r', encoding='utf-8', newline='\n', errors='ignore')
 word2idx = {}
 
+word2idx['_GO'] = 0
+word2idx['_EOS'] = 1
+word2idx['_UNK'] = 2
+word2idx['_PAD'] = 3
+
 for idx, value in enumerate(vocab):
     word2idx[value] = idx
 
@@ -37,8 +42,8 @@ history, true_utt, false_utt = [], [], []
 with open("/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/new_corpus.txt", mode='r', encoding='utf-8') as f:
     lines = f.readlines()
     for idx in range(0, len(lines)-3, 3):
-        history.append([ [ word2idx[tmp] for tmp in lines[idx]]]) # 加入的是一个list
-        true_utt.append([word2idx[tmp] for tmp in lines[idx+1]])
+        history.append([ [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in lines[idx][2:]]]) # 加入的是一个list
+        true_utt.append([word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in lines[idx+1][2:]])
         false_utt.append(lines[random.choice(range(len(lines)//3)) + 1 ])
 
 
@@ -46,4 +51,9 @@ import pickle
 results = {'history':history, 'true_utt':true_utt, 'false_utt':false_utt}
 save_file = open("results.pkl","wb")
 pickle.dump(results, save_file)
+save_file.close()
+
+embedding = {'embedding_matrix':embedding_matrix}
+save_file = open("embedding_matrix.pkl","wb")
+pickle.dump(embedding, save_file)
 save_file.close()
