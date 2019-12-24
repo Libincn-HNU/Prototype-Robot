@@ -32,19 +32,19 @@ class Seq2SeqModel(object):
         self.batch_size = config.batch_size
         self.num_layers = config.num_layers
         self.max_gradient_norm = config.max_gradient_norm
-        self.mc_search = tf.placeholder(tf.bool, name="mc_search")
-        self.forward_only = tf.placeholder(tf.bool, name="forward_only")
-        self.up_reward = tf.placeholder(tf.bool, name="up_reward")
-        self.reward_bias = tf.get_variable("reward_bias", [1], dtype=tf.float32)
+        self.mc_search = tf.placeholder(tf.bool, name="mc_search") # 是否进行 蒙特卡洛搜索
+        self.forward_only = tf.placeholder(tf.bool, name="forward_only") # 为 ture 时，更新参数并输出结果， 为false时，更新参数并且不输出结果 
+        self.up_reward = tf.placeholder(tf.bool, name="up_reward") # 是否更新reward
+        self.reward_bias = tf.get_variable("reward_bias", [0], dtype=tf.float32) # reward 的偏置项, 默认是 1, new_add 改为0
         # If we use sampled softmax, we need an output projection.
-        output_projection = None
+        output_projection = None # 
         softmax_loss_function = None
         # Sampled softmax only makes sense if we sample less than vocabulary size.
-        if num_samples > 0 and num_samples < target_vocab_size:
-            w_t = tf.get_variable("proj_w", [target_vocab_size, emb_dim], dtype=dtype)
+        if num_samples > 0 and num_samples < target_vocab_size:  # 样本数大于0 同时 样本数小于 生成序列的字典数时，产生一个计算样本loss 的函数 sampled_loss
+            w_t = tf.get_variable("proj_w", [target_vocab_size, emb_dim], dtype=dtype)  # 从 生成序列的字典数 映射到 embedding dim
             w = tf.transpose(w_t)
             b = tf.get_variable("proj_b", [target_vocab_size], dtype=dtype)
-            output_projection = (w, b)
+            output_projection = (w, b) # 输入到 embedding 的映射参数
             w_t=tf.cast(w_t,tf.float32)
             b=tf.cast(b,tf.float32)
 
@@ -57,57 +57,43 @@ class Seq2SeqModel(object):
                 return tf.nn.sampled_softmax_loss(w_t ,b, labels,inputs,num_samples,target_vocab_size)
             softmax_loss_function = sampled_loss
 
-        # Create the internal multi-layer cell for our RNN.
+        # 构造多层RNN 的结构， cell
+        # 由 seq2seq_f 调用
         single_cell = tf.nn.rnn_cell.GRUCell(emb_dim)
         cell = single_cell
         if self.num_layers > 1:
             cell = tf.nn.rnn_cell.MultiRNNCell([single_cell] * self.num_layers)
+            cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=0.5) # new add 添加 dropout, 为了蒙特卡洛产生新的结果
 
-        # The seq2seq function: we use embedding for the input and attention.
+        # 使用 seq2seq 的函数， 从 seq2seq 的文件中 导入，当前使用 embedding seq2seq, 并且使用attention
         def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
-            return rl_seq2seq.embedding_attention_seq2seq(
-                encoder_inputs,
-                decoder_inputs,
-                cell,
-                num_encoder_symbols= source_vocab_size,
-                num_decoder_symbols= target_vocab_size,
-                embedding_size= emb_dim,
-                output_projection=output_projection,
-                feed_previous=do_decode,
-                mc_search=self.mc_search,
-                dtype=tf.float32)
+            return rl_seq2seq.embedding_attention_seq2seq(encoder_inputs, decoder_inputs, cell, num_encoder_symbols= source_vocab_size,
+            num_decoder_symbols= target_vocab_size,embedding_size= emb_dim,output_projection=output_projection, feed_previous=do_decode,mc_search=self.mc_search,dtype=tf.float32)
 
         # Feeds for inputs.
         self.encoder_inputs = []
         self.decoder_inputs = []
         self.target_weights = []
+
         for i in xrange(self.buckets[-1][0]):  # Last bucket is the biggest one.
-            self.encoder_inputs.append(tf.placeholder(tf.int32, shape=[None], name="encoder{0}".format(i)))
+            self.encoder_inputs.append(tf.placeholder(tf.int32, shape=[None], name="encoder{0}".format(i)))  # 大小是 35
         for i in xrange(self.buckets[-1][1] + 1):
-            self.decoder_inputs.append(tf.placeholder(tf.int32, shape=[None], name="decoder{0}".format(i)))
-            self.target_weights.append(tf.placeholder(dtype, shape=[None], name="weight{0}".format(i)))
-        self.reward = [tf.placeholder(tf.int32, name="reward_%i" % i) for i in range(len(self.buckets))]
+            self.decoder_inputs.append(tf.placeholder(tf.int32, shape=[None], name="decoder{0}".format(i)))  # 大小是  50 + 1
+            self.target_weights.append(tf.placeholder(dtype, shape=[None], name="weight{0}".format(i)))      # 大小是  50 + 1
+        self.reward = [tf.placeholder(tf.int32, name="reward_%i" % i) for i in range(len(self.buckets))] # 每个大小的bucket 都有一个reward
 
         # Our targets are decoder inputs shifted by one.
         targets = [self.decoder_inputs[i + 1] for i in xrange(len(self.decoder_inputs) - 1)]
 
-        self.outputs, self.losses, self.encoder_state = rl_seq2seq.model_with_buckets(
-            self.encoder_inputs, self.decoder_inputs, targets, self.target_weights,
+        self.outputs, self.losses, self.encoder_state = rl_seq2seq.model_with_buckets(self.encoder_inputs, self.decoder_inputs, targets, self.target_weights,
             self.buckets, source_vocab_size, self.batch_size,
             lambda x, y: seq2seq_f(x, y, tf.where(self.forward_only, True, False)),
             output_projection=output_projection, softmax_loss_function=softmax_loss_function)
 
-        for b in xrange(len(self.buckets)):
-            self.outputs[b] = [
-                tf.cond(
-                    self.forward_only,
-                    lambda: tf.matmul(output, output_projection[0]) + output_projection[1],
-                    lambda: output
-                )
-                for output in self.outputs[b]
-            ]
+        for b in xrange(len(self.buckets)): # ???
+            self.outputs[b] = [ tf.cond( self.forward_only, lambda: tf.matmul(output, output_projection[0]) + output_projection[1], lambda: output) for output in self.outputs[b] ]
         
-        if not forward_only:
+        if not forward_only: # 初始化时 不是 forward_only 时， 更新参数， 当前初始化为False
             with tf.name_scope("gradient_descent"):
                 self.gradient_norms = []
                 self.updates = []
@@ -131,6 +117,7 @@ class Seq2SeqModel(object):
         self.gen_variables = [k for k in tf.global_variables() if name_scope in k.name]
         self.saver = tf.train.Saver(self.gen_variables)
 
+    # gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
     def step(self, session, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True, reward=1, mc_search=False, up_reward=False, debug=True):
         # Check if the sizes match.
         encoder_size, decoder_size = self.buckets[bucket_id]
@@ -141,14 +128,9 @@ class Seq2SeqModel(object):
         if len(target_weights) != decoder_size:
             raise ValueError("Weights length must be equal to the one in bucket, %d != %d." % (len(target_weights), decoder_size))
 
-        # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
+        input_feed = { self.forward_only.name: forward_only, self.up_reward.name: up_reward, self.mc_search.name: mc_search}
 
-        input_feed = {
-            self.forward_only.name: forward_only,
-            self.up_reward.name: up_reward,
-            self.mc_search.name: mc_search
-        }
-        for l in xrange(len(self.buckets)):
+        for l in xrange(len(self.buckets)): # 遍历所有bucket， 为所有bucket 设置初始 reward
             input_feed[self.reward[l].name] = reward
         for l in xrange(encoder_size):
             input_feed[self.encoder_inputs[l].name] = encoder_inputs[l]
@@ -163,9 +145,8 @@ class Seq2SeqModel(object):
         # Output feed: depends on whether we do a backward step or not.
         if not forward_only: # normal training
             # 极大似然估计
-            output_feed = [self.updates[bucket_id],  # Update Op that does SGD.
-                       self.aj_losses[bucket_id],  # Gradient norm.
-                       self.losses[bucket_id]]  # Loss for this batch.
+            # Update Op that does SGD., # Gradient norm. # Loss for this batch.
+            output_feed = [self.updates[bucket_id], self.aj_losses[bucket_id], self.losses[bucket_id]]  
         else:
             # testing or reinforcement learning
             output_feed = [self.encoder_state[bucket_id], self.losses[bucket_id]]  # Loss for this batch.
@@ -190,6 +171,11 @@ class Seq2SeqModel(object):
         # print("bucket_id: %s" %bucket_id)
         if type == 1:
             batch_size = 1
+        
+        """
+        默认type 为0， 随机抽取batch size 个样本
+    
+        """
         for batch_i in xrange(batch_size):
             if type == 1:
                 encoder_input, decoder_input = train_data[bucket_id]
@@ -209,23 +195,18 @@ class Seq2SeqModel(object):
 
             # Decoder inputs get an extra "GO" symbol, and are padded then.
             decoder_pad_size = decoder_size - len(decoder_input) - 1
-            decoder_inputs.append([data_utils.GO_ID] + decoder_input +
-                                [data_utils.PAD_ID] * decoder_pad_size)
+            decoder_inputs.append([data_utils.GO_ID] + decoder_input + [data_utils.PAD_ID] * decoder_pad_size)
 
         # Now we create batch-major vectors from the disc_data selected above.
         batch_encoder_inputs, batch_decoder_inputs, batch_weights = [], [], []
 
         # Batch encoder inputs are just re-indexed encoder_inputs.
         for length_idx in xrange(encoder_size):
-            batch_encoder_inputs.append(
-                np.array([encoder_inputs[batch_idx][length_idx]
-                          for batch_idx in xrange(batch_size)], dtype=np.int32))
+            batch_encoder_inputs.append(np.array([encoder_inputs[batch_idx][length_idx] for batch_idx in xrange(batch_size)], dtype=np.int32))
 
         # Batch decoder inputs are re-indexed decoder_inputs, we create weights.
         for length_idx in xrange(decoder_size):
-            batch_decoder_inputs.append(
-                np.array([decoder_inputs[batch_idx][length_idx]
-                          for batch_idx in xrange(batch_size)], dtype=np.int32))
+            batch_decoder_inputs.append(np.array([decoder_inputs[batch_idx][length_idx] for batch_idx in xrange(batch_size)], dtype=np.int32))
 
             # Create target_weights to be 0 for targets that are padding.
             batch_weight = np.ones(batch_size, dtype=np.float64)

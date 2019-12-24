@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 checkpoint
+gen_data/
 *.index
 *.meta
 *.data-*
