@@ -253,8 +253,8 @@ if __name__ == "__main__":
     else:
         sess = scn.LoadModel()
         print(word2idx)
-        tmp1 = ['你好啊']
-        tmp2 = [['你好我就好', '你说啥', '哈利路亚']]
+        tmp1 = '你好啊'
+        tmp2 = ['你好我就好', '你说啥', '哈利路亚']
         result = scn.Predict(sess, tmp1, tmp2)
         print(result)    
 
