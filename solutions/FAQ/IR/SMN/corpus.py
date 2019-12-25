@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 # 获取字典  word2idx
-vocab = open('/export/home/sunhongchao1/Prototype-Robot/solutions/NLG/seqGAN/gen_data/vocab5000.all', 'r', encoding='utf-8', newline='\n', errors='ignore')
+vocab = open('/export/home/sunhongchao1/Prototype-Robot/solutions/FAQ/NLG/seqGAN/gen_data/vocab5000.all', 'r', encoding='utf-8', newline='\n', errors='ignore')
 word2idx = {}
 
 for idx, value in enumerate(vocab):

@@ -17,6 +17,12 @@ emb_file.close()
 
 embeddings = emb['embedding_matrix']
 
+vocab = open('/export/home/sunhongchao1/Prototype-Robot/solutions/FAQ/NLG/seqGAN/gen_data/vocab5000.all', 'r', encoding='utf-8', newline='\n', errors='ignore')
+word2idx = {}
+
+for idx, value in enumerate(vocab):
+    word2idx[value.strip()] = id
+
 class SCN():
     def __init__(self):
         self.max_num_utterance = 10 # 上下文最大轮数
@@ -85,9 +91,32 @@ class SCN():
         optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
         self.train_op = optimizer.minimize(self.total_loss)
 
-    def Evaluate(self,sess):
-        with open(evaluate_file, 'rb') as f:
-           history, true_utt,labels = pickle.load(f)
+    def Predict(self, sess, single_history, true_utt_list):
+
+        """
+            single_history 结构
+            [
+                ["今天天气不错啊","是的，天气好心情就好","有没有适合这个天气的户外活动？"],
+            ]
+
+            true_utt_list 结构 
+            [
+                ["晴朗的天气适合户外跑步"],
+                ...
+                [""],
+                [""]
+            ]
+        """
+        
+        tmp_single_history = [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in single_history]
+        tmp_true_utt_list = []
+        for tmp_utt in true_utt_list:
+            tmp_true_utt_list.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt])
+
+
+        history = [tmp_single_history] * len(true_utt_list)
+        true_utt = tmp_true_utt_list
+
         self.all_candidate_scores = []
         history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
         history, history_len = np.array(history), np.array(history_len)
@@ -106,9 +135,34 @@ class SCN():
             if low >= history.shape[0]:
                 break
         all_candidate_scores = np.concatenate(self.all_candidate_scores, axis=0)
-        Evaluate.ComputeR10_1(all_candidate_scores,labels)
-        Evaluate.ComputeR2_1(all_candidate_scores,labels)
 
+        print(true_utt_list)
+        print(all_candidate_scores)
+
+
+    # def Evaluate(self,sess):
+        # with open(evaluate_file, 'rb') as f:
+        #    history, true_utt,labels = pickle.load(f)
+        # self.all_candidate_scores = []
+        # history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
+        # history, history_len = np.array(history), np.array(history_len)
+        # true_utt_len = np.array(utils.get_sequences_length(true_utt, maxlen=self.max_sentence_len))
+        # true_utt = np.array(pad_sequences(true_utt, padding='post', maxlen=self.max_sentence_len))
+        # low = 0
+        # while True:
+        #     feed_dict = {self.utterance_ph: np.concatenate([history[low:low + 200]], axis=0),
+        #                  self.all_utterance_len_ph: np.concatenate([history_len[low:low + 200]], axis=0),
+        #                  self.response_ph: np.concatenate([true_utt[low:low + 200]], axis=0),
+        #                  self.response_len: np.concatenate([true_utt_len[low:low + 200]], axis=0),
+        #                  }
+        #     candidate_scores = sess.run(self.y_pred, feed_dict=feed_dict)
+        #     self.all_candidate_scores.append(candidate_scores[:, 1])
+        #     low = low + 200
+        #     if low >= history.shape[0]:
+        #         break
+        # all_candidate_scores = np.concatenate(self.all_candidate_scores, axis=0)
+        # Evaluate.ComputeR10_1(all_candidate_scores,labels)
+        # Evaluate.ComputeR2_1(all_candidate_scores,labels)
 
     def TrainModel(self,countinue_train = False, previous_modelpath = "model"):
         init = tf.global_variables_initializer()
@@ -174,7 +228,7 @@ class SCN():
                 low += n_sample
                 if low % 102400 == 0:
                     print("loss",sess.run(self.total_loss, feed_dict=feed_dict))
-                    self.Evaluate(sess)
+                    # self.Evaluate(sess)
                 if low >= history.shape[0]:
                     low = 0
                     saver.save(sess,"model/model.{0}".format(epoch))
@@ -185,10 +239,11 @@ class SCN():
 if __name__ == "__main__":
     scn =SCN()
     scn.BuildModel()
-    scn.TrainModel()
-    #sess = scn.LoadModel()
-    #scn.Evaluate(sess)
-    #results = scn.BuildIndex(sess)
-    #print(len(results))
 
-    #scn.TrainModel()
+    if True:
+        scn.TrainModel()
+    else:
+        sess = scn.LoadModel()
+        result = scn.Predict(sess, single_history=['你好啊'], true_utt_list=['你好我就好', '你说啥', '哈利路亚'])
+        print(result)    
+
