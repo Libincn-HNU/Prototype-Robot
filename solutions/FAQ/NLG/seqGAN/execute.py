@@ -216,13 +216,14 @@ def al_train():
             encoder, decoder, weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size)
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X) with Monte Carlo search
-            train_query, train_answer, train_labels = __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
-            train_query = np.transpose(train_query)
-            train_answer = np.transpose(train_answer
+            train_query_origin, train_answer_origin, train_labels = __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder, decoder, weights, bucket_id, mc_search=True)
+            train_query = np.transpose(train_query_origin)
+            train_answer = np.transpose(train_answer_origin)
 
             # 3.Compute Reward r for (X, ^Y ) using D.---based on Monte Carlo search
+            
             reward, _ = __get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=True)
-            reward = reward - 0.5
+            # reward = reward - 0.5
             batch_reward += reward / gen_config.steps_per_checkpoint
 
             # 4.Update G on (X, ^Y ) using reward r   #用poliy gradient更新G
@@ -230,19 +231,20 @@ def al_train():
             gen_loss += gen_step_loss / gen_config.steps_per_checkpoint
 
             # 5.Teacher-Forcing: Update G on (X, Y )   #用极大似然法更新G
-            t_adjusted_loss, t_step_loss, a = gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=False)
+            t_adjusted_loss, t_step_loss, a = gen_model.step(sess, encoder, decoder, weights, bucket_id, forward_only=True)
             t_loss += t_step_loss / gen_config.steps_per_checkpoint
            
             if current_step % gen_config.steps_per_checkpoint == 0:
 
                 for i in xrange(3): # 输出3条样本进行查看
-                    print("tmp query is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_query[i]])) # 打印当前的query 
+                    print("tmp query is ",
+                          "".join([tf.compat.as_str(rev_vocab[output]) for output in train_query_origin[i]])) # 打印当前的query 
                     print("label: ", train_labels[i]) # 打印ground truth label 1
-                    print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[i] if output != 0]))
+                    print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer_origin[i] if output != 0]))
 
                     for idx in range(1, gen_config.beam_size):
                         print('i', i, "idx", idx, 'beam_size', gen_config.beam_size, 'tmp', idx*gen_config.batch_size + i)
-                        print("label: ", train_labels[ idx * gen_config.batch_size + i],  " text is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer[ idx * gen_config.batch_size + i] if output != 0]))
+                        print("label: ", train_labels[ idx * gen_config.batch_size + i],  " text is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer_origin[ idx * gen_config.batch_size + i] if output != 0]))
  
 
                 step_time += (time.time() - start_time) / gen_config.steps_per_checkpoint
