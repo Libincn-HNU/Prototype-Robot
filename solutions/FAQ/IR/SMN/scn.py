@@ -111,7 +111,9 @@ class SCN():
         print('single_history', single_history)
         print('true_utt_list', true_utt_list)
         
-        tmp_single_history = [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in single_history]
+        tmp_single_history = []
+        for tmp_history in single_history:
+            tmp_single_history.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_history])
         tmp_true_utt_list = []
         for tmp_utt in true_utt_list:
             tmp_true_utt_list.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt])
@@ -253,7 +255,7 @@ if __name__ == "__main__":
     else:
         sess = scn.LoadModel()
         print(word2idx)
-        tmp1 = '你好啊'
+        tmp1 = [['hello', '你好啊']]
         tmp2 = ['你好我就好', '你说啥', '哈利路亚']
         result = scn.Predict(sess, tmp1, tmp2)
         print(result)    
