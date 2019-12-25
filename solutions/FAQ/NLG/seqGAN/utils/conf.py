@@ -42,7 +42,7 @@ class gen_config(object):
     name_loss = "gen_loss"
     teacher_loss = "teacher_loss"
     reward_name = "reward"
-    max_train_data_size = 2000000
+    max_train_data_size = 6000000
     steps_per_checkpoint = 20
     buckets = [(5, 10), (10, 15), (20, 25), (25, 50)] # (40, 50)
     buckets_concat = [(5, 10), (10, 15), (20, 25), (25, 50), (100, 50)]

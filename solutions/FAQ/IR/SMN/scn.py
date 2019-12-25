@@ -7,9 +7,10 @@ import Evaluate
 
 import pickle
 
-load_file = open("results.pkl","rb")
-results = pickle.load(load_file)
-load_file.close()
+if False:
+    load_file = open("results.pkl","rb")
+    results = pickle.load(load_file)
+    load_file.close()
 
 emb_file = open('embedding_matrix.pkl', 'rb')
 emb = pickle.load(emb_file)
@@ -21,7 +22,7 @@ vocab = open('/export/home/sunhongchao1/Prototype-Robot/solutions/FAQ/NLG/seqGAN
 word2idx = {}
 
 for idx, value in enumerate(vocab):
-    word2idx[value.strip()] = id
+    word2idx[value.strip()] = idx
 
 class SCN():
     def __init__(self):
@@ -107,15 +108,22 @@ class SCN():
                 [""]
             ]
         """
+        print('single_history', single_history)
+        print('true_utt_list', true_utt_list)
         
         tmp_single_history = [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in single_history]
         tmp_true_utt_list = []
         for tmp_utt in true_utt_list:
             tmp_true_utt_list.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt])
 
+        print('tmp history', tmp_single_history)
+        print('tmp_true_utt_list', tmp_true_utt_list)
 
         history = [tmp_single_history] * len(true_utt_list)
         true_utt = tmp_true_utt_list
+
+        print('history', history)
+        print('true_utt', true_utt)
 
         self.all_candidate_scores = []
         history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
@@ -240,10 +248,13 @@ if __name__ == "__main__":
     scn =SCN()
     scn.BuildModel()
 
-    if True:
+    if False:
         scn.TrainModel()
     else:
         sess = scn.LoadModel()
-        result = scn.Predict(sess, single_history=['你好啊'], true_utt_list=['你好我就好', '你说啥', '哈利路亚'])
+        print(word2idx)
+        tmp1 = ['你好啊']
+        tmp2 = [['你好我就好', '你说啥', '哈利路亚']]
+        result = scn.Predict(sess, tmp1, tmp2)
         print(result)    
 
