@@ -36,7 +36,7 @@ class SCN():
     def LoadModel(self):
         saver = tf.train.Saver()
         sess = tf.Session()
-        saver.restore(sess,"neg5model\\model.5")
+        saver.restore(sess,"./model/model.9")
         return sess
 
     def BuildModel(self):

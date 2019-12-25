@@ -278,7 +278,7 @@ def main(_):
     # gens.pretrain(gen_config)
 
     # step_2 gen training data for disc
-    # gens.decoder(gen_config)
+    # gens.gen_for_disc(gen_config)
 
     # step_3 training disc model
     # disc.hier_train(disc_config, evl_config)
