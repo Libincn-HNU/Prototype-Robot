@@ -4,6 +4,7 @@ import utils
 from keras.preprocessing.sequence import pad_sequences
 import numpy as np
 import Evaluate
+from es_tool import *
 
 import pickle
 
@@ -108,24 +109,17 @@ class SCN():
                 [""]
             ]
         """
-        print('single_history', single_history)
-        print('true_utt_list', true_utt_list)
         
         tmp_single_history = []
         for tmp_history in single_history:
             tmp_single_history.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_history])
+
         tmp_true_utt_list = []
         for tmp_utt in true_utt_list:
             tmp_true_utt_list.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt])
 
-        print('tmp history', tmp_single_history)
-        print('tmp_true_utt_list', tmp_true_utt_list)
-
         history = [tmp_single_history] * len(true_utt_list)
         true_utt = tmp_true_utt_list
-
-        print('history', history)
-        print('true_utt', true_utt)
 
         self.all_candidate_scores = []
         history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
@@ -148,6 +142,7 @@ class SCN():
 
         print(true_utt_list)
         print(all_candidate_scores)
+        return all_candidate_scores
 
 
     # def Evaluate(self,sess):
@@ -254,9 +249,15 @@ if __name__ == "__main__":
         scn.TrainModel()
     else:
         sess = scn.LoadModel()
-        print(word2idx)
-        tmp1 = [['hello', '你好啊']]
-        tmp2 = ['你好我就好', '你说啥', '哈利路亚']
-        result = scn.Predict(sess, tmp1, tmp2)
-        print(result)    
+        
+        search = Search()
+        search.create_index()
+        obj = ElasticObj('qa_info', 'qa_detail')
+        answer_list = obj.Get_Data_By_Body(sys.argv[1])
+        answer_list = list(set(answer_list))
 
+        print('input', sys.argv[1])
+        print('es results', answer_list)
+        result = scn.Predict(sess, [sys.argv[1]], answer_list)
+        print('smn score', result)    
+        print("best answer", answer_list[np.argmax(result)], 'best idx', np.argmax(result))
