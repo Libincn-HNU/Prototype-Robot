@@ -33,7 +33,20 @@ class ElasticObj(object):
 
     def Get_Data_By_Body(self, inputs):
         doc = {"query": {"bool": {'should':[{'match':{'query':inputs}}]}}}
-        
+        # doc = {"query":{"match_phrase":{"answer":inputs}}}
+
+        _searched = self.es.search(index=self.index_name, body=doc)
+
+        answer_list = []
+        for hit in _searched['hits']['hits']:
+            answer_list.append(hit['_source']['answer'])
+            # print('query is ', hit['_source']['query'], ' ###  answer is ', hit['_source']['answer'], ' ### ', len(hit['_source']['answer']))
+
+        return(answer_list)
+
+    def Get_Data_By_Answer(self, inputs):
+        doc = {"query":{"match_phrase":{"answer":inputs}}}
+
         _searched = self.es.search(index=self.index_name, body=doc)
 
         answer_list = []
@@ -43,9 +56,16 @@ class ElasticObj(object):
 
         return(answer_list)
 
+    def Delete_Data_By_Body(self, inputs):
+        doc = {"query":{"match_phrase":{"answer":inputs}}}
+
+        result = self.es.delete_by_query(index=self.index_name, body=doc)
+        print(result)
+
 if __name__ == '__main__':
 
     search = Search()
     search.create_index()
     obj = ElasticObj('qa_info', 'qa_detail')
-    answer_list = obj.Get_Data_By_Body(sys.argv[1])
+    answer_list = obj.Get_Data_By_Answer(sys.argv[1])
+    obj.Delete_Data_By_Body(sys.argv[1])

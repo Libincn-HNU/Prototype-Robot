@@ -245,7 +245,7 @@ if __name__ == "__main__":
 
     if False:
         scn.TrainModel()
-    else:
+    elif False:
         sess = scn.LoadModel()
         
         search = Search()
@@ -265,3 +265,48 @@ if __name__ == "__main__":
         result = [str(round(tmp,2)) for tmp in result ]
         print('smn score', ' '.join(result))    
         print("best answer", answer_list[np.argmax(result)], 'best idx', np.argmax(result))
+    else:
+
+        sess = scn.LoadModel()
+        
+        search = Search()
+        search.create_index()
+        obj = ElasticObj('qa_info', 'qa_detail')
+
+        query_list = ['你好啊', '你会唱歌吗', '你吃饭了吗', '你会跳舞吗', '你是哪里人',
+         '窗前明月关', '你知道航母吗', '我会打篮球', '我打架可厉害了',
+         '你有钱吗', '大河向东流', '消灭人类暴政', '我要做海贼王的男人',
+         '钢铁侠变身', '那只竹鼠中暑了', '天王盖地虎', '说个笑话', '北京天气',
+        '给大爷笑一个', '你知道乔丹吗', '你知道周杰伦吗', '苹果手机不错啊',
+         '华为手机不错啊', '小米手机真垃圾', 'oppo手机不错啊',
+         '西门子冰箱不错啊', '苹果手机太贵了', '华为手机真耐用',
+         '小米手机性价比高', 'oppo手机不错啊', '西门子冰箱不错啊',
+         '你喜欢航模吗', '飞机模型好玩吗', '本田的车太小了',
+         '牧马人简直太帅了', '张辽威震逍遥津', '许褚裸衣战马超',
+         '西游记的故事', '水浒传的故事', '白娘子的传说', '三国演艺的故事',
+         '何不食肉糜', '八王之乱', '五胡十六国', '蜡笔小新', '派大星',
+         '你养狗吗', '自然语言处理', '最近都听啥歌了', '吃太饱了怎么办',
+         '如何减肥', '出门跑步吧', '跑个几公里',
+         '做完俯卧撑，再来几个仰卧起坐', '刷火锅好吃吗', '羊肉怎么吃好吃',
+         '烤羊腿，羊蝎子，羊肉火锅', '出门去玩了', '北京堵车好厉害啊']
+
+        def find_error(input_list, input_str):
+            for item in input_list:
+                if item in input_str:
+                    return True
+            return False
+
+        for query in query_list:
+            answer_list = obj.Get_Data_By_Body(query)
+            answer_list = list(set(answer_list))
+            new_answer_list = []
+            check_list=['-','<','>','《','》', "@", '【', '】', '？', ' ——', '_', '"', "'",':','：', '‘','’']
+            for answer in answer_list:
+                if find_error(check_list, answer):
+                    # print('error', answer)
+                    pass
+                else:
+                    new_answer_list.append(answer)
+
+            result = scn.Predict(sess, [query], new_answer_list)
+            print(query, '\t', new_answer_list[np.argmax(result)])
