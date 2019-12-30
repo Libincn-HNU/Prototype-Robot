@@ -140,8 +140,6 @@ class SCN():
                 break
         all_candidate_scores = np.concatenate(self.all_candidate_scores, axis=0)
 
-        print(true_utt_list)
-        print(all_candidate_scores)
         return all_candidate_scores
 
 
@@ -253,11 +251,17 @@ if __name__ == "__main__":
         search = Search()
         search.create_index()
         obj = ElasticObj('qa_info', 'qa_detail')
-        answer_list = obj.Get_Data_By_Body(sys.argv[1])
+
+        history = sys.argv[1:] 
+        query = sys.argv[-1]
+
+        print('history', history)
+        print('input', query)
+
+        answer_list = obj.Get_Data_By_Body(query)
         answer_list = list(set(answer_list))
 
-        print('input', sys.argv[1])
-        print('es results', answer_list)
-        result = scn.Predict(sess, [sys.argv[1]], answer_list)
-        print('smn score', result)    
+        result = scn.Predict(sess, query, answer_list)
+        result = [str(round(tmp,2)) for tmp in result ]
+        print('smn score', ' '.join(result))    
         print("best answer", answer_list[np.argmax(result)], 'best idx', np.argmax(result))

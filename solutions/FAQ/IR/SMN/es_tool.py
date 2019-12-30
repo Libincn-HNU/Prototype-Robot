@@ -39,6 +39,7 @@ class ElasticObj(object):
         answer_list = []
         for hit in _searched['hits']['hits']:
             answer_list.append(hit['_source']['answer'])
+            print('query is ', hit['_source']['query'], ' ###  answer is ', hit['_source']['answer'], ' ### ', len(hit['_source']['answer']))
 
         return(answer_list)
 

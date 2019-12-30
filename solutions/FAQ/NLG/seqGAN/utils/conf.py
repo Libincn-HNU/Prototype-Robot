@@ -6,7 +6,7 @@ class disc_config(object):
     lr_decay = 0.9
     vocab_size = 5000
     embed_dim = 128 # 64
-    steps_per_checkpoint = 20
+    steps_per_checkpoint = 50
     #hidden_neural_size = 128
     num_layers = 2
     train_dir = './disc_data/'
@@ -43,7 +43,7 @@ class gen_config(object):
     teacher_loss = "teacher_loss"
     reward_name = "reward"
     max_train_data_size = 6000000
-    steps_per_checkpoint = 20
+    steps_per_checkpoint = 50
     buckets = [(5, 10), (10, 15), (20, 25), (25, 50)] # (40, 50)
     buckets_concat = [(5, 10), (10, 15), (20, 25), (25, 50), (100, 50)]
 
@@ -55,6 +55,6 @@ class source_data_utils(object):
     test_dec =  "./gen_data/test.answer"
     resource_data = "/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/new_corpus.txt"
 
-    TEST_SIZE=100000
+    TEST_SIZE=10000
     e = "E"
     m = "M"

@@ -52,9 +52,12 @@ def __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
         """
         query 和 answer 倒转加padding
         """
-        query = query[:query_len] + [int(data_utils.PAD_ID)] * (query_len - len(query) if query_len > len(query) else 0)
+        # 超过 query_len, 进行截取，不超过query_len 进行padding  
+        query = query[:query_len] + [int(data_utils.PAD_ID)] * (query_len - len(query) if query_len > len(query) else 0)  
         train_query.append(query)
-        answer = answer[:-1] # del tag EOS
+        # 对 answer 进行倒序
+        answer = answer[:-1]
+        # 超过 answer_len, 进行截取，不超过answer_len 进行padding
         answer = answer[:answer_len] + [int(data_utils.PAD_ID)] * (answer_len - len(answer) if answer_len > len(answer) else 0)
         train_answer.append(answer)
         train_labels = [1 for _ in source_inputs]
@@ -67,6 +70,8 @@ def __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
 
         for _ in range(num_roll):
             # encoder_state, loss, outputs. 猜测  output_logits 大小为 [seq_len, batch_size]
+            # step 函数需要改进，forword_only 改为 False 跑？ 
+            _, _, _ = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=False)
             _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
 
             seq_tokens = []
@@ -243,7 +248,7 @@ def al_train():
                     print(" ".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer_origin[i] if output != 0]))
 
                     for idx in range(1, gen_config.beam_size):
-                        print('i', i, "idx", idx, 'beam_size', gen_config.beam_size, 'tmp', idx*gen_config.batch_size + i)
+                        # print('i', i, "idx", idx, 'beam_size', gen_config.beam_size, 'tmp', idx*gen_config.batch_size + i)
                         print("label: ", train_labels[ idx * gen_config.batch_size + i],  " text is ", "".join([tf.compat.as_str(rev_vocab[output]) for output in train_answer_origin[ idx * gen_config.batch_size + i] if output != 0]))
  
 
@@ -281,10 +286,10 @@ def main(_):
     # gens.gen_for_disc(gen_config)
 
     # step_3 training disc model
-    disc.hier_train(disc_config, evl_config)
+    # disc.hier_train(disc_config, evl_config)
 
     # step_4 training al model
-    # al_train()
+    al_train()
 
 
 if __name__ == "__main__":
