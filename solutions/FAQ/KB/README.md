@@ -21,3 +21,6 @@
 
 + BERT-KBQA
     + https://github.com/WenRichard/KBQA-BERT
+
++ 基于知识的机器阅读理解论文列表
+    + https://zhuanlan.zhihu.com/p/88207389

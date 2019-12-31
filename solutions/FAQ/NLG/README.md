@@ -23,6 +23,8 @@
         2. [NLG != 机器写作](#nlg--机器写作)
         3. [多轮检索式对话系统小节](#多轮检索式对话系统小节)
         4. [A Hybrid Retrieval-Generation Neural Conversation Model](#a-hybrid-retrieval-generation-neural-conversation-model)
+        5. [QuaSE：Sequence Editing under Quantifiable Guidance](#quasesequence-editing-under-quantifiable-guidance)
+        6. [Towards Less Ceneric Responses in Neural Conversation Models: A Statictical Re-weighting Method](#towards-less-ceneric-responses-in-neural-conversation-models-a-statictical-re-weighting-method)
 
 <!-- /TOC -->
 
@@ -103,3 +105,18 @@ GAN-RL
 
 
 
+![nlp-category-1-2019-12-25-18-30-48](https://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/nlp-category-1-2019-12-25-18-30-48)
+
+NLG 的一些应用场景和方法
+https://arxiv.org/pdf/1906.00500.pdf
+
+Knowledge-based Controllable Writing Generation
+
+https://blog.csdn.net/c9Yv2cf9I06K2A9E/article/details/83388740
+
+### QuaSE：Sequence Editing under Quantifiable Guidance
++ 作者提出一种新的量化指标引导下的序列编辑模型，可以编辑生成与给定的量化指标相匹配的句子
+
+### Towards Less Ceneric Responses in Neural Conversation Models: A Statictical Re-weighting Method
++ 作者提出一种适用于开放领域对话系统的新型神经对话模型（Neural Conversation Model），旨在解决生成模型中容易产生通用回复（如“我不知道”，“我也是”）的问题
++ 实验分析还不错
