@@ -11,9 +11,9 @@ import utils.data_utils as data_utils
 from six.moves import xrange
 
 
-gen_config = conf.gen_config
-disc_config = conf.disc_config
-evl_config = conf.disc_config
+gen_config = conf.gen_config # 生成器 配置
+disc_config = conf.disc_config # 判别器 配置
+evl_config = conf.disc_config # 判别器预训练时会使用，step 3
 
 _buckets=gen_config.buckets
 
@@ -27,14 +27,14 @@ def __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
         vocab : 字典，当前未使用
         source_inputs: 原始的 query token list, 大小为 [batch_size, sequence_length, vocabulary_size]
         source_outputs: 原始的 answer token list, 大小为 [batch_size, sequence_length, vocabulary_size] 
-        encoder_inputs: gen_model encoder 使用的数据， 
-        decoder_inputs: gen_model decoder 使用的数据
+        encoder_inputs: gen_model encoder 使用的数据, 大小为 [sequence_length, batch_size]
+        decoder_inputs: gen_model decoder 使用的数据, 大小为 [sequence_length, batch_size]
         target_weights:  暂时不了解 ？？？
-        bucket_id: 选择的 bucket
-        mc_search: 是否进行 蒙特卡洛 搜索
+        bucket_id: 选择的 bucket, 每次的操作仅仅在某一个bucket上操作
+        mc_search: 是否进行 蒙特卡洛 搜索， 如果是进行搜索则会生成采样结果，如果不是进行搜索则会直接进行训练不输出结果
 
     返回：
-        合并后的 train_query, train_answer, train_labels， 大小为 （1 + 1） * batch_size 或者 （1 + beam_size) * batch_size
+        合并后的 train_query, train_answer, train_labels， 大小为 （1 + 1） * batch_size (进行蒙特卡洛搜素) 或者 （1 + beam_size) * batch_size（不进行蒙特卡洛搜索）
         
         两者的 train query 相同
         两者的 train answer 不同， 前 batch_size 个 为 source 真实数据， 后 batch size 个 为 gen model 生成的数据
@@ -42,11 +42,10 @@ def __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
         
     """
     train_query, train_answer = [], []
-    query_len = gen_config.buckets[bucket_id][0]
-    answer_len = gen_config.buckets[bucket_id][1]
+    query_len = gen_config.buckets[bucket_id][0] # bucket 长度下限
+    answer_len = gen_config.buckets[bucket_id][1] # bucket 长度上限
     """
-     获得 原始 数据的 query， answer， label
-     label 为1 
+     获得 原始 数据的 train_query, train_answer, train_label, label 全为1
     """
     for query, answer in zip(source_inputs, source_outputs): 
         """
@@ -63,24 +62,26 @@ def __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs,
         train_labels = [1 for _ in source_inputs]
 
     """
-    根据原始的label 生成answer
-    label 为 0
+    根据query 生成answer， label 为 0
     """
     def decoder(num_roll):
-
+        """
+        generator 的生成方法
+        num_roll 为生成次数， 所有的生成结果 都添加到 train_answer 中
+        """
         for _ in range(num_roll):
             # encoder_state, loss, outputs. 猜测  output_logits 大小为 [seq_len, batch_size]
-            # step 函数需要改进，forword_only 改为 False 跑？ 
+            # 当前先执行一步 step(False)， 更新一步参数， 然后再执行step(True)，进行蒙特卡洛采样
             _, _, _ = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=False)
             _, _, output_logits = gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
 
             seq_tokens = []
             resps = []
 
-            for seq in output_logits: # 遍历 所有 sequence 的 位置
+            for seq in output_logits: # 遍历 decoder 的 所有位置
                 row_token = []
-                for t in seq: # 遍历当前位置中的所有的词
-                    row_token.append(int(np.argmax(t, axis=0))) # 找到 当前位置的 最佳 token 写入
+                for t in seq: # 遍历当前位置中的所有的 字
+                    row_token.append(int(np.argmax(t, axis=0))) # 找到概率最大的字  
                 seq_tokens.append(row_token) # 返回当前 sequence 的 最佳解码结果
 
             # 格式转化 与结果处理
@@ -121,11 +122,11 @@ def __get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer,
     功能：
         获得 reward 或者 loss
     输入：
-        bucket_id :
-        disc_model : 
-        train_query : 
-        train_answer :
-        train_labels : 
+        bucket_id : 使用指定的bucket 进行训练
+        disc_model : 判别模型
+        train_query : query
+        train_answer : answer
+        train_labels : labels
         forward_only : 为 True 时 更新  Gen， 为 False 时 更新 Disc 
     """
     feed_dict={}
@@ -195,14 +196,14 @@ def al_train():
             current_step += 1
             start_time = time.time()
             random_number_01 = np.random.random_sample() # 返回一个 0到1 之间的数
-            bucket_id = min([i for i in xrange(len(train_buckets_scale)) if train_buckets_scale[i] > random_number_01]) # 找到大于 random_number_01 的那个最小的 bucket_id
+            bucket_id = min([i for i in xrange(len(train_buckets_scale)) if train_buckets_scale[i] > random_number_01]) # 找到大于 random_number_01 的那个最小的 bucket_id， 相当与随机找一个bucket, 数据越的bucket, 被选到的概率越大
 
             #
             # print("==================Updating Discriminator: %d=====================" % current_step)
             #
 
             # 1.Sample (X,Y) from real disc_data
-            encoder_inputs, decoder_inputs, target_weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size) # 获得所有batch 之后的数据
+            encoder_inputs, decoder_inputs, target_weights, source_inputs, source_outputs = gen_model.get_batch(train_set, bucket_id, gen_config.batch_size) # 获得 一个 batch 的数据，并转化成训练需要的格式
 
             # 2.Sample (X,Y) and (X, ^Y) through ^Y ~ G(*|X)
             train_query, train_answer, train_labels = __merge_data_for_disc(sess, gen_model, vocab, source_inputs, source_outputs, encoder_inputs, decoder_inputs, target_weights, bucket_id, mc_search=False)
@@ -228,7 +229,7 @@ def al_train():
             # 3.Compute Reward r for (X, ^Y ) using D.---based on Monte Carlo search
             
             reward, _ = __get_reward_or_loss(sess, bucket_id, disc_model, train_query, train_answer, train_labels, forward_only=True)
-            # reward = reward - 0.5
+
             batch_reward += reward / gen_config.steps_per_checkpoint
 
             # 4.Update G on (X, ^Y ) using reward r   #用poliy gradient更新G
