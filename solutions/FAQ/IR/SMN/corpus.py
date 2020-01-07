@@ -32,6 +32,9 @@ for word, idx in word2idx.items():
 
 history, true_utt, false_utt = [], [], []
 
+"""
+读取单轮数据
+"""
 with open("/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/new_corpus.txt", mode='r', encoding='utf-8') as f:
     lines = f.readlines()
     for idx in range(0, len(lines)-3, 3):
@@ -40,9 +43,41 @@ with open("/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/new_corpus.
         tmp_utt =lines[random.choice(range(len(lines)//3)) + 1 ][2:]
         false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt ])
 
-# for tmp_his, tmp_ture, tmp_false in zip(history, true_utt, false_utt):
-#    print("history", )
+"""
+读取多轮数据
+默认一问一答
+"""
 
+def random_choice_false_response(lines):
+
+    tmp_flag = True
+    while tmp_flag:
+        idx = random.choice(len(lines))
+        
+        if lines[idx].startwith('M'):
+            tmp_flag = False
+
+    return lines[idx]
+
+with open("/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/new_corpus_multi.txt", mode='r', encoding='utf-8') as f:
+    lines = f.readlines()
+    tmp_text_list = []
+    for idx in range(lines):
+        if lines[idx].startwith('E'):
+            tmp_history = []
+            for item in tmp_text_list[:-1]:
+                tmp_history.append([word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in item])    
+            history.append(tmp_history)
+
+            true_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_test_list[-1]])
+
+            tmp_utt = random_choice_false_response(lines)
+            false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt ])
+            tmp_text_list = []
+        elif lines[idx].startwith('M'):
+            tmp_text_list.append(lines[idx][2:])
+        else:
+            print('not start with E or M error')
 
 import pickle
 results = {'history':history, 'true_utt':true_utt, 'false_utt':false_utt}

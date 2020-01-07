@@ -201,7 +201,7 @@ class SCN():
 
             """
 
-            with open('results.pkl', encoding='utf-8', mode='r') as f:
+            with open('results.pkl', mode='rb') as f:
                 results = pickle.load(f)
 
             history, true_utt, actions = results['history'], results['true_utt'], results['false_utt']
@@ -245,12 +245,12 @@ class SCN():
 
 if __name__ == "__main__":
     import os
-    os.environ["CUDA_VISIBLE_DEVICES"] = '2'
+    os.environ["CUDA_VISIBLE_DEVICES"] = '3'
 
     scn =SCN()
     scn.BuildModel()
 
-    if False:
+    if True:
         scn.TrainModel()
     elif False:
         """
