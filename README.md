@@ -4,11 +4,12 @@
     1. [整理Bot 相关的数据，论文，例子，代码](#整理bot-相关的数据论文例子代码)
     2. [探索情感的构造，并依靠现有工具进行搭建](#探索情感的构造并依靠现有工具进行搭建)
     3. [探索逻辑的构造，并依靠现有工具进行搭建](#探索逻辑的构造并依靠现有工具进行搭建)
-2. [Category](#category)
+2. [Current and Deadline](#current-and-deadline)
+3. [Category](#category)
     1. [获取答案的方式](#获取答案的方式)
     2. [业务场景](#业务场景)
     3. [答案类型](#答案类型)
-3. [Solutions](#solutions)
+4. [Solutions](#solutions)
     1. [Contextual](#contextual)
     2. [DM&UP](#dmup)
     3. [FQA](#fqa)
@@ -17,12 +18,12 @@
         3. [Community QA](#community-qa)
         4. [Open Domain QA](#open-domain-qa)
         5. [MRC](#mrc)
-4. [Problem](#problem)
-5. [Doing](#doing)
-6. [ToDo](#todo)
-7. [Backlog](#backlog)
-8. [Tooks](#tooks)
-9. [Products](#products)
+5. [Problem](#problem)
+6. [Doing](#doing)
+7. [ToDo](#todo)
+8. [Backlog](#backlog)
+9. [Tooks](#tooks)
+10. [Products](#products)
 
 <!-- /TOC -->
 # Target
@@ -31,6 +32,10 @@
 ## 探索逻辑的构造，并依靠现有工具进行搭建
 + 信息完善
     + 多轮对话指代消解
+    
+# Current and Deadline
++ 单多轮数据预处理脚本
++ 单多轮检索调试()
 
 # Category
 ## 获取答案的方式
