@@ -200,7 +200,11 @@ class SCN():
             ]
 
             """
-            history, true_utt ,actions = results['history'], results['true_utt'], results['false_utt']
+
+            with open('results.pkl', encoding='utf-8', mode='r') as f:
+                results = pickle.load(f)
+
+            history, true_utt, actions = results['history'], results['true_utt'], results['false_utt']
 
             history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
             true_utt_len = np.array(utils.get_sequences_length(true_utt, maxlen=self.max_sentence_len))
