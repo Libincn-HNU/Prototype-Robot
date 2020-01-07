@@ -9,7 +9,8 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 from tensorflow.python.ops import control_flow_ops
 import utils.data_utils as data_utils
-import gen.seq2seq as rl_seq2seq
+# import gen.seq2seq as rl_seq2seq
+import gen.
 from tensorflow.python.ops import variable_scope
 sys.path.append('../utils')
 
@@ -37,9 +38,13 @@ class Seq2SeqModel(object):
         self.up_reward = tf.placeholder(tf.bool, name="up_reward") # 是否更新reward
         self.reward_bias = tf.get_variable("reward_bias", [0], dtype=tf.float32) # reward 的偏置项, 默认是 1, new_add 改为0
         # If we use sampled softmax, we need an output projection.
-        output_projection = None # 
+        output_projection = None 
         softmax_loss_function = None
-        # Sampled softmax only makes sense if we sample less than vocabulary size.
+
+        """
+        Sampled softmax only makes sense if we sample less than vocabulary size.
+        定义 batch 的loss 函数
+        """
         if num_samples > 0 and num_samples < target_vocab_size:  # 样本数大于0 同时 样本数小于 生成序列的字典数时，产生一个计算样本loss 的函数 sampled_loss
             w_t = tf.get_variable("proj_w", [target_vocab_size, emb_dim], dtype=dtype)  # 从 生成序列的字典数 映射到 embedding dim
             w = tf.transpose(w_t)
@@ -50,22 +55,25 @@ class Seq2SeqModel(object):
 
             def sampled_loss(inputs, labels):
                 labels = tf.reshape(labels, [-1, 1])
-               
-                labels=tf.cast(labels,tf.float32)
-                inputs=tf.cast(inputs,tf.float32)
+                labels=tf.cast(labels, tf.float32)
+                inputs=tf.cast(inputs, tf.float32)
                 
-                return tf.nn.sampled_softmax_loss(w_t ,b, labels,inputs,num_samples,target_vocab_size)
+                return tf.nn.sampled_softmax_loss(w_t, b, labels, inputs, num_samples, target_vocab_size)
             softmax_loss_function = sampled_loss
 
-        # 构造多层RNN 的结构， cell
-        # 由 seq2seq_f 调用
+        """
+        构造多层RNN 的结构， cell
+        由 seq2seq_f 调用
+        """
         single_cell = tf.nn.rnn_cell.GRUCell(emb_dim)
         cell = single_cell
         if self.num_layers > 1:
             cell = tf.nn.rnn_cell.MultiRNNCell([single_cell] * self.num_layers)
             # cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=0.5) # new add 添加 dropout, 为了蒙特卡洛产生新的结果
 
-        # 使用 seq2seq 的函数， 从 seq2seq 的文件中 导入，当前使用 embedding seq2seq, 并且使用attention
+        """
+        使用 seq2seq 的函数， 从 seq2seq 的文件中 导入，当前使用 embedding seq2seq, 并且使用attention
+        """
         def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
             return rl_seq2seq.embedding_attention_seq2seq(encoder_inputs, decoder_inputs, cell, num_encoder_symbols= source_vocab_size,
             num_decoder_symbols= target_vocab_size,embedding_size= emb_dim,output_projection=output_projection, feed_previous=do_decode,mc_search=self.mc_search,dtype=tf.float32)
@@ -85,6 +93,9 @@ class Seq2SeqModel(object):
         # Our targets are decoder inputs shifted by one.
         targets = [self.decoder_inputs[i + 1] for i in xrange(len(self.decoder_inputs) - 1)]
 
+        """
+        seq2seq 的主要函数
+        """
         self.outputs, self.losses, self.encoder_state = rl_seq2seq.model_with_buckets(self.encoder_inputs, self.decoder_inputs, targets, self.target_weights,
             self.buckets, source_vocab_size, self.batch_size,
             lambda x, y: seq2seq_f(x, y, tf.where(self.forward_only, True, False)),
@@ -117,7 +128,6 @@ class Seq2SeqModel(object):
         self.gen_variables = [k for k in tf.global_variables() if name_scope in k.name]
         self.saver = tf.train.Saver(self.gen_variables)
 
-    # gen_model.step(sess, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True)
     def step(self, session, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only=True, reward=1, mc_search=False, up_reward=False, debug=True):
         # Check if the sizes match.
         encoder_size, decoder_size = self.buckets[bucket_id]
@@ -127,6 +137,18 @@ class Seq2SeqModel(object):
             raise ValueError("Decoder length must be equal to the one in bucket, %d != %d." % (len(decoder_inputs), decoder_size))
         if len(target_weights) != decoder_size:
             raise ValueError("Weights length must be equal to the one in bucket, %d != %d." % (len(target_weights), decoder_size))
+
+        """
+        input_feed
+            forward_only
+            up_reward
+            mc_search
+            reward
+            encoder_inputs
+            decoder_inptus
+            target_weights
+            last_target
+        """
 
         input_feed = { self.forward_only.name: forward_only, self.up_reward.name: up_reward, self.mc_search.name: mc_search}
 
@@ -144,8 +166,7 @@ class Seq2SeqModel(object):
 
         # Output feed: depends on whether we do a backward step or not.
         if not forward_only: # normal training
-            # 极大似然估计
-            # Update Op that does SGD., # Gradient norm. # Loss for this batch.
+            # 使用sgd 更新参数 
             output_feed = [self.updates[bucket_id], self.aj_losses[bucket_id], self.losses[bucket_id]]  
         else:
             # testing or reinforcement learning
@@ -154,12 +175,11 @@ class Seq2SeqModel(object):
                 output_feed.append(self.outputs[bucket_id][l])
 
         outputs = session.run(output_feed, input_feed)
+
         if not forward_only:
-            # 极大似然估计
-            return outputs[1], outputs[2], outputs[0]  # Gradient norm, loss, no outputs.
+            return outputs[1], outputs[2], outputs[0]  # Gradient norm, loss, no outputs
         else:
-            # RL
-            return outputs[0], outputs[1], outputs[2:]  # encoder_state, loss, outputs.
+            return outputs[0], outputs[1], outputs[2:]  # encoder_state, loss, outputs
 
     def get_batch(self, train_data, bucket_id, batch_size, type=0):
 

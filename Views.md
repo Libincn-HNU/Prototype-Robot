@@ -10,6 +10,8 @@
 - 评价指标
     - https://blog.csdn.net/liuchonge/article/details/79104045
 - GAN + 文本生成的一些论文
+- DPF 无监督对话数据清洗方法
+    - http://breezedeus.github.io/2017/08/07/breezedeus-purify-data.html
 
 ## Papers
 
