@@ -35,12 +35,14 @@ class ElasticObj(object):
         doc = {"query": {"bool": {'should':[{'match':{'query':inputs}}]}}}
         # doc = {"query":{"match_phrase":{"answer":inputs}}}
 
-        _searched = self.es.search(index=self.index_name, body=doc)
+        _searched = self.es.search(index=self.index_name, body=doc, size=5)
 
         answer_list = []
+        idx = 0
         for hit in _searched['hits']['hits']:
             answer_list.append(hit['_source']['answer'])
-            # print('query is ', hit['_source']['query'], ' ###  answer is ', hit['_source']['answer'], ' ### ', len(hit['_source']['answer']))
+            print( ' es-score ' + str(hit['_score']) + ' idx '+ str(idx) + ' ### ' +  'query is ', hit['_source']['query'], ' ###  answer is ', hit['_source']['answer'], ' ### ', len(hit['_source']['answer']))
+            idx = idx + 1
 
         return(answer_list)
 
