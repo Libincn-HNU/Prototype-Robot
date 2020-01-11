@@ -7,6 +7,35 @@ import Evaluate
 from es_tool import *
 
 
+data_file = 'results.pkl'
+
+"""
+            history 结构
+            [
+                ["今天天气不错啊","是的，天气好心情就好","有没有适合这个天气的户外活动？"],
+                ...
+                [""],
+                [""]
+            ]
+
+            true_utt 结构 
+            [
+                ["晴朗的天气适合户外跑步"],
+                ...
+                [""],
+                [""]
+            ]
+
+            actions 结构 选一个随机负样本， 当前为随机生成（考虑用nlg）
+            [
+                ['下雨天适合在家里呆着‘]
+                []
+                []
+            ]
+
+"""
+
+
 if False:
     print('加载已经处理好的数据')
     load_file = open("results.pkl","rb")
@@ -22,9 +51,11 @@ embeddings = emb['embedding_matrix']
 print('加载字典')
 vocab = open('/export/home/sunhongchao1/Prototype-Robot/solutions/FAQ/NLG/seqGAN/gen_data/vocab5000.all', 'r', encoding='utf-8', newline='\n', errors='ignore')
 word2idx = {}
+idx2word = {}
 
 for idx, value in enumerate(vocab):
     word2idx[value.strip()] = idx
+    idx2word[idx] = value.strip()
 
 class SCN():
     def __init__(self):
@@ -95,21 +126,6 @@ class SCN():
         self.train_op = optimizer.minimize(self.total_loss)
 
     def Predict(self, sess, single_history, true_utt_list):
-
-        """
-            single_history 结构
-            [
-                ["今天天气不错啊","是的，天气好心情就好","有没有适合这个天气的户外活动？"],
-            ]
-
-            true_utt_list 结构 
-            [
-                ["晴朗的天气适合户外跑步"],
-                ...
-                [""],
-                [""]
-            ]
-        """
         
         tmp_single_history = []
         for tmp_history in single_history:
@@ -176,33 +192,7 @@ class SCN():
             writer = tf.summary.FileWriter("output2", sess.graph)
             train_writer = tf.summary.FileWriter('output2', sess.graph)
 
-            """
-            history 结构
-            [
-                ["今天天气不错啊","是的，天气好心情就好","有没有适合这个天气的户外活动？"],
-                ...
-                [""],
-                [""]
-            ]
-
-            true_utt 结构 
-            [
-                ["晴朗的天气适合户外跑步"],
-                ...
-                [""],
-                [""]
-            ]
-
-            actions 结构 选一个随机负样本， 当前为随机生成（考虑用nlg）
-            [
-                ['下雨天适合在家里呆着‘]
-                []
-                []
-            ]
-
-            """
-
-            with open('results.pkl', mode='rb') as f:
+            with open(data_file, mode='rb') as f:
                 results = pickle.load(f)
 
             history, true_utt, actions = results['history'], results['true_utt'], results['false_utt']
