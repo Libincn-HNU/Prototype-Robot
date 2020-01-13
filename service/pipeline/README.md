@@ -15,6 +15,8 @@
 ### DM
 
 - DST
+    + neural network
+    + 图谱
 - DPL
 
 ### NLG
