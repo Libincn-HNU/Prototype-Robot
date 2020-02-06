@@ -3,29 +3,97 @@
 ## 记录历史信息
 ## 根据query中信息和历史信息来 为 nlg 提供支持
 
-def error_correction(inputs):
-    return inputs
+"""
+state_detection
+"""
 
-def sequence_labeling(inputs):
-    return '', '', ''
+class state_detection(object):
+    """
+    领域检测
+    """
+    def domian_detect(self, ):
+        # 搜集文本分类数据集合
+        # THUNEWS 
+        # 搜狐
 
-def syntax_analysis(inputs):
-    return ''
+        pass
 
-def compress(inputs):
-    if len(inputs) > 50:
-        return inputs # 返回压缩后的结果
-    else:
-        return inputs
+    """
+    意图检测
+    """
+    def intent_detect(self):
+        # 意图数据搜集
+        # 规则？
+        pass
 
-def anaphora_resolution(inputs):
-    return inputs
+    """
+    情感识别
+    """
+    def sentiment_detect(self):
+        # snownlp 
+        pass
 
-def deal_query(inputs):
-    inputs = error_correction(inputs)
-    seg, pos, ner = sequence_labeling(inputs)
-    syntax = syntax_analysis(inputs)
-    compress = compress(inputs)
+    """
+    多轮领域检测
+    """
+    def multi_domain_detect(self):
+        pass
 
-def clf_query(inputs, history):
+    """
+    多轮意图检测
+    """
+    def multi_intent_detect(self):
+        pass
+
+    """
+    多轮意图检测
+    """
+    def multi_sentiment_detect(self):
+        pass
+
+
+
+
+
+"""
+Context Query Understanding
+"""
+class context_query_understanding(object):
+    
+    """
+    实体链接
+    """
+    def entity_link(self, input_str):
+        pass
+
+    """
+    指代消解
+    """
+    def anaphora_resolution(self, input_str):
+        pass
+
+    """
+    句子补全 
+    """
+    def sentence_completion(self,input_str):
+        pass
+
+"""
+user simulation
+"""
+class user_simulation(object):
+    pass
+
+
+"""
+agent setting
+"""
+class agent_setting(object):
+    pass
+
+
+"""
+dialogue policy
+"""
+class dialogue_policy(object):
     pass
