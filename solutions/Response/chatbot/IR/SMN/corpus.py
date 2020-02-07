@@ -33,51 +33,31 @@ for word, idx in word2idx.items():
 history, true_utt, false_utt = [], [], []
 
 """
-读取单轮数据
+读取单轮数据 和 多轮的混合数据
 """
-with open("/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/new_corpus.txt", mode='r', encoding='utf-8') as f:
-    lines = f.readlines()
-    for idx in range(0, len(lines)-3, 3):
-        history.append([ [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in lines[idx][2:]]]) # 加入的是一个list
-        true_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in lines[idx+1][2:]])
-        tmp_utt =lines[random.choice(range(len(lines)//3)) + 1 ][2:]
-        false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt ])
+def tmp_utt_choice(lines:list):
+    return lines[0]
 
-"""
-读取多轮数据
-默认一问一答
-"""
+def deal_conv(inputs:list):
+    history.append([ [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in inputs[-1:] ]]) # 加入的是一个list
+    true_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in inputs[-1] ])
 
-def random_choice_false_response(lines):
+    tmp_utt = tmp_utt_choice(inputs)
+    false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt ])
+    
 
-    tmp_flag = True
-    while tmp_flag:
-        idx = random.choice(len(lines))
-        
-        if lines[idx].startwith('M'):
-            tmp_flag = False
+with open("/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/in_use/merge_weibo_xhj_singlemulti.txt", mode='r', encoding='utf-8') as f:
 
-    return lines[idx]
-
-with open("/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/new_corpus_multi.txt", mode='r', encoding='utf-8') as f:
-    lines = f.readlines()
-    tmp_text_list = []
-    for idx in range(lines):
-        if lines[idx].startwith('E'):
-            tmp_history = []
-            for item in tmp_text_list[:-1]:
-                tmp_history.append([word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in item])    
-            history.append(tmp_history)
-
-            true_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_test_list[-1]])
-
-            tmp_utt = random_choice_false_response(lines)
-            false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt ])
-            tmp_text_list = []
-        elif lines[idx].startwith('M'):
-            tmp_text_list.append(lines[idx][2:])
+    tmp_list = []
+    for line in f:
+        if len(line.strip()) is 0:
+            if len(tmp_list) > 1:
+                deal_conv(tmp_list)
+                tmp_list = []
+            else:
+                print('error in tmp list')
         else:
-            print('not start with E or M error')
+            tmp_list.append(line)
 
 import pickle
 results = {'history':history, 'true_utt':true_utt, 'false_utt':false_utt}
