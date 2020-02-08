@@ -7,7 +7,7 @@ import Evaluate
 from es_tool import *
 
 
-data_file = 'results.pkl'
+data_file = 'history-true-false.pkl'
 
 """
             history 结构
@@ -38,7 +38,7 @@ data_file = 'results.pkl'
 
 if False:
     print('加载已经处理好的数据')
-    load_file = open("results.pkl","rb")
+    load_file = open("history-ture-false.pkl","rb")
     results = pickle.load(load_file)
     load_file.close()
 
