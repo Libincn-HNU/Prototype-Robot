@@ -4,7 +4,7 @@ from elasticsearch import RequestsHttpConnection, Elasticsearch
 from elasticsearch.helpers import bulk
 
 
-all_index_name = 'chatbot_corpus_59'
+all_index_name = 'chatbot_corpus_60'
 
 class Build(object):
     def __init__(self, ip='127.0.0.1'):
