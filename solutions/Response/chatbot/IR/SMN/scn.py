@@ -281,13 +281,14 @@ if __name__ == "__main__":
 
         sess = scn.LoadModel()
         
-        search = Search()
-        search.create_index()
-        obj = ElasticObj('qa_info', 'qa_detail')
+        obj = ElasticObj('chatbot_corpus_59', 'qa_detail')
+        # obj = ElasticObj('qa_info', 'qa_detail')
 
         query_list = ['南京', '北京', '东京', '沈阳', '大连', '莫斯科', '纽约', 
                      '迪丽热巴', '古力娜扎', '穷哈', '周杰伦', '张一鸣','马斯克',
                       '五一小长假','清明','春节','元旦','中秋']
+        
+
 
         def find_error(input_list, input_str):
             for item in input_list:
@@ -300,6 +301,7 @@ if __name__ == "__main__":
             print(query)
             answer_list = obj.Get_Data_By_Body(query)
             answer_list = list(set(answer_list))
+            print(answer_list)
             new_answer_list = []
             # #
             check_list = ['旺财', '小通', '鸡鸡']
