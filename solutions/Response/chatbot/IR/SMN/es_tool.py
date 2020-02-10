@@ -10,7 +10,7 @@ class Build(object):
     def __init__(self, ip='127.0.0.1'):
         self.es = Elasticsearch([ip], port=9200)
 
-    def create_index(self, index_name, file_name, index_type='text_qa'):
+    def create_index(self, index_name, file_name, index_type='ott_date'):
         _index_mappings = {
             "mappings":{
                 "properties":{
@@ -56,6 +56,31 @@ class Build(object):
 
                 success, _ = bulk(self.es, ACTIONS, index=index_name, raise_on_error=True)
                 print("Performed %d actions " % success)
+
+class Search(object):
+    
+    def __init__(self, ip='127.0.0.1'):
+        self.es = Elasticsearch([ip], port=9200)
+
+    def create_index(self, index_name=all_index_name, index_type='ott_date'):
+        """
+        创建索引
+        """
+        _index_mappings = {
+            "mappings":{
+                "properties":{
+                    "query":{
+                        'type':'text',
+                        },
+                    'answer':{
+                        'type':'text',
+                        }
+                    }
+                }
+            }
+        if self.es.indices.exists(index=index_name) is not True:
+            res = self.es.indices.create(index=index_name, body=_index_mappings)
+            print(res)
 
 
 class Operate(object):
@@ -123,7 +148,7 @@ class ElasticObj(object):
 
 def build(index_name = all_index_name, file_name='corpus-step-1.pkl'):
     build = Build()
-    build.create_index(index_name=index_name, index_type='qa_type', file_name= file_name)
+    build.create_index(index_name=index_name, index_type='qa_detail', file_name= file_name)
 
 def search():
     ope = Operate()
