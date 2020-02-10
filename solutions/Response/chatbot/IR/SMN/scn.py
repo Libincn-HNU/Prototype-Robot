@@ -7,7 +7,7 @@ import Evaluate
 from es_tool import *
 
 
-data_file = 'results.pkl'
+data_file = 'history-true-false.pkl'
 
 """
             history 结构
@@ -38,7 +38,7 @@ data_file = 'results.pkl'
 
 if False:
     print('加载已经处理好的数据')
-    load_file = open("results.pkl","rb")
+    load_file = open(data_file,"rb")
     results = pickle.load(load_file)
     load_file.close()
 
@@ -70,7 +70,7 @@ class SCN():
     def LoadModel(self):
         saver = tf.train.Saver()
         sess = tf.Session()
-        saver.restore(sess,"./model/model.27")
+        saver.restore(sess,"./model/model.4")
         return sess
 
     def BuildModel(self):
@@ -241,9 +241,12 @@ if __name__ == "__main__":
     scn =SCN()
     scn.BuildModel()
 
-    if False:
+    if False: 
+        """
+        进行模型训练
+        """
         scn.TrainModel()
-    elif False:
+    elif False:  
         """
         加载模型，使用命令行参数训练
         """
@@ -272,6 +275,9 @@ if __name__ == "__main__":
         best_idx = np.argmax(result)
         print("best answer", answer_list[best_idx], 'best idx', best_idx)
     else:
+        """
+        连同es 进行结果输出
+        """
 
         sess = scn.LoadModel()
         

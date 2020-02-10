@@ -30,38 +30,31 @@ for word, idx in word2idx.items():
         embedding_matrix[idx] = unknown_words_vector
 
 
-history, true_utt, false_utt = [], [], []
+history, true_utt, false_utt, all_response = [], [], [], []
 
 """
 读取单轮数据 和 多轮的混合数据
 """
-def tmp_utt_choice(lines:list):
-    return lines[0]
 
 def deal_conv(inputs:list):
     history.append([ [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in inputs[-1:] ]]) # 加入的是一个list
     true_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in inputs[-1] ])
-
-    tmp_utt = tmp_utt_choice(inputs)
-    false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt ])
+    all_response.append(inputs[-1])
+    false_utt_all = random.choice(all_response) 
+    false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in false_utt_all])
     
-
-with open("/export/home/sunhongchao1/Prototype-Robot/corpus/dialogue/in_use/merge_weibo_xhj_singlemulti.txt", mode='r', encoding='utf-8') as f:
+import pickle
+with open("/export/home/sunhongchao1/Prototype-Robot/corpus/corpus-step-1.pkl", mode='rb') as f:
+    conv_list = pickle.load(f) # 读到的是一个个conv list 
 
     tmp_list = []
-    for line in f:
-        if len(line.strip()) is 0:
-            if len(tmp_list) > 1:
-                deal_conv(tmp_list)
-                tmp_list = []
-            else:
-                print('error in tmp list')
-        else:
-            tmp_list.append(line)
+    for item in conv_list:
+        print('item conv list', item)
+        deal_conv(item)
 
 import pickle
 results = {'history':history, 'true_utt':true_utt, 'false_utt':false_utt}
-save_file = open("results.pkl","wb")
+save_file = open("history-ture-false.pkl","wb")
 pickle.dump(results, save_file)
 save_file.close()
 
