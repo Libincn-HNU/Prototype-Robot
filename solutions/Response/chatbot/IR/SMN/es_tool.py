@@ -139,14 +139,19 @@ def build():
     obj.Get_Data_By_Body(sys.argv[1])
 
 def search():
-    ope = Operate()
-    ope.search_query()
+    build = Search()
+    build.create_index()
+
+    input_list = []
+
+    obj = ElasticObj('new_qa_name', 'new_qa_type')
+    obj.Get_Data_By_Body(sys.argv[1])
 
 
 if __name__ == '__main__':
-    build()
+    #build()
 
-   #  search()
+    search()
     
 #class Operate(object):
 #    "使用 指定的IP， 端口， index_name 进行 查询"
