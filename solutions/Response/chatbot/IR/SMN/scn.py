@@ -64,8 +64,8 @@ class SCN():
         self.max_sentence_len = 32 # 文本最大长度
         self.word_embedding_size = 200 # 需要改
         self.rnn_units = 200 
-        self.total_words = 5000
-        self.batch_size = 22752
+        self.total_words = 22752
+        self.batch_size = 1024
 
     def LoadModel(self):
         saver = tf.train.Saver()
