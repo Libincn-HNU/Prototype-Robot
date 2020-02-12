@@ -36,7 +36,7 @@ data_file = 'history-true-false.pkl'
 """
 
 
-if False:
+if True:
     print('加载已经处理好的数据')
     load_file = open(data_file,"rb")
     results = pickle.load(load_file)
@@ -61,7 +61,7 @@ class SCN():
     def __init__(self):
         self.max_num_utterance = 10 # 上下文最大轮数
         self.negative_samples = 1 # 负样本个数
-        self.max_sentence_len = 50 # 文本最大长度
+        self.max_sentence_len = 32 # 文本最大长度
         self.word_embedding_size = 200 # 需要改
         self.rnn_units = 200 
         self.total_words = 5000
@@ -242,7 +242,7 @@ if __name__ == "__main__":
     scn =SCN()
     scn.BuildModel()
 
-    if False: 
+    if True: 
         """
         进行模型训练
         """
