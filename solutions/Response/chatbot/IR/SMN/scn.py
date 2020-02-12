@@ -282,7 +282,7 @@ if __name__ == "__main__":
 
         sess = scn.LoadModel()
         
-        obj = ElasticObj('chatbot_corpus_59', 'qa_detail')
+        obj = ElasticObj('new_qa_name', 'new_qa_type')
         # obj = ElasticObj('qa_info', 'qa_detail')
 
         query_list = ['南京', '北京', '东京', '沈阳', '大连', '莫斯科', '纽约', 

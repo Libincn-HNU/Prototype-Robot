@@ -4,13 +4,19 @@ from elasticsearch import RequestsHttpConnection, Elasticsearch
 from elasticsearch.helpers import bulk
 
 
-all_index_name = 'chatbot_corpus_59'
+all_index_name = 'new_info_3'
+all_index_type = 'new_detail'
+all_file_name = 'corpus-step-1.pkl'
 
-class Build(object):
+class Search(object):
+    
     def __init__(self, ip='127.0.0.1'):
         self.es = Elasticsearch([ip], port=9200)
 
-    def create_index(self, index_name, file_name, index_type='doc'):
+    def create_index(self, index_name=all_index_name, index_type=all_index_type):
+        """
+        创建索引
+        """
         _index_mappings = {
             "mappings":{
                 "properties":{
@@ -23,61 +29,12 @@ class Build(object):
                     }
                 }
             }
-        
-        if self.es.indices.exists(index=index_name) is not True: # index 不存在 则创建
+        if self.es.indices.exists(index=index_name) is not True:
             res = self.es.indices.create(index=index_name, body=_index_mappings)
+            print('create new index ')
             print(res)
 
-            with open(file_name, 'rb') as f:
-                results = pickle.load(f)
 
-                i = 1
-                ACTIONS = []
-
-                for item in results:
-                    idx = 0
-                    while idx < len(item) - 1:
-                        action  = {
-                            '_index':index_name,
-                            '_type':index_type,
-                            '_id':i, 
-                            '_source':{
-                                'query':item[idx],
-                                'answer':item[idx+1]                
-                            }
-                        }
-                        idx +=1 
-                        i += 1
-                        ACTIONS.append(action)
-
-                        if i % 100000 == 0:
-                            print('index is ', i)
-                            print(action)
-
-                success, _ = bulk(self.es, ACTIONS, index=index_name, raise_on_error=True)
-                print("Performed %d actions " % success)
-
-class Operate(object):
-    "使用 指定的IP， 端口， index_name 进行 查询"
-
-    def __init__(self, ip='127.0.0.1'):
-        self.es = Elasticsearch([ip], port=9200)
-
-
-    def search_query(self):
-        obj = ElasticObj('qa_info', 'qa_detail')
-        answer_list = obj.Get_Data_By_Body(sys.argv[1])
-        print(answer_list)
-
-    def search_query_and_delete(self):
-        obj = ElasticObj('qa_info', 'qa_detail')
-        answer_list = obj.Get_Data_By_Body(sys.argv[1])
-        obj.Delete_Data_By_Body(sys.argv[1])
-    
-    def search_answer_and_delete(self):
-        obj = ElasticObj('qa_info', 'qa_detail')
-        answer_list = obj.Get_Data_By_Answer(sys.argv[1])
-        obj.Delete_Data_By_Body(sys.argv[1])
 
 class ElasticObj(object):
     
@@ -155,21 +112,65 @@ class ElasticObj(object):
             ACTIONS.append(action)
 
         success, _ = bulk(self.es, ACTIONS, index=self.index_name, raise_on_error=True)
-        print("Performed %d actions " % success)
-    
 
 
-def build(index_name = all_index_name, file_name='corpus-step-1.pkl'):
-    build = Build()
-    build.create_index(index_name=index_name, index_type='doc', file_name= file_name)
+def build():
+    build = Search()
+    build.create_index()
+
+    input_list = []
+    count = 0
+    with open(all_file_name, 'rb') as f:
+        results = pickle.load(f)
+        for item in results:
+            idx = 0
+            while idx < len(item) -1:
+                input_list.append({'query':item[idx], 'answer': item[idx+1]})
+                count = count + 1
+
+                if count % 100000 == 0:
+                    print({'query':item[idx], 'answer': item[idx+1]})
+
+                idx = idx + 1
+
+
+    obj = ElasticObj('new_qa_name', 'new_qa_type')
+    obj.bulk_Index_Data(input_list)
+    obj.Get_Data_By_Body(sys.argv[1])
 
 def search():
-    ope = Operate()
-    ope.search_query()
+    build = Search()
+    build.create_index()
+
+    input_list = []
+
+    obj = ElasticObj('new_qa_name', 'new_qa_type')
+    obj.Get_Data_By_Body(sys.argv[1])
 
 
 if __name__ == '__main__':
-    build()
+    #build()
 
     search()
     
+#class Operate(object):
+#    "使用 指定的IP， 端口， index_name 进行 查询"
+#
+#    def __init__(self, ip='127.0.0.1'):
+#        self.es = Elasticsearch([ip], port=9200)
+#
+#
+#    def search_query(self):
+#        obj = ElasticObj(all_index_name, all_index_type)
+#        answer_list = obj.Get_Data_By_Body(sys.argv[1])
+#        print(answer_list)
+#
+#    def search_query_and_delete(self):
+#        obj = ElasticObj(all_index_name, all_index_type)
+#        answer_list = obj.Get_Data_By_Body(sys.argv[1])
+#        obj.Delete_Data_By_Body(sys.argv[1])
+#    
+#    def search_answer_and_delete(self):
+#        obj = ElasticObj(all_index_name, all_index_type)
+#        answer_list = obj.Get_Data_By_Answer(sys.argv[1])
+#        obj.Delete_Data_By_Body(sys.argv[1])
