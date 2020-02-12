@@ -49,12 +49,12 @@ emb_file.close()
 embeddings = emb['embedding_matrix']
 
 print('加载字典')
-vocab = open('/export/home/sunhongchao1/Prototype-Robot/solutions/FAQ/NLG/seqGAN/gen_data/vocab5000.all', 'r', encoding='utf-8', newline='\n', errors='ignore')
-word2idx = {}
+vocab_file = open('/export/home/sunhongchao1/Prototype-Robot/corpus/char2idx_tencent.pkl', 'rb')
+char2idx = pickle.load(vocab_file)
+word2idx = char2idx
 idx2word = {}
 
-for idx, value in enumerate(vocab):
-    word2idx[value.strip()] = idx
+for (char, idx)in word2idx.items():
     idx2word[idx] = value.strip()
 
 class SCN():
@@ -65,7 +65,7 @@ class SCN():
         self.word_embedding_size = 200 # 需要改
         self.rnn_units = 200 
         self.total_words = 5000
-        self.batch_size = 1024
+        self.batch_size = 22752
 
     def LoadModel(self):
         saver = tf.train.Saver()
