@@ -89,24 +89,25 @@ class SCN():
         self.all_utterance_len_ph = tf.placeholder(tf.int32, shape=(None, self.max_num_utterance))
 
         word_embeddings = tf.get_variable('word_embeddings_v', shape=(self.total_words, self.word_embedding_size), dtype=tf.float32, trainable=False)
-        self.embedding_init = word_embeddings.assign(self.embedding_ph)
-        all_utterance_embeddings = tf.nn.embedding_lookup(word_embeddings, self.utterance_ph)
-        response_embeddings = tf.nn.embedding_lookup(word_embeddings, self.response_ph)
-        sentence_GRU = tf.nn.rnn_cell.GRUCell(self.rnn_units, kernel_initializer=tf.orthogonal_initializer())
-        all_utterance_embeddings = tf.unstack(all_utterance_embeddings, num=self.max_num_utterance, axis=1)
-        all_utterance_len = tf.unstack(self.all_utterance_len_ph, num=self.max_num_utterance, axis=1)
+        self.embedding_init = word_embeddings.assign(self.embedding_ph) # 将placeholder 赋值给 value，run 的时候给placeholder 赋值时 同事更新 value
+        all_utterance_embeddings = tf.nn.embedding_lookup(word_embeddings, self.utterance_ph) # 使用lookup 将 utterance_ph 进行 embedding 表示
+        response_embeddings = tf.nn.embedding_lookup(word_embeddings, self.response_ph) # 使用lookup 将 response_ph 进行 embedding 表示
+
+        sentence_GRU = tf.nn.rnn_cell.GRUCell(self.rnn_units, kernel_initializer=tf.orthogonal_initializer()) # 初始化GRU 单元， 用于句子编码
+        all_utterance_embeddings = tf.unstack(all_utterance_embeddings, num=self.max_num_utterance, axis=1) # 改变信息表示方式
+        all_utterance_len = tf.unstack(self.all_utterance_len_ph, num=self.max_num_utterance, axis=1) # 改变信息表示方式
         A_matrix = tf.get_variable('A_matrix_v', shape=(self.rnn_units, self.rnn_units), initializer=tf.contrib.layers.xavier_initializer(), dtype=tf.float32)
-        final_GRU = tf.nn.rnn_cell.GRUCell(self.rnn_units, kernel_initializer=tf.orthogonal_initializer())
+        final_GRU = tf.nn.rnn_cell.GRUCell(self.rnn_units, kernel_initializer=tf.orthogonal_initializer()) # 最终GRU 单元，用于结果输出
         reuse = None
 
-        response_GRU_embeddings, _ = tf.nn.dynamic_rnn(sentence_GRU, response_embeddings, sequence_length=self.response_len, dtype=tf.float32, scope='sentence_GRU')
+        response_GRU_embeddings, _ = tf.nn.dynamic_rnn(sentence_GRU, response_embeddings, sequence_length=self.response_len, dtype=tf.float32, scope='sentence_GRU') # 返回值 (outputs， states)， 获得response的GRU表示
         self.response_embedding_save = response_GRU_embeddings
         response_embeddings = tf.transpose(response_embeddings, perm=[0, 2, 1])
         response_GRU_embeddings = tf.transpose(response_GRU_embeddings, perm=[0, 2, 1])
         matching_vectors = []
         for utterance_embeddings, utterance_len in zip(all_utterance_embeddings, all_utterance_len):
-            matrix1 = tf.matmul(utterance_embeddings, response_embeddings)
-            utterance_GRU_embeddings, _ = tf.nn.dynamic_rnn(sentence_GRU, utterance_embeddings, sequence_length=utterance_len, dtype=tf.float32, scope='sentence_GRU')
+            matrix1 = tf.matmul(utterance_embeddings, response_embeddings) # 计算utterance 和 response 的匹配矩阵
+            utterance_GRU_embeddings, _ = tf.nn.dynamic_rnn(sentence_GRU, utterance_embeddings, sequence_length=utterance_len, dtype=tf.float32, scope='sentence_GRU') # 获得每个utterance 的GRU 表示
             matrix2 = tf.einsum('aij,jk->aik', utterance_GRU_embeddings, A_matrix)  # TODO:check this
             matrix2 = tf.matmul(matrix2, response_GRU_embeddings)
             matrix = tf.stack([matrix1, matrix2], axis=3, name='matrix_stack')
