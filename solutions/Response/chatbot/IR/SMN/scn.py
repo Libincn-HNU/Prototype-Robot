@@ -123,7 +123,7 @@ class SCN():
         self.y_pred = tf.nn.softmax(logits)
         self.total_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.y_true, logits=logits))
         tf.summary.scalar('loss', self.total_loss)
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
+        optimizer = tf.train.AdamOptimizer(learning_rate=0.1)
         self.train_op = optimizer.minimize(self.total_loss)
 
     def Predict(self, sess, single_history, true_utt_list):

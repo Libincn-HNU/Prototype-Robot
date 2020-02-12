@@ -29,3 +29,11 @@ To evaluate the model, run
 ```bash
 python evaluate.py --log_root=logs_ubuntu --batch_size=100
 ```
+
+
+需要构造的数据
++ 语料
+label \t u1 \t u2 ... un \t r
++ word2idx
+
++ char2idx
