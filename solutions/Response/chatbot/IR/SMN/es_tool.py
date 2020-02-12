@@ -10,7 +10,7 @@ class Build(object):
     def __init__(self, ip='127.0.0.1'):
         self.es = Elasticsearch([ip], port=9200)
 
-    def create_index(self, index_name, file_name, index_type='ott_date'):
+    def create_index(self, index_name, file_name, index_type='doc'):
         _index_mappings = {
             "mappings":{
                 "properties":{
@@ -56,32 +56,6 @@ class Build(object):
 
                 success, _ = bulk(self.es, ACTIONS, index=index_name, raise_on_error=True)
                 print("Performed %d actions " % success)
-
-class Search(object):
-    
-    def __init__(self, ip='127.0.0.1'):
-        self.es = Elasticsearch([ip], port=9200)
-
-    def create_index(self, index_name=all_index_name, index_type='ott_date'):
-        """
-        创建索引
-        """
-        _index_mappings = {
-            "mappings":{
-                "properties":{
-                    "query":{
-                        'type':'text',
-                        },
-                    'answer':{
-                        'type':'text',
-                        }
-                    }
-                }
-            }
-        if self.es.indices.exists(index=index_name) is not True:
-            res = self.es.indices.create(index=index_name, body=_index_mappings)
-            print(res)
-
 
 class Operate(object):
     "使用 指定的IP， 端口， index_name 进行 查询"
@@ -145,10 +119,49 @@ class ElasticObj(object):
         result = self.es.delete_by_query(index=self.index_name, body=doc)
         print(result)
 
+    def bulk_Index_Data(self, input_list):
+        '''
+        用bulk将批量数据存储到es
+        :return:
+        '''
+
+        if len(input_list) is  0:
+            print("input list is none, use demo list")
+            input_list = [
+                {'query':'你好','answer':'你好啊'},
+                {'query':'hello', 'answer':'hi'},
+                {'query':'天气不错啊','answer':'是的啊，情况万里，天气很好'},
+                {'query':'心情不错啊','answer':'是的，心情特别好'},
+                {'query':'心情好','answer':'今天真高兴'},
+                {'query':'今天开心','answer':'今天真高兴'}]
+
+        ACTIONS=[]
+        i = 1
+
+        for line in input_list:
+            action  = {
+                '_index':self.index_name,
+                '_type':self.index_type,
+                '_id':i, 
+                '_source':{
+                    'query':line['query'],
+                    'answer':line['answer']
+                }
+            }
+            i += 1
+
+            if i % 100000 == 0:
+                print('index is ', i)
+            ACTIONS.append(action)
+
+        success, _ = bulk(self.es, ACTIONS, index=self.index_name, raise_on_error=True)
+        print("Performed %d actions " % success)
+    
+
 
 def build(index_name = all_index_name, file_name='corpus-step-1.pkl'):
     build = Build()
-    build.create_index(index_name=index_name, index_type='qa_detail', file_name= file_name)
+    build.create_index(index_name=index_name, index_type='doc', file_name= file_name)
 
 def search():
     ope = Operate()
