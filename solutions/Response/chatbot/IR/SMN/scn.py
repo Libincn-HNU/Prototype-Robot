@@ -55,7 +55,7 @@ word2idx = char2idx
 idx2word = {}
 
 for (char, idx)in word2idx.items():
-    idx2word[idx] = value.strip()
+    idx2word[idx] = char
 
 class SCN():
     def __init__(self):
