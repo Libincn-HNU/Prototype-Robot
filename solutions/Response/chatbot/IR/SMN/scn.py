@@ -10,37 +10,31 @@ from es_tool import *
 data_file = 'history-true-false.pkl'
 
 """
-            history 结构
-            [
-                ["今天天气不错啊","是的，天气好心情就好","有没有适合这个天气的户外活动？"],
-                ...
-                [""],
-                [""]
-            ]
+ history 结构
+ [
+ ["今天天气不错啊","是的，天气好心情就好","有没有适合这个天气的户外活动？"],
+  ...
+ [""],
+ [""]
+  ]
 
-            true_utt 结构 
-            [
-                ["晴朗的天气适合户外跑步"],
-                ...
-                [""],
-                [""]
-            ]
+ true_utt 结构 
+ [
+ ["晴朗的天气适合户外跑步"],
+  ...
+ [""],
+ [""]
+ ]
 
-            actions 结构 选一个随机负样本， 当前为随机生成（考虑用nlg）
-            [
-                ['下雨天适合在家里呆着‘]
-                []
-                []
-            ]
+ actions 结构 选一个随机负样本， 当前为随机生成（考虑用nlg）(优化点1)
+ [
+  ['下雨天适合在家里呆着‘]
+  []
+  []
+ ]
 
 """
 
-
-if True:
-    print('加载已经处理好的数据')
-    load_file = open(data_file,"rb")
-    results = pickle.load(load_file)
-    load_file.close()
 
 print('加载embedding')
 emb_file = open('embedding_matrix.pkl', 'rb')
@@ -56,6 +50,10 @@ idx2word = {}
 
 for (char, idx)in word2idx.items():
     idx2word[idx] = char
+print('的 : index', word2idx.get['的'])
+print('你 : index', word2idx['你'])
+print('1 : word', idx2word[1])
+print('2 : word', idx2word[2])
 
 class SCN():
     def __init__(self):
@@ -250,7 +248,7 @@ if __name__ == "__main__":
         scn.TrainModel()
     elif False:  
         """
-        加载模型，使用命令行参数训练
+        加载模型，单条输入，并进行结果输出
         """
         sess = scn.LoadModel()
         
@@ -278,7 +276,7 @@ if __name__ == "__main__":
         print("best answer", answer_list[best_idx], 'best idx', best_idx)
     else:
         """
-        连同es 进行结果输出
+        加载模型，批量输入，并进行结果输出
         """
 
         sess = scn.LoadModel()
