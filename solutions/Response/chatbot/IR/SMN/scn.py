@@ -64,6 +64,7 @@ class SCN():
         self.rnn_units = 128 
         self.total_words = 22752
         self.batch_size = 512
+        self.epoch = 10
 
     def LoadModel(self):
         saver = tf.train.Saver()
@@ -194,13 +195,13 @@ class SCN():
             with open(data_file, mode='rb') as f:
                 results = pickle.load(f)
 
-            history, true_utt, actions = results['history'], results['true_utt'], results['false_utt']
+            history, true_utt, false_utt = results['history'], results['true_utt'], results['false_utt']
 
             history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
             true_utt_len = np.array(utils.get_sequences_length(true_utt, maxlen=self.max_sentence_len))
             true_utt = np.array(pad_sequences(true_utt, padding='post', maxlen=self.max_sentence_len))
-            actions_len = np.array(utils.get_sequences_length(actions, maxlen=self.max_sentence_len))
-            actions = np.array(pad_sequences(actions, padding='post', maxlen=self.max_sentence_len))
+            false_utt_len = np.array(utils.get_sequences_length(false_utt, maxlen=self.max_sentence_len))
+            false_utt = np.array(pad_sequences(false_utt, padding='post', maxlen=self.max_sentence_len))
             history, history_len = np.array(history), np.array(history_len)
             if countinue_train == False:
                 sess.run(init)
@@ -210,17 +211,29 @@ class SCN():
             low = 0
             epoch = 1
 
-            while epoch < 30:
+            while epoch < self.epoch:
                 n_sample = min(low + self.batch_size, history.shape[0]) - low
-                negative_indices = [np.random.randint(0, actions.shape[0], n_sample) for _ in range(self.negative_samples)]
-                negs = [actions[negative_indices[i], :] for i in range(self.negative_samples)]
-                negs_len = [actions_len[negative_indices[i]] for i in range(self.negative_samples)]
+                # negative_indices = [np.random.randint(0, false_utt.shape[0], n_sample) for _ in range(self.negative_samples - 1)] # 负样本索引随机产生
+
+                # negs = [false_utt[negative_indices[i]] for i in range(self.negative_samples)]
+                # negs = [false_utt[negative_indices[i], :] for i in range(self.negative_samples)]
+
+                # negs_len = [actions_len[negative_indices[i]] for i in range(self.negative_samples)]
+
                 feed_dict = {self.utterance_ph: np.concatenate([history[low:low + n_sample]] * (self.negative_samples + 1), axis=0),
                              self.all_utterance_len_ph: np.concatenate([history_len[low:low + n_sample]] * (self.negative_samples + 1), axis=0),
-                             self.response_ph: np.concatenate([true_utt[low:low + n_sample]] + negs, axis=0),
-                             self.response_len: np.concatenate([true_utt_len[low:low + n_sample]] + negs_len, axis=0),
+                             self.response_ph: np.concatenate([true_utt[low:low + n_sample], false_utt[low:low + n_sample]], axis=0),
+                             self.response_len: np.concatenate([true_utt_len[low:low + n_sample], false_utt_len[low:low + n_sample]], axis=0),
                              self.y_true: np.concatenate([np.ones(n_sample)] + [np.zeros(n_sample)] * self.negative_samples, axis=0)
                              }
+            
+                # feed_dict = {self.utterance_ph: np.concatenate([history[low:low + n_sample]] * (self.negative_samples + 1), axis=0),
+                #              self.all_utterance_len_ph: np.concatenate([history_len[low:low + n_sample]] * (self.negative_samples + 1), axis=0),
+                #              self.response_ph: np.concatenate([true_utt[low:low + n_sample], false_utt[low:low + n_sample]], axis=0),
+                #              self.response_len: np.concatenate([true_utt_len[low:low + n_sample], false_utt_len[low:low + n_sample]], axis=0),
+                #              self.y_true: np.concatenate([np.ones(n_sample)] + [np.zeros(n_sample)] * self.negative_samples, axis=0)
+                #              }
+
                 _, summary = sess.run([self.train_op, merged], feed_dict=feed_dict)
                 train_writer.add_summary(summary)
                 low += n_sample
