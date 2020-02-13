@@ -55,7 +55,7 @@ with open("/export/home/sunhongchao1/Prototype-Robot/corpus/corpus-step-1.pkl", 
 
 import pickle
 results = {'history':history, 'true_utt':true_utt, 'false_utt':false_utt}
-save_file = open("history-ture-false.pkl","wb")
+save_file = open("history-true-false.pkl","wb")
 pickle.dump(results, save_file)
 save_file.close()
 
