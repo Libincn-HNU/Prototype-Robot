@@ -63,9 +63,9 @@ class SCN():
         self.negative_samples = 1 # 负样本个数
         self.max_sentence_len = 32 # 文本最大长度
         self.word_embedding_size = 200 # 需要改
-        self.rnn_units = 200 
+        self.rnn_units = 128 
         self.total_words = 22752
-        self.batch_size = 1024
+        self.batch_size = 512
 
     def LoadModel(self):
         saver = tf.train.Saver()
@@ -211,6 +211,7 @@ class SCN():
                 saver.restore(sess,previous_modelpath)
             low = 0
             epoch = 1
+
             while epoch < 30:
                 n_sample = min(low + self.batch_size, history.shape[0]) - low
                 negative_indices = [np.random.randint(0, actions.shape[0], n_sample) for _ in range(self.negative_samples)]
@@ -225,7 +226,7 @@ class SCN():
                 _, summary = sess.run([self.train_op, merged], feed_dict=feed_dict)
                 train_writer.add_summary(summary)
                 low += n_sample
-                if low % 102400 == 0:
+                if low % n_sample*5 == 0:
                     print("loss",sess.run(self.total_loss, feed_dict=feed_dict))
                     # self.Evaluate(sess)
                 if low >= history.shape[0]:

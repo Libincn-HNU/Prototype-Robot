@@ -1,14 +1,13 @@
 import random
+import pickle
 import numpy as np
 
-# 获取字典  word2idx
-vocab = open('/export/home/sunhongchao1/Prototype-Robot/solutions/FAQ/NLG/seqGAN/gen_data/vocab5000.all', 'r', encoding='utf-8', newline='\n', errors='ignore')
 word2idx = {}
+# 获取字典  word2idx
+with open('/export/home/sunhongchao1/Prototype-Robot/corpus/char2idx_tencent.pkl','rb') as f:
+    word2idx = pickle.load(f)
 
-for idx, value in enumerate(vocab):
-    word2idx[value.strip()] = idx
-
-print(word2idx)
+print('load word2idx done')
 
 # 获取 embedding matrix
 embedding_path = '/export/home/sunhongchao1/Workspace-of-NLU/resources/Tencent_AILab_ChineseEmbedding.txt'
@@ -20,7 +19,8 @@ for line in fin:
     if tokens[0] in word2idx.keys():
         word2vec[tokens[0]] = np.asarray(tokens[1:], dtype='float32')
 
-embedding_matrix = np.zeros((len(word2idx), 200))
+embedding_matrix = np.zeros((len(word2idx) + 1, 200))
+print(len(word2idx))
 unknown_words_vector = np.random.rand(200)
 
 for word, idx in word2idx.items():
@@ -37,11 +37,12 @@ history, true_utt, false_utt, all_response = [], [], [], []
 """
 
 def deal_conv(inputs:list):
-    history.append([ [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in inputs[-1:] ]]) # 加入的是一个list
-    true_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in inputs[-1] ])
+    # history.append([ [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in inputs[-1:] ]]) # 加入的是一个list
+    history.append([ [ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in inputs[-1:] ]]) # 加入的是一个list
+    true_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in inputs[-1] ])
     all_response.append(inputs[-1])
     false_utt_all = random.choice(all_response) 
-    false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in false_utt_all])
+    false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in false_utt_all])
     
 import pickle
 with open("/export/home/sunhongchao1/Prototype-Robot/corpus/corpus-step-1.pkl", mode='rb') as f:
