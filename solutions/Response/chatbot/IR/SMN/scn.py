@@ -237,7 +237,7 @@ class SCN():
                 _, summary = sess.run([self.train_op, merged], feed_dict=feed_dict)
                 train_writer.add_summary(summary)
                 low += n_sample
-                if low % n_sample*5 == 0:
+                if low % n_sample*1024 == 0:
                     print("loss",sess.run(self.total_loss, feed_dict=feed_dict))
                     # self.Evaluate(sess)
                 if low >= history.shape[0]:
