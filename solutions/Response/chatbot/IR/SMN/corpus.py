@@ -32,30 +32,67 @@ for word, idx in word2idx.items():
 
 history, true_utt, false_utt, all_response = [], [], [], []
 
+def deal_conv_str(inputs:list):
+    tmp_history = inputs[:-1]
+    tmp_true= inputs[-1]
+
+    his_result = []
+    for item in tmp_history:
+        his_result.append([ tmp if tmp in word2idx.keys() else 0 for tmp in item])
+
+    history.append(his_result) # 加入的是一个list
+
+    true_utt.append([ tmp if tmp in word2idx.keys() else 0 for tmp in tmp_true])
+
+    all_response.append(tmp_true)
+    tmp_false = random.choice(all_response) # 此处有待优化 
+    false_utt.append([ tmp if tmp in word2idx.keys() else 0 for tmp in tmp_false])
+
+
 """
 读取单轮数据 和 多轮的混合数据
 """
 
 def deal_conv(inputs:list):
-    # history.append([ [ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in inputs[-1:] ]]) # 加入的是一个list
-    history.append([ [ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in inputs[-1:] ]]) # 加入的是一个list
-    true_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in inputs[-1] ])
-    all_response.append(inputs[-1])
-    false_utt_all = random.choice(all_response) 
-    false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in false_utt_all])
+    tmp_history = inputs[:-1]
+    tmp_true= inputs[-1]
+
+    his_result = []
+    for item in tmp_history:
+        his_result.append([ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in item])
+
+    history.append(his_result) # 加入的是一个list
+
+    true_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in tmp_true])
+
+    all_response.append(tmp_true)
+    tmp_false = random.choice(all_response) # 此处有待优化 
+    false_utt.append([ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in tmp_false])
+
     
 import pickle
 with open("/export/home/sunhongchao1/Prototype-Robot/corpus/corpus-step-1.pkl", mode='rb') as f:
     conv_list = pickle.load(f) # 读到的是一个个conv list 
-
+    count = 0 
     tmp_list = []
     for item in conv_list:
-        print('item conv list', item)
-        deal_conv(item)
+        if len(item) > 1:
+            # deal_conv(item)
+            deal_conv_str(item)
+        else:
+            count = count + 1
+            print('wrong format count {}/{}'.format(count, len(conv_list)),
+                  end='\r')
+
+print('history top 110', history[100:110])
+print('true top 110', true_utt[100:110])
+print('false top 110', false_utt[100:110])
+
 
 import pickle
 results = {'history':history, 'true_utt':true_utt, 'false_utt':false_utt}
-save_file = open("history-true-false.pkl","wb")
+# save_file = open("history-true-false.pkl","wb")
+save_file = open("str-history-true-false.pkl","wb")
 pickle.dump(results, save_file)
 save_file.close()
 
