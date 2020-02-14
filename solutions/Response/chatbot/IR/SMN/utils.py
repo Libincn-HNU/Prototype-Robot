@@ -50,7 +50,7 @@ def build_evaluate_data(lines, tid=0):
     return history, true_utt
 
 def multi_sequences_padding(all_sequences, max_sentence_len=50):
-    max_num_utterance = 10
+    max_num_utterance = 2
     PAD_SEQUENCE = [0] * max_sentence_len
     padded_sequences = []
     sequences_length = []

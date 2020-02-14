@@ -90,9 +90,11 @@ print('false top 110', false_utt[100:110])
 
 
 import pickle
-results = {'history':history, 'true_utt':true_utt, 'false_utt':false_utt}
-# save_file = open("history-true-false.pkl","wb")
-save_file = open("str-history-true-false.pkl","wb")
+results = {'history':history[:10000], 'true_utt':true_utt[:10000],
+           'false_utt':false_utt[:10000]}
+#results = {'history':history, 'true_utt':true_utt, 'false_utt':false_utt}
+save_file = open("str-history-true-false-top10000.pkl","wb")
+# save_file = open("str-history-true-false.pkl","wb")
 pickle.dump(results, save_file)
 save_file.close()
 
