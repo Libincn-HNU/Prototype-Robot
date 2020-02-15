@@ -47,7 +47,7 @@ class ElasticObj(object):
         doc = {"query": {"bool": {'should':[{'match':{'query':inputs}}]}}}
         # doc = {"query":{"match_phrase":{"answer":inputs}}}
 
-        _searched = self.es.search(index=self.index_name, body=doc, size=5)
+        _searched = self.es.search(index=self.index_name, body=doc, size=20)
 
         answer_list = []
         idx = 0
@@ -61,7 +61,7 @@ class ElasticObj(object):
     def Get_Data_By_Answer(self, inputs):
         doc = {"query":{"match_phrase":{"answer":inputs}}}
 
-        _searched = self.es.search(index=self.index_name, body=doc, size=5)
+        _searched = self.es.search(index=self.index_name, body=doc, size=20)
 
         answer_list = []
         for hit in _searched['hits']['hits']:

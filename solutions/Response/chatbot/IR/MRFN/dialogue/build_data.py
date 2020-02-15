@@ -19,7 +19,7 @@ def convert(inputs):
 
     return results
 
-for tmp_his, tmp_true, tmp_false in zip(history[:10], true_utt[:10], false_utt[:10]):
+for tmp_his, tmp_true, tmp_false in zip(history, true_utt, false_utt):
     
     str_his = ["".join(convert(tmp)) for  tmp in tmp_his]
     str_true = ''.join(convert(tmp_true))
