@@ -7,7 +7,7 @@ import Evaluate
 from es_tool import *
 
 
-data_file = 'history-true-false.pkl'
+data_file = 'history-true-false-top10000.pkl'
 
 """
  history 结构
@@ -60,7 +60,7 @@ class SCN():
         self.max_num_utterance = 10 # 上下文最大轮数
         self.negative_samples = 1 # 负样本个数
         self.max_sentence_len = 32 # 文本最大长度
-        self.word_embedding_size = 200 # 需要改
+        self.word_embedding_size = 200
         self.rnn_units = 128 
         self.total_words = 22752
         self.batch_size = 512
