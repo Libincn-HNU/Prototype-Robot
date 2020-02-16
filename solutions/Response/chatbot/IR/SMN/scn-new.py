@@ -7,7 +7,24 @@ import Evaluate
 from es_tool import *
 
 
-data_file = 'history-true-false-top10000.pkl'
+model_path = './model/model.20'
+
+mode_train = True
+mode_load = False
+mode_predict = False
+mode_debug = False
+
+hidden_unit = 512 
+sequence_len = 32
+learning_rate = 0.01
+
+
+if mode_debug == True:
+    data_file = 'history-true-false-top10000.pkl'
+    batch_size = 64
+else:
+    batch_size = 1024
+    data_file = 'history-true-false.pkl'
 
 """
  history 结构
@@ -36,13 +53,17 @@ data_file = 'history-true-false-top10000.pkl'
 """
 
 
-print('加载embedding')
 emb_file = open('embedding_matrix.pkl', 'rb')
 emb = pickle.load(emb_file)
 emb_file.close()
 embeddings = emb['embedding_matrix']
 
-print('加载字典')
+if mode_debug == True:
+    print('加载embedding')
+    print(embeddings[0])
+    print(embeddings[1])
+    print(embeddings[2])
+
 vocab_file = open('/export/home/sunhongchao1/Prototype-Robot/corpus/char2idx_tencent.pkl', 'rb')
 char2idx = pickle.load(vocab_file)
 word2idx = char2idx
@@ -50,26 +71,28 @@ idx2word = {}
 
 for (char, idx)in word2idx.items():
     idx2word[idx] = char
-print('的 : index', word2idx.get['的'])
-print('你 : index', word2idx['你'])
-print('1 : word', idx2word[1])
-print('2 : word', idx2word[2])
+if mode_debug == True:
+    print('加载字典')
+    print('的 : index', word2idx['的'])
+    print('你 : index', word2idx['你'])
+    print('1 : word', idx2word[1])
+    print('2 : word', idx2word[2])
 
 class SCN():
     def __init__(self):
-        self.max_num_utterance = 10 # 上下文最大轮数
+        self.max_num_utterance = 2 # 上下文最大轮数
         self.negative_samples = 1 # 负样本个数
-        self.max_sentence_len = 32 # 文本最大长度
-        self.word_embedding_size = 200
-        self.rnn_units = 128 
+        self.max_sentence_len = sequence_len # 文本最大长度
+        self.word_embedding_size = 200 # 需要改
+        self.rnn_units = hidden_unit
         self.total_words = 22752
-        self.batch_size = 512
-        self.epoch = 10
+        self.batch_size = batch_size
+        self.epoch = 100
 
     def LoadModel(self):
         saver = tf.train.Saver()
         sess = tf.Session()
-        saver.restore(sess,"./model/model.4")
+        saver.restore(sess, model_path)
         return sess
 
     def BuildModel(self):
@@ -118,41 +141,61 @@ class SCN():
             matching_vectors.append(matching_vector)
         _, last_hidden = tf.nn.dynamic_rnn(final_GRU, tf.stack(matching_vectors, axis=0, name='matching_stack'), dtype=tf.float32,
                                            time_major=True, scope='final_GRU')  # TODO: check time_major
-        logits = tf.layers.dense(last_hidden, 2, kernel_initializer=tf.contrib.layers.xavier_initializer(), name='final_v')
-        self.y_pred = tf.nn.softmax(logits)
-        self.total_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.y_true, logits=logits))
+        self.logits = tf.layers.dense(last_hidden, 2, kernel_initializer=tf.contrib.layers.xavier_initializer(), name='final_v')
+        self.y_pred = tf.nn.softmax(self.logits)
+        self.total_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.y_true,
+                                                                      logits=self.logits))
         tf.summary.scalar('loss', self.total_loss)
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.1)
+        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         self.train_op = optimizer.minimize(self.total_loss)
 
-    def Predict(self, sess, single_history, true_utt_list):
+    def Predict(self, sess, history, es_candidate_list):
+        """
+        根据 对话历史(当前知识单轮) 和 es 粗排结果进行精确排
+        sess
+        single
+        """
+
+        history_index = []
+        for item in history:
+            history_index.append([ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in item])
+
+        candidate_index = []
+        for item in es_candidate_list:
+            candidate_index.append([ word2idx[tmp] if tmp in word2idx.keys() else 0 for tmp in item])
+
+        history = [history_index] * len(candidate_index)
+        true_utt = candidate_index
         
-        tmp_single_history = []
-        for tmp_history in single_history:
-            tmp_single_history.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_history])
-
-        tmp_true_utt_list = []
-        for tmp_utt in true_utt_list:
-            tmp_true_utt_list.append([ word2idx[tmp] if tmp in word2idx.keys() else word2idx['_UNK'] for tmp in tmp_utt])
-
-        history = [tmp_single_history] * len(true_utt_list)
-        true_utt = tmp_true_utt_list
+        if mode_debug == True:
+            print('history embedding', history)
+            print('true_utt embedding', true_utt)
 
         self.all_candidate_scores = []
         history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
         history, history_len = np.array(history), np.array(history_len)
         true_utt_len = np.array(utils.get_sequences_length(true_utt, maxlen=self.max_sentence_len))
         true_utt = np.array(pad_sequences(true_utt, padding='post', maxlen=self.max_sentence_len))
+
+        if mode_debug == True:
+            print('history embedding padding', history)
+            print('true_utt embedding padding', true_utt)
+            print('history len', history_len)
+            print('true utt len', true_utt_len)
+
         low = 0
         while True:
-            feed_dict = {self.utterance_ph: np.concatenate([history[low:low + 200]], axis=0),
-                         self.all_utterance_len_ph: np.concatenate([history_len[low:low + 200]], axis=0),
-                         self.response_ph: np.concatenate([true_utt[low:low + 200]], axis=0),
-                         self.response_len: np.concatenate([true_utt_len[low:low + 200]], axis=0),
+            feed_dict = {self.utterance_ph: np.concatenate([history[low:low + self.batch_size]], axis=0),
+                         self.all_utterance_len_ph: np.concatenate([history_len[low:low + self.batch_size]], axis=0),
+                         self.response_ph: np.concatenate([true_utt[low:low + self.batch_size]], axis=0),
+                         self.response_len: np.concatenate([true_utt_len[low:low + batch_size]], axis=0),
                          }
-            candidate_scores = sess.run(self.y_pred, feed_dict=feed_dict)
-            self.all_candidate_scores.append(candidate_scores[:, 1])
-            low = low + 200
+            candidate_scores, logits = sess.run([self.y_pred, self.logits], feed_dict=feed_dict)
+            print('# logits', logits)
+            print('# candidate socres', candidate_scores)
+            self.all_candidate_scores.append(candidate_scores[:, 1]) # 匹配 
+            print('all andidate socres', self.all_candidate_scores)
+            low = low + self.batch_size
             if low >= history.shape[0]:
                 break
         all_candidate_scores = np.concatenate(self.all_candidate_scores, axis=0)
@@ -185,66 +228,98 @@ class SCN():
         # Evaluate.ComputeR2_1(all_candidate_scores,labels)
 
     def TrainModel(self, countinue_train = False, previous_modelpath = "model"):
+        """
+        读取数据
+        """
+        with open(data_file, mode='rb') as f:
+            results = pickle.load(f)
+        print('read data done')
+        history, true_utt, false_utt = results['history'], results['true_utt'], results['false_utt']
+        history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
+        true_utt_len = np.array(utils.get_sequences_length(true_utt, maxlen=self.max_sentence_len))
+        true_utt = np.array(pad_sequences(true_utt, padding='post', maxlen=self.max_sentence_len))
+        false_utt_len = np.array(utils.get_sequences_length(false_utt, maxlen=self.max_sentence_len))
+        false_utt = np.array(pad_sequences(false_utt, padding='post', maxlen=self.max_sentence_len))
+        history, history_len = np.array(history), np.array(history_len)
+
+        print('data index and padding done')
+
+        print('history top 10', history[:10])
+        print('true top 10 ', true_utt[:10])
+        print('false top 10', false_utt[:10])
+        print('his len top 10', history_len[:10])
+        print('true len top 10', true_utt_len[:10])
+        print('false len top 10', false_utt_len[:10])
+        
+
+        import random
+
+        randnum = random.randint(0,100)
+        random.seed(randnum)
+        random.shuffle(history)
+        random.seed(randnum)
+        random.shuffle(history_len)
+        random.seed(randnum)
+        random.shuffle(true_utt)
+        random.seed(randnum)
+        random.shuffle(true_utt_len)
+        random.seed(randnum)
+        random.shuffle(false_utt)
+        random.seed(randnum)
+        random.shuffle(false_utt_len)
+
+
+        """
+        参数初始化
+        """
+        low = 0
+        epoch = 1
+        all_samples_len = len(true_utt)
+
         init = tf.global_variables_initializer()
         saver = tf.train.Saver()
-        merged = tf.summary.merge_all()
         with tf.Session() as sess:
-            writer = tf.summary.FileWriter("output2", sess.graph)
-            train_writer = tf.summary.FileWriter('output2', sess.graph)
-
-            with open(data_file, mode='rb') as f:
-                results = pickle.load(f)
-
-            history, true_utt, false_utt = results['history'], results['true_utt'], results['false_utt']
-
-            history, history_len = utils.multi_sequences_padding(history, self.max_sentence_len)
-            true_utt_len = np.array(utils.get_sequences_length(true_utt, maxlen=self.max_sentence_len))
-            true_utt = np.array(pad_sequences(true_utt, padding='post', maxlen=self.max_sentence_len))
-            false_utt_len = np.array(utils.get_sequences_length(false_utt, maxlen=self.max_sentence_len))
-            false_utt = np.array(pad_sequences(false_utt, padding='post', maxlen=self.max_sentence_len))
-            history, history_len = np.array(history), np.array(history_len)
             if countinue_train == False:
                 sess.run(init)
                 sess.run(self.embedding_init, feed_dict={self.embedding_ph: embeddings})
             else:
                 saver.restore(sess,previous_modelpath)
-            low = 0
-            epoch = 1
 
             while epoch < self.epoch:
                 n_sample = min(low + self.batch_size, history.shape[0]) - low
-                # negative_indices = [np.random.randint(0, false_utt.shape[0], n_sample) for _ in range(self.negative_samples - 1)] # 负样本索引随机产生
+                negative_indices = [np.random.randint(0, false_utt.shape[0], n_sample) for _ in range(self.negative_samples)] 
 
-                # negs = [false_utt[negative_indices[i]] for i in range(self.negative_samples)]
-                # negs = [false_utt[negative_indices[i], :] for i in range(self.negative_samples)]
+                negs = np.asarray([false_utt[negative_indices[i]] for i in
+                                   range(self.negative_samples)])
+                negs_len = np.asarray([false_utt_len[negative_indices[i]] for i in
+                            range(self.negative_samples)])
 
-                # negs_len = [actions_len[negative_indices[i]] for i in range(self.negative_samples)]
+                negs = np.reshape(negs, (n_sample, -1))
+                negs_len = np.reshape(negs_len, (n_sample))
+
+                #print('negs shape', negs.shape)
+                #print('negs len shape', negs_len.shape)
+                #print('true utt shape', true_utt.shape)
 
                 feed_dict = {self.utterance_ph: np.concatenate([history[low:low + n_sample]] * (self.negative_samples + 1), axis=0),
                              self.all_utterance_len_ph: np.concatenate([history_len[low:low + n_sample]] * (self.negative_samples + 1), axis=0),
-                             self.response_ph: np.concatenate([true_utt[low:low + n_sample], false_utt[low:low + n_sample]], axis=0),
-                             self.response_len: np.concatenate([true_utt_len[low:low + n_sample], false_utt_len[low:low + n_sample]], axis=0),
+                             self.response_ph: np.concatenate([true_utt[low:low + n_sample], negs], axis=0),
+                             self.response_len: np.concatenate([true_utt_len[low:low + n_sample], negs_len], axis=0),
                              self.y_true: np.concatenate([np.ones(n_sample)] + [np.zeros(n_sample)] * self.negative_samples, axis=0)
                              }
             
-                # feed_dict = {self.utterance_ph: np.concatenate([history[low:low + n_sample]] * (self.negative_samples + 1), axis=0),
-                #              self.all_utterance_len_ph: np.concatenate([history_len[low:low + n_sample]] * (self.negative_samples + 1), axis=0),
-                #              self.response_ph: np.concatenate([true_utt[low:low + n_sample], false_utt[low:low + n_sample]], axis=0),
-                #              self.response_len: np.concatenate([true_utt_len[low:low + n_sample], false_utt_len[low:low + n_sample]], axis=0),
-                #              self.y_true: np.concatenate([np.ones(n_sample)] + [np.zeros(n_sample)] * self.negative_samples, axis=0)
-                #              }
 
-                _, summary = sess.run([self.train_op, merged], feed_dict=feed_dict)
-                train_writer.add_summary(summary)
+                _, logits, loss, prob = sess.run([self.train_op, self.logits,
+                                                  self.total_loss, self.y_pred], feed_dict=feed_dict)
                 low += n_sample
-                if low % n_sample*1024 == 0:
-                    print("loss",sess.run(self.total_loss, feed_dict=feed_dict))
-                    # self.Evaluate(sess)
                 if low >= history.shape[0]:
+                    print(" ######## epoch:{}, 进度:{:.2f}%, total_loss:{:.4f}".format(epoch,
+                                                                         low/all_samples_len*100,
+                                                                         loss))
+                    print(logits[:4])
+                    print(prob[:4])
                     low = 0
                     saver.save(sess,"model/model.{0}".format(epoch))
-                    print(sess.run(self.total_loss, feed_dict=feed_dict))
-                    print('epoch={i}'.format(i=epoch))
                     epoch += 1
 
 if __name__ == "__main__":
@@ -254,55 +329,45 @@ if __name__ == "__main__":
     scn =SCN()
     scn.BuildModel()
 
-    if True: 
+    if mode_train: 
         """
         进行模型训练
         """
         scn.TrainModel()
-    elif False:  
+    elif mode_load:  
         """
         加载模型，单条输入，并进行结果输出
         """
         sess = scn.LoadModel()
-        
         search = Search()
         search.create_index()
         obj = ElasticObj('qa_info', 'qa_detail')
-
         history = sys.argv[1:] 
         query = sys.argv[-1]
-
         print('history', history)
         print('input', query)
-
         answer_list = obj.Get_Data_By_Body(query)
         # answer_list = list(set(answer_list))
-
         result = scn.Predict(sess, query, answer_list)
-
         exp_result = np.exp(result)
         result = [item/np.sum(exp_result) for item in exp_result]
-
         result_str = [str(round(tmp,3)) for tmp in result ]
         print('smn score', ' '.join(result_str))    
         best_idx = np.argmax(result)
         print("best answer", answer_list[best_idx], 'best idx', best_idx)
-    else:
+    elif mode_predict:
         """
         加载模型，批量输入，并进行结果输出
         """
-
         sess = scn.LoadModel()
         
+        """
+        导入ES 库
+        """
         obj = ElasticObj('new_qa_name', 'new_qa_type')
-        # obj = ElasticObj('qa_info', 'qa_detail')
-
-        query_list = ['南京', '北京', '东京', '沈阳', '大连', '莫斯科', '纽约', 
-                     '迪丽热巴', '古力娜扎', '穷哈', '周杰伦', '张一鸣','马斯克',
-                      '五一小长假','清明','春节','元旦','中秋']
+        query_list = ['你好啊','会打篮球吗', '喜欢足球吗', '姚明', '物理学',
+                     '武磊的足球踢的好吗', '你和小冰谁厉害']
         
-
-
         def find_error(input_list, input_str):
             for item in input_list:
                 if item in input_str:
@@ -311,28 +376,28 @@ if __name__ == "__main__":
 
         for query in query_list:
             print("#" * 30)
-            print(query)
-            answer_list = obj.Get_Data_By_Body(query)
-            answer_list = list(set(answer_list))
-            print(answer_list)
-            new_answer_list = []
-            # #
-            check_list = ['旺财', '小通', '鸡鸡']
-            # check_list=['撸','事件','成都','北京','上海','那个','这个','图片','晚安', '早安', '上午好','下午好','晚上好', '传说中','吃吃吃','礼物','下台','转一个','转运','政绩工程','朱艳艳','毛泽东','做客','记录','Nick','听众','中国梦','博鳌','求救','达人秀','演唱会','明星','PM','北京空气','早上','清早','凌晨','上午','中午','晚上','今晚','昨天','明天','后天','销量','到货','si','鸡鸡','小通','旺财','直播','庆祝','销量','视频','mv','#','#', '-','<','>','《','》', "@", '【', '】', '？', ' ——', '_', '"', "'",':','：', '‘','’']
-            for answer in answer_list:
-                if find_error(check_list, answer):
-                    # print('error', answer)
-                    pass
-                else:
-                    new_answer_list.append(answer)
-
-            result = scn.Predict(sess, [query], new_answer_list)
-            # print(query, '\t', new_answer_list[np.argmax(result)])
+            print('query is ', query)
+            es_list = obj.Get_Data_By_Body(query)
+            print('es results', es_list)
+            result = scn.Predict(sess, [query], es_list)
 
             exp_result = np.exp(result)
             result = [item/np.sum(exp_result) for item in exp_result]
 
             result_str = [str(round(tmp,3)) for tmp in result ]
-            print('smn score', ' '.join(result_str))    
+            print('smn score softmax', ' '.join(result_str))    
             best_idx = np.argmax(result)
-            print("best answer", answer_list[best_idx], 'best idx', best_idx)
+            print("best answer", es_list[best_idx], 'best idx', best_idx)
+
+
+    else:
+        pass
+
+# check_list=['撸','事件','成都','北京','上海','那个','这个','图片','晚安', '早安', '上午好','下午好','晚上好', '传说中','吃吃吃','礼物','下台','转一个','转运','政绩工程','朱艳艳','毛泽东','做客','记录','Nick','听众','中国梦','博鳌','求救','达人秀','演唱会','明星','PM','北京空气','早上','清早','凌晨','上午','中午','晚上','今晚','昨天','明天','后天','销量','到货','si','鸡鸡','小通','旺财','直播','庆祝','销量','视频','mv','#','#', '-','<','>','《','》', "@", '【', '】', '？', ' ——', '_', '"', "'",':','：', '‘','’']
+#            new_answer_list = []
+#            check_list = ['旺财', '小通', '鸡鸡']
+#            for answer in answer_list:
+#                if find_error(check_list, answer):
+#                    pass
+#                else:
+#                    new_answer_list.append(answer)
