@@ -9,9 +9,9 @@ from es_tool import *
 
 model_path = './model/model.40'
 
-mode_train = False
+mode_train = True
 mode_load = False
-mode_predict = True
+mode_predict = False
 mode_debug = False
 
 hidden_unit = 512 
@@ -141,9 +141,11 @@ class SCN():
             matching_vectors.append(matching_vector)
         _, last_hidden = tf.nn.dynamic_rnn(final_GRU, tf.stack(matching_vectors, axis=0, name='matching_stack'), dtype=tf.float32,
                                            time_major=True, scope='final_GRU')  # TODO: check time_major
-        self.logits = tf.layers.dense(last_hidden, 2, kernel_initializer=tf.contrib.layers.xavier_initializer(), name='final_v')
-        self.y_pred = tf.nn.softmax(self.logits)
-        self.total_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.y_true,
+
+        with tf.variable_scope("logits", reuse=tf.AUTO_REUSE):  
+            self.logits = tf.layers.dense(last_hidden, 2, kernel_initializer=tf.contrib.layers.xavier_initializer(), name='final_v')
+            self.y_pred = tf.nn.softmax(self.logits, name = 'preds')
+            self.total_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.y_true,
                                                                       logits=self.logits))
         tf.summary.scalar('loss', self.total_loss)
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
@@ -252,7 +254,6 @@ class SCN():
         print('true len top 10', true_utt_len[:10])
         print('false len top 10', false_utt_len[:10])
         
-
         import random
 
         randnum = random.randint(0,100)
@@ -323,9 +324,23 @@ class SCN():
                     saver.save(sess,"model/model.{0}".format(epoch))
                     epoch += 1
 
+                    """
+                    save pb model
+                    """
+                    pb_dir = './model'
+
+                    from tensorflow.python.framework import graph_util
+                    # print(sess)
+                    # print(sess.graph_def)
+                    trained_graph = graph_util.convert_variables_to_constants(sess,
+                                                              sess.graph_def,
+                                                              output_node_names=['logits/preds'])
+                    tf.train.write_graph(trained_graph, pb_dir, 'model-' + str(epoch) + ".pb", as_text=False)
+
+
 if __name__ == "__main__":
     import os
-    os.environ["CUDA_VISIBLE_DEVICES"] = '3'
+    os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 
     scn =SCN()
     scn.BuildModel()

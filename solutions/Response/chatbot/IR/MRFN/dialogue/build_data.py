@@ -1,14 +1,14 @@
 import pickle
-with open('str-history-true-false.pkl', mode='rb') as f:
+with open('str-history-true-false-top10000.pkl', mode='rb') as f:
     results = pickle.load(f)
     history, true_utt, false_utt = results['history'], results['true_utt'], results['false_utt']
 
 print('read data done')
 
-span = 100000
-history = history[ 10*span: 10*span + 1000 ]
-true_utt = true_utt[ 10*span: 10*span + 1000 ]
-false_utt = false_utt[ 10*span: 10*span + 1000 ]
+span = 200
+history = history[ 10*span: 10*span + 100 ]
+true_utt = true_utt[ 10*span: 10*span + 100 ]
+false_utt = false_utt[ 10*span: 10*span + 100 ]
 
 print('build data done')
 

@@ -11,9 +11,8 @@ from data_utils_record import get_record_parser, get_batch_dataset
 from model_FLS import model 
 from config import config
 
-data_path='ubuntu'
 if __name__=="__main__":
-    FLAGS = config(data_path)
+    FLAGS = config()
     print("\nParameters:")
     for attr, value in sorted(FLAGS.__flags.items()):
         print("{}={}".format(attr.upper(), value))
