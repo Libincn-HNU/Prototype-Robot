@@ -86,7 +86,7 @@ def get_char_word_idx_from_sent_msg(sents, word_idx_map, char_idx_map, max_turn=
  
         for i, word in enumerate(words):
             if i >= max_word_len: continue
-            if i < 2: continue # shc add
+            # if i < 2: continue # shc add
             char_ids = [char_idx_map.get(c.encode("utf-8"), 0) for c in word]
             x_char[i] = pad_sequences([char_ids], padding='post', maxlen=max_char_len)[0]
             x_char_mask[i] = pad_sequences([len(char_ids)*[1]], padding='post', maxlen=max_char_len)[0]
