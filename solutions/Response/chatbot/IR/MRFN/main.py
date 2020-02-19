@@ -23,7 +23,7 @@ if __name__=="__main__":
         FLAGS.gpu = 'gpu:' + str(index_of_gpu)
         os.environ["CUDA_VISIBLE_DEVICES"] = FLAGS.gpu.split(':')[1]
     else:
-    	os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+    	os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 
     # Output directory for models and summaries
     out_dir = os.path.abspath(os.path.join(os.path.curdir, FLAGS.log_root))
@@ -47,7 +47,7 @@ if __name__=="__main__":
             print("Loading pretrained word embeddings ...")
             with open(FLAGS.init_embeddings_path, 'rb') as f:
                 embeddings = pickle.load(f)
-                embeddings = embeddings['embedding_matrix']
+                embeddings = embeddings['word_embedding_matrix']
 
             pretrained_word_embeddings = np.array(embeddings)
             print(pretrained_word_embeddings.shape)

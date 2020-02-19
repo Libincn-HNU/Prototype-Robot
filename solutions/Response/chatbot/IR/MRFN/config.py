@@ -13,14 +13,14 @@ def config(data_path='dialogue'):
 	tf.flags.DEFINE_integer("rnn_dim", 200, "Dimensionality of rnn")
 
 	tf.flags.DEFINE_boolean("init_dict", True, "Allow initialize word2vec")
-	tf.flags.DEFINE_string('init_embeddings_path', './%s/embedding_matrix.pkl'%(data_path), 'Path expression to initial embedding file. ')
+	tf.flags.DEFINE_string('init_embeddings_path', './%s/word_embedding_matrix_tencent.pkl'%(data_path), 'Path expression to initial embedding file. ')
 	#tf.flags.DEFINE_string('init_embeddings_path', './%s/word_emb_matrix.pkl'%(data_path), 'Path expression to initial embedding file. ')
 	tf.flags.DEFINE_string('word_dict_path', './%s/word_dict.pkl'%(data_path), 'Path expression to word dict. ')
 
 	tf.flags.DEFINE_boolean("init_char_dict", True, "Allow initialize char2vec")
 
 
-	tf.flags.DEFINE_string('init_char_embeddings_path', './%s/embedding_matrix.pkl'%(data_path), 'Path expression to initial char embedding file. ')
+	tf.flags.DEFINE_string('init_char_embeddings_path', './%s/char_embedding_matrix_tencent.pkl'%(data_path), 'Path expression to initial char embedding file. ')
 	#tf.flags.DEFINE_string('init_char_embeddings_path', './%s/char_emb_matrix.pkl'%(data_path), 'Path expression to initial char embedding file. ')
 	tf.flags.DEFINE_string('char_dict_path', './%s/char_dict.pkl'%(data_path), 'Path expression to char dict. ')
 
