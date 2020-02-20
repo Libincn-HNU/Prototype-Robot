@@ -31,9 +31,14 @@ python evaluate.py --log_root=logs_ubuntu --batch_size=100
 ```
 
 
-需要构造的数据
+# 需要构造的数据
 + 语料
 label \t u1 \t u2 ... un \t r
 + word2idx
-
++ word embedding metric
 + char2idx
++ char embedding metric
+
+# 测试
++ 使用es 获得候选集
++ 使用 构造成tfrecord 的格式 

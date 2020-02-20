@@ -249,9 +249,8 @@ def process_word_embeddings(embedding_file, total_words, word_embedding_size,  o
 
 if __name__ == "__main__":
     
-    build_records('dialogue/train.txt',
-                  'dialogue/word2idx_tencent.pkl','dialogue/char2idx_tencent.pkl',
-                  'dialogue/train.char.tfrecords')
+    build_records('dialogue/train.txt', 'dialogue/word2idx_tencent.pkl','dialogue/char2idx_tencent.pkl', 'dialogue/train.char.tfrecords')
+    build_records('dialogue/predict.txt', 'dialogue/word2idx_tencent.pkl','dialogue/char2idx_tencent.pkl', 'dialogue/predict.char.tfrecords')
 #    if 0:
 #        build_records('ubuntu/train.txt', 'ubuntu/word_dict.pkl', 'ubuntu/char_dict.pkl', 'ubuntu/train.char.small.tfrecords', isshuffle=True, max_mum=20000)
 #        build_records('ubuntu/valid.txt', 'ubuntu/word_dict.pkl', 'ubuntu/char_dict.pkl', 'ubuntu/valid.char.small.tfrecords', max_mum=10000)
