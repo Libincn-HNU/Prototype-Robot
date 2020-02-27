@@ -53,7 +53,7 @@ class ElasticObj(object):
         idx = 0
         for hit in _searched['hits']['hits']:
             answer_list.append(hit['_source']['answer'])
-            print( ' es-score ' + str(hit['_score']) + ' idx '+ str(idx) + ' ### ' +  'query is ', hit['_source']['query'], ' ###  answer is ', hit['_source']['answer'], ' ### ', len(hit['_source']['answer']))
+            # print( ' es-score ' + str(hit['_score']) + ' idx '+ str(idx) + ' ### ' +  'query is ', hit['_source']['query'], ' ###  answer is ', hit['_source']['answer'], ' ### ', len(hit['_source']['answer']))
             idx = idx + 1
 
         return(answer_list)

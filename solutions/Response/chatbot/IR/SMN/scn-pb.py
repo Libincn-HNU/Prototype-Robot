@@ -7,11 +7,11 @@ import Evaluate
 from es_tool import *
 
 
-model_path = './model-work-21/model.21'
+model_path = './model/model.40'
 
-mode_train = False
+mode_train = True
 mode_load = False
-mode_predict = True
+mode_predict = False
 mode_debug = False
 
 hidden_unit = 512 
@@ -141,9 +141,11 @@ class SCN():
             matching_vectors.append(matching_vector)
         _, last_hidden = tf.nn.dynamic_rnn(final_GRU, tf.stack(matching_vectors, axis=0, name='matching_stack'), dtype=tf.float32,
                                            time_major=True, scope='final_GRU')  # TODO: check time_major
-        self.logits = tf.layers.dense(last_hidden, 2, kernel_initializer=tf.contrib.layers.xavier_initializer(), name='final_v')
-        self.y_pred = tf.nn.softmax(self.logits)
-        self.total_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.y_true,
+
+        with tf.variable_scope("logits", reuse=tf.AUTO_REUSE):  
+            self.logits = tf.layers.dense(last_hidden, 2, kernel_initializer=tf.contrib.layers.xavier_initializer(), name='final_v')
+            self.y_pred = tf.nn.softmax(self.logits, name = 'preds')
+            self.total_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.y_true,
                                                                       logits=self.logits))
         tf.summary.scalar('loss', self.total_loss)
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
@@ -252,7 +254,6 @@ class SCN():
         print('true len top 10', true_utt_len[:10])
         print('false len top 10', false_utt_len[:10])
         
-
         import random
 
         randnum = random.randint(0,100)
@@ -323,9 +324,23 @@ class SCN():
                     saver.save(sess,"model/model.{0}".format(epoch))
                     epoch += 1
 
+                    """
+                    save pb model
+                    """
+                    pb_dir = './model'
+
+                    from tensorflow.python.framework import graph_util
+                    # print(sess)
+                    # print(sess.graph_def)
+                    trained_graph = graph_util.convert_variables_to_constants(sess,
+                                                              sess.graph_def,
+                                                              output_node_names=['logits/preds'])
+                    tf.train.write_graph(trained_graph, pb_dir, 'model-' + str(epoch) + ".pb", as_text=False)
+
+
 if __name__ == "__main__":
     import os
-    os.environ["CUDA_VISIBLE_DEVICES"] = '3'
+    os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 
     scn =SCN()
     scn.BuildModel()
@@ -369,43 +384,7 @@ if __name__ == "__main__":
         #query_list = ['你好啊','会打篮球吗', '喜欢足球吗', '姚明', '物理学',
         #             '武磊的足球踢的好吗', '你和小冰谁厉害', '许褚']
 
-        query_list = ['你好啊 ', '你会唱歌吗 ', '你吃饭了吗 ', '你会跳舞吗 ', '你是哪里人 ',
-                      '窗前明月关 ', '你知道航母吗 ', '我会打篮球 ', '我打架可厉害了 ', '你有钱吗 ',
-                      '大河向东流 ', '消灭人类暴政 ', '我要做海贼王的男人 ', '钢铁侠变身 ',
-                      '那只竹鼠中暑了 ', '天王盖地虎 ', '说个笑话 ', '北京天气 ', '给大爷笑一个 ',
-                      '你知道乔丹吗 ', '你知道周杰伦吗 ', '张辽威震逍遥津 ', '许褚裸衣战马超 ',
-                      '何不食肉糜 ', '蜡笔小新 ', '派大星 ', '你养狗吗 ', '自然语言处理 ',
-                      '最近都听啥歌了 ', '吃太饱了怎么办 ', '如何减肥 ', '出门跑步吧 ', '跑个几公里',
-                      '做完俯卧撑，再来几个仰卧起坐 ', '刷火锅好吃吗 ', '羊肉怎么吃好吃 ',
-                      '烤羊腿，羊蝎子，羊肉火锅 ', '出门去玩了 ', '北京堵车好厉害啊 ',
-                      '好的，不着急哈', '啥时候放假呀', '真无聊', '周末出去玩不', '周一日常虚弱',
-                      '好好休息一下把', '下午还有计划去健身房吗', '我感冒了 待会我自己吃',
-                      '还需要补充什么？', '你就是不想上班', '我热爱工作',
-                      '哈哈，那你今天陪我加班，我就认为你热爱工作', '我每天都加班啊',
-                      '昨天我加班，没看到你', '损失了好几个亿了',
-                      '嗯嗯，没事没事', '今天天气真好',
-                      '外面下雪了', '窗外有只松鼠\xa0', '我是一只鱼', '我在成都', '你和小冰谁更厉害',
-                      '我要喝牛奶', '今天好冷啊', '不如跳舞', '你是男生还是女生',
-                      '你最近在听什么音乐', '马上要过年啦', '早上好！', '再见！', '晚安！',
-                      '谢谢！', '太好了！多亏你帮忙！', '太好了！', '太奇妙了！', '多美妙啊',
-                      '你学得真快！', '你真棒！', '你真能干！', '我真为你高兴！', '我好羡慕你！',
-                      '我来帮助你好吗？', '请你帮帮我！', '你真会思考！', '你真能想办法l',
-                      '我们都按游戏规则玩，好吗？', '不怕，让我们来想想办法！',
-                      '有进步，再试一次！', '再来一次！', '你真有理想！ ', '和你在一起，真快乐！',
-                      '你猜我想问啥？', '你猜我猜不猜？', '瞅啥呢？', '浪来了，浪来了。',
-                      '浪来了也没有他。', '送我一台手机吧', '知道我鞋子穿几号吗',
-                      '妈妈称赞我数学考60分', '今天又午睡到三点', '周末想去哪玩', '巧克力真好吃',
-                      '唱首有关大海的歌', '你知道小明的笑话吗', '20元一餐可以吃什么',
-                      '肚子疼怎么办', '先有鸡还先有蛋', '我是一只小小鸟', '这个香瓜有点老',
-                      '云从龙，风从虎', '邻家妹妹可有主', '看山不是山，看水不是水',
-                      '这个龙虾挺辣嘴', '一路向北，可曾后悔', '考试可以抱大腿', '最近怎么样',
-                      '吃了吗', '你瞅啥', '啥时候换手机', '穿秋裤了吗', '晚上去哪吃', '你叫啥',
-                      '你猜我叫啥', '那你为什么这么说啊', '你刚刚在想什么', '你有梦想吗？',
-                      '想不想我？', '你周五怎么没有回我电话啊', '你知道我是怎么想的吗',
-                      '你知道我的信仰是什么吗', '我的未来不是梦', '眼下就是要步步为营，不容半点闪失']
-
-
-        query_list_1  = ['你好啊 ', '你会唱歌吗 ', '你吃饭了吗 ', '你会跳舞吗 ',
+        query_list = ['你好啊 ', '你会唱歌吗 ', '你吃饭了吗 ', '你会跳舞吗 ',
                       '你是哪里人 ', '窗前明月关 ', '你知道航母吗 ',
                       '我会打篮球 ', '我打架可厉害了 ', '你有钱吗 ',
                       '大河向东流 ', '消灭人类暴政 ', '我要做海贼王的男人 ',
@@ -464,8 +443,8 @@ if __name__ == "__main__":
             return False
 
         for query in query_list:
-            # print("#" * 30)
-            # print('query is ', query)
+            print("#" * 30)
+            print('query is ', query)
             es_list = obj.Get_Data_By_Body(query)
 
             es_list = list(set(es_list))
@@ -477,14 +456,13 @@ if __name__ == "__main__":
 
             result_str = [str(round(tmp,3))  for tmp in result]
             
-            # print('es results with smn score ')
+            print('es results with smn score ')
             count = 0 
             for text, score in zip(es_list, result_str):
-                #print( 'idx :', count, ' score is :', score, ' text is :', text)
+                print( 'idx :', count, ' score is :', score, ' text is :', text)
                 count = count + 1
             best_idx = np.argmax(result)
-            # print("best answer", es_list[best_idx], 'best idx', best_idx)
-            print(es_list[best_idx])
+            print("best answer", es_list[best_idx], 'best idx', best_idx)
 
 
     else:
