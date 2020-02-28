@@ -2,12 +2,18 @@
 checkpoint
 gen_data/
 *.index
+*.pickle
+*.pickle
+*.pkl
+*backup
+*.out
+*.csv
 *.meta
 *.data-*
 .idea
 *.pyc
-corpus
-resources
+# corpus
+# resources
 .DS_Store
 data/
 *.zip
