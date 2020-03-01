@@ -4,7 +4,7 @@
 ## 语料整理清洗
 + corpus
 
-## Frame work
+## Framework
 + https://app.gitmind.cn/doc/4f4a6005da14c77e840f13c15dd3af03
 
 ## Relate work
@@ -15,4 +15,8 @@
 + 多轮检索方法
     + https://zhuanlan.zhihu.com/p/105349728
 + 对话生成方法
+
++ 阅读理解
+
++ 对话管理
 
