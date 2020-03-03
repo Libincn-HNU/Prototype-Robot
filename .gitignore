@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 checkpoint
 gen_data/
+*.json
 *.index
 *.pickle
 *.pickle
