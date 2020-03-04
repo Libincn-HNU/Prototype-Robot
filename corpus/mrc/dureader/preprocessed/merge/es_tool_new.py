@@ -4,7 +4,7 @@ from elasticsearch import RequestsHttpConnection, Elasticsearch
 from elasticsearch.helpers import bulk
 
 
-all_index_name = 'new_info_3'
+all_index_name = 'du_reader_index_test'
 all_index_type = 'new_detail'
 all_file_name = 'corpus-step-1.pkl'
 
@@ -120,21 +120,33 @@ def build():
 
     input_list = []
     count = 0
-    with open(all_file_name, 'rb') as f:
-        results = pickle.load(f)
-        for item in results:
-            idx = 0
-            while idx < len(item) -1:
-                input_list.append({'query':item[idx], 'answer': item[idx+1]})
-                count = count + 1
 
-                if count % 100000 == 0:
-                    print({'query':item[idx], 'answer': item[idx+1]})
+    import json
+    with open('/Users/apollo/Documents/Bot/corpus/mrc/dureader/preprocessed/merge/search.merge.json', mode='r', encoding='utf-8') as f:
+        dataset = f.readlines()
 
-                idx = idx + 1
+    for item in dataset:
+        item = json.loads(item)
 
+        if item['answer_spans'] is None: # 没有答案
+            continue
+        if item['question_type'] is not 'DESCRIPTION': # 不是描述型
+            continue
 
-    obj = ElasticObj('new_qa_name', 'new_qa_type')
+        for document in item['documents']:
+            if document['is_selected'] is True:
+                # print('*'*10)
+                # print(document['segmented_title'])
+                # print('question', item['question'])
+                # print('title', document['title'])
+                # print('&'*10)
+                # print(document['segmented_paragraphs'][document['most_related_para']])
+                # print('most related paragraph', document['paragraphs'][document['most_related_para']])
+                input_list.append({'query':item['question'], document['paragraphs'][document['most_related_para']]})
+
+                break
+
+    obj = ElasticObj('brc_test_name', 'brc_test_type')
     obj.bulk_Index_Data(input_list)
     obj.Get_Data_By_Body(sys.argv[1])
 
