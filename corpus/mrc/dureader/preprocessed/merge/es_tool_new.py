@@ -4,9 +4,8 @@ from elasticsearch import RequestsHttpConnection, Elasticsearch
 from elasticsearch.helpers import bulk
 
 
-all_index_name = 'du_reader_index_test'
-all_index_type = 'new_detail'
-all_file_name = 'corpus-step-1.pkl'
+all_index_name = 'brc_index_name'
+all_index_type = 'brc_index_type'
 
 class Search(object):
     
@@ -53,7 +52,7 @@ class ElasticObj(object):
         idx = 0
         for hit in _searched['hits']['hits']:
             answer_list.append(hit['_source']['answer'])
-            # print( ' es-score ' + str(hit['_score']) + ' idx '+ str(idx) + ' ### ' +  'query is ', hit['_source']['query'], ' ###  answer is ', hit['_source']['answer'], ' ### ', len(hit['_source']['answer']))
+            print( ' es-score ' + str(hit['_score']) + ' idx '+ str(idx) + ' ### ' +  'query is ', hit['_source']['query'], ' ###  answer is ', hit['_source']['answer'], ' ### ', len(hit['_source']['answer']))
             idx = idx + 1
 
         return(answer_list)
@@ -81,17 +80,6 @@ class ElasticObj(object):
         用bulk将批量数据存储到es
         :return:
         '''
-
-        if len(input_list) is  0:
-            print("input list is none, use demo list")
-            input_list = [
-                {'query':'你好','answer':'你好啊'},
-                {'query':'hello', 'answer':'hi'},
-                {'query':'天气不错啊','answer':'是的啊，情况万里，天气很好'},
-                {'query':'心情不错啊','answer':'是的，心情特别好'},
-                {'query':'心情好','answer':'今天真高兴'},
-                {'query':'今天开心','answer':'今天真高兴'}]
-
         ACTIONS=[]
         i = 1
 
@@ -107,12 +95,11 @@ class ElasticObj(object):
             }
             i += 1
 
-            if i % 100000 == 0:
+            if i % 10000 == 0:
                 print('index is ', i)
             ACTIONS.append(action)
 
         success, _ = bulk(self.es, ACTIONS, index=self.index_name, raise_on_error=True)
-
 
 def build():
     build = Search()
@@ -122,67 +109,36 @@ def build():
     count = 0
 
     import json
-    with open('/Users/apollo/Documents/Bot/corpus/mrc/dureader/preprocessed/merge/search.merge.json', mode='r', encoding='utf-8') as f:
+    dataset = []
+    with open('search.merge.json', mode='r', encoding='utf-8') as f:
         dataset = f.readlines()
 
     for item in dataset:
         item = json.loads(item)
 
-        if item['answer_spans'] is None: # 没有答案
-            continue
-        if item['question_type'] is not 'DESCRIPTION': # 不是描述型
+        if 'answer_spans' not in item.keys():
             continue
 
         for document in item['documents']:
             if document['is_selected'] is True:
-                # print('*'*10)
-                # print(document['segmented_title'])
-                # print('question', item['question'])
-                # print('title', document['title'])
-                # print('&'*10)
-                # print(document['segmented_paragraphs'][document['most_related_para']])
-                # print('most related paragraph', document['paragraphs'][document['most_related_para']])
-                input_list.append({'query':item['question'], document['paragraphs'][document['most_related_para']]})
-
+                input_list.append({'query':item['question'], 'answer':document['paragraphs'][document['most_related_para']]})
                 break
+
+    print('input list length', len(input_list))
 
     obj = ElasticObj('brc_test_name', 'brc_test_type')
     obj.bulk_Index_Data(input_list)
     obj.Get_Data_By_Body(sys.argv[1])
 
 def search():
-    build = Search()
-    build.create_index()
+    #build = Search()
+    #build.create_index()
+    #print('begin search')
 
-    input_list = []
-
-    obj = ElasticObj('new_qa_name', 'new_qa_type')
+    obj = ElasticObj('brc_test_name', 'brc_test_type')
     obj.Get_Data_By_Body(sys.argv[1])
 
 
 if __name__ == '__main__':
-    #build()
-
+    # build()
     search()
-    
-#class Operate(object):
-#    "使用 指定的IP， 端口， index_name 进行 查询"
-#
-#    def __init__(self, ip='127.0.0.1'):
-#        self.es = Elasticsearch([ip], port=9200)
-#
-#
-#    def search_query(self):
-#        obj = ElasticObj(all_index_name, all_index_type)
-#        answer_list = obj.Get_Data_By_Body(sys.argv[1])
-#        print(answer_list)
-#
-#    def search_query_and_delete(self):
-#        obj = ElasticObj(all_index_name, all_index_type)
-#        answer_list = obj.Get_Data_By_Body(sys.argv[1])
-#        obj.Delete_Data_By_Body(sys.argv[1])
-#    
-#    def search_answer_and_delete(self):
-#        obj = ElasticObj(all_index_name, all_index_type)
-#        answer_list = obj.Get_Data_By_Answer(sys.argv[1])
-#        obj.Delete_Data_By_Body(sys.argv[1])
