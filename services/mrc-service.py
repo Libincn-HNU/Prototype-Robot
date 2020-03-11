@@ -48,15 +48,20 @@ def run():
     print("&"*100)
     print(merge_info)
 
-    output_file = "../corpus/mrc/dureader/preprocessed/testset/build.test.json" 
-    model_folder = 'app/models/model_mrc/bidaf/'
+    output_file = "/export/home/sunhongchao1/Prototype-Robot/corpus/mrc/dureader/preprocessed/testset/build.test.json" 
+    model_folder = "/export/home/sunhongchao1/Prototype-Robot/services/models/model_mrc/bidaf"
+    vocab_dir = "/export/home/sunhongchao1/Prototype-Robot/solutions/response/mrc/document-retrieval/data/"
     with open(output_file, mode="w", encoding="utf-8") as f:
         f.write(json.dumps(merge_info, ensure_ascii=False) + "\n")
 
     import os
-    str=('python ../solutions/mrc/document-retrieval/run.py --predict --algo BIDAF --model_dir ' + model_folder + ' --result_dir . --test_files ' + output_file) 
+    str=('python /export/home/sunhongchao1/Prototype-Robot/solutions/response/mrc/document-retrieval/run.py --predict --algo BIDAF --vocab_dir ' + vocab_dir + ' --model_dir ' + model_folder + ' --result_dir . --test_files ' + output_file) 
     p=os.system(str)
-    print(p)
+
+    with open('test.predicted.json', mode='r', encoding='utf-8') as f:
+        results = json.load(f)
+
+    return json.dumps(results) 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5060, debug=True, threaded=True)
