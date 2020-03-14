@@ -58,7 +58,6 @@ def get_char_word_idx_from_sent(sent, word_idx_map, char_idx_map, max_word_len=5
         x_char_mask[i] = pad_sequences([len(char_ids)*[1]], padding='post', maxlen=max_char_len)[0]
         x_char_len[i] = len(char_ids)
 
-
     return x, x_mask, x_len, x_char, x_char_mask, x_char_len
 
 def get_char_word_idx_from_sent_msg(sents, word_idx_map, char_idx_map, max_turn=10, max_word_len=50, max_char_len=16):
@@ -71,7 +70,8 @@ def get_char_word_idx_from_sent_msg(sents, word_idx_map, char_idx_map, max_turn=
     char_lens = []
 
     for sent in sents:
-        words = sent.split()
+        print(sent[:10])
+        words = sent.split() # 分词后结果
         token_ids = [word_idx_map.get(word.encode("utf-8"), 0) for word in words]
         x = pad_sequences([token_ids], padding='post', maxlen=max_word_len)[0]
         x_mask = pad_sequences([len(token_ids)*[1]], padding='post', maxlen=max_word_len)[0]
@@ -86,6 +86,7 @@ def get_char_word_idx_from_sent_msg(sents, word_idx_map, char_idx_map, max_turn=
  
         for i, word in enumerate(words):
             if i >= max_word_len: continue
+            # if i < 2: continue # shc add
             char_ids = [char_idx_map.get(c.encode("utf-8"), 0) for c in word]
             x_char[i] = pad_sequences([char_ids], padding='post', maxlen=max_char_len)[0]
             x_char_mask[i] = pad_sequences([len(char_ids)*[1]], padding='post', maxlen=max_char_len)[0]

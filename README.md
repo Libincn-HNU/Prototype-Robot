@@ -1,10 +1,14 @@
 
 # Summary of Bot
 
-## 语料整理清洗
-+ corpus
+# Dialogue System
+## Corpus
++ 见 corpus 文件夹
 
-## Frame work
+## Preprocessing
++ 
+
+## Framework
 + https://app.gitmind.cn/doc/4f4a6005da14c77e840f13c15dd3af03
 
 ## Relate work
@@ -15,4 +19,8 @@
 + 多轮检索方法
     + https://zhuanlan.zhihu.com/p/105349728
 + 对话生成方法
-
+    + https://zhuanlan.zhihu.com/p/105809274 
++ 阅读理解
+    + https://zhuanlan.zhihu.com/p/107298665
++ 对话管理
+    + 有待添加

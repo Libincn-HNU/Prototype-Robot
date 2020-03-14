@@ -1,13 +1,22 @@
 # Byte-compiled / optimized / DLL files
+*jd*
+*JD*
 checkpoint
 gen_data/
+*.json
 *.index
+*.pickle
+*.pickle
+*.pkl
+*backup
+*.out
+*.csv
 *.meta
 *.data-*
 .idea
 *.pyc
-corpus
-resources
+# corpus
+# resources
 .DS_Store
 data/
 *.zip

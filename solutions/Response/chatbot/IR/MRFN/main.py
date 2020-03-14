@@ -11,9 +11,8 @@ from data_utils_record import get_record_parser, get_batch_dataset
 from model_FLS import model 
 from config import config
 
-data_path='ubuntu'
 if __name__=="__main__":
-    FLAGS = config(data_path)
+    FLAGS = config()
     print("\nParameters:")
     for attr, value in sorted(FLAGS.__flags.items()):
         print("{}={}".format(attr.upper(), value))
@@ -24,7 +23,7 @@ if __name__=="__main__":
         FLAGS.gpu = 'gpu:' + str(index_of_gpu)
         os.environ["CUDA_VISIBLE_DEVICES"] = FLAGS.gpu.split(':')[1]
     else:
-    	os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+    	os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 
     # Output directory for models and summaries
     out_dir = os.path.abspath(os.path.join(os.path.curdir, FLAGS.log_root))
@@ -36,7 +35,8 @@ if __name__=="__main__":
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
 
-    with tf.device("/%s" % FLAGS.gpu):
+    # with tf.device("/%s" % FLAGS.gpu):
+    if 1:
         session_conf = tf.ConfigProto(
             allow_soft_placement=FLAGS.allow_soft_placement,
             log_device_placement=FLAGS.log_device_placement)
@@ -47,6 +47,8 @@ if __name__=="__main__":
             print("Loading pretrained word embeddings ...")
             with open(FLAGS.init_embeddings_path, 'rb') as f:
                 embeddings = pickle.load(f)
+                embeddings = embeddings['word_embedding_matrix']
+
             pretrained_word_embeddings = np.array(embeddings)
             print(pretrained_word_embeddings.shape)
             FLAGS.vocab_size = pretrained_word_embeddings.shape[0]
@@ -61,6 +63,8 @@ if __name__=="__main__":
             print("Loading pretrained char embeddings ...")
             with open(FLAGS.init_char_embeddings_path, 'rb') as f:
                 embeddings = pickle.load(f)
+                embeddings = embeddings['embedding_matrix']
+
             pretrained_char_embeddings = np.array(embeddings)
             print(pretrained_char_embeddings.shape)
             FLAGS.char_vocab_size = pretrained_char_embeddings.shape[0]
