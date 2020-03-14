@@ -1,17 +1,12 @@
 
-# Summary of Bot
 
-# Dialogue System
-## Corpus
-+ 见 corpus 文件夹
+# Corpus & Preprocessing
++ 见 corpus 文件夹 
 
-## Preprocessing
-+ 
-
-## Framework
+# Framework
 + https://app.gitmind.cn/doc/4f4a6005da14c77e840f13c15dd3af03
 
-## Relate work
+# Relate work
 + 工程 语料 论文
     + https://zhuanlan.zhihu.com/p/105167934
 + 架构
