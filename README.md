@@ -17,7 +17,7 @@
 ## 小冰
 + https://arxiv.org/pdf/1812.08989v1.pdf
 
-![20200315174630-2020-3-15-17-46-31](https://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/20200315174630-2020-3-15-17-46-31)
+![ds_xiaoice_1.png](https://blog-picture-new.oss-cn-beijing.aliyuncs.com/dialog/ds_xiaoice_1.png)
 ​
 ## DialoGPT
 + https://arxiv.org/abs/1911.00536
