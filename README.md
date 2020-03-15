@@ -1,6 +1,6 @@
 # Summary of Dialogue System
 
-![20200315174742-2020-3-15-17-47-42](http://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/20200315174742-2020-3-15-17-47-42)
+
 
 # Papers
 + [martian-ai/Awesome-Paper](https://github.com/martian-ai/Awesome-Paper/blob/master/chatbot-papers-candidates.md)
