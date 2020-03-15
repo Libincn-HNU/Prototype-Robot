@@ -3,7 +3,11 @@
     "markdown.extension.toc.orderedList": true,
     "markdown-toc.orderedList": true,
     "markdown-toc.insertAnchor": false,
+<<<<<<< HEAD
     "python.pythonPath": "/Users/apollo/miniconda3/envs/tf_base/bin/python",
+=======
+    "python.pythonPath": "/Users/sunhongchao/anaconda3/envs/tf_base/bin/python",
+>>>>>>> 168739def04157cd77828ec6c00d8e2502ff367d
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true
 }
