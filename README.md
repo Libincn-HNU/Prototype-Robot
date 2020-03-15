@@ -1,13 +1,10 @@
 # Summary of Dialogue System
 
-![20200315174742-2020-3-15-17-47-42](https://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/20200315174742-2020-3-15-17-47-42)
+![20200315174742-2020-3-15-17-47-42](http://blog-picture-bed.oss-cn-beijing.aliyuncs.com/blog/upload/20200315174742-2020-3-15-17-47-42)
 
 # Papers
 + [martian-ai/Awesome-Paper](https://github.com/martian-ai/Awesome-Paper/blob/master/chatbot-papers-candidates.md)
 
-<<<<<<< HEAD
-## Framework
-=======
 
 # Corpus & Preprocessing
 + See in 'corpus' folder
@@ -40,7 +37,6 @@
 ## DeepBot
 
 # Framework
->>>>>>> 168739def04157cd77828ec6c00d8e2502ff367d
 + https://app.gitmind.cn/doc/4f4a6005da14c77e840f13c15dd3af03
 
 # Solutions
@@ -103,12 +99,6 @@ Using Context Information for Dialog Act Classification in DNN Framework
 + BLEU
 + 图灵测试
 
-<<<<<<< HEAD
-+ 阅读理解
-
-+ 对话管理
-
-=======
 # Reference
 xingluxi：基于知识的机器阅读理解论文列表
 Ted Li：rasa的component，policy，action的自定义开发
@@ -116,4 +106,3 @@ BreezeDeus：微软小冰对话机器人架构
 李永彬：小蜜团队万字长文：讲透对话管理模型研究最新进展
 https://arxiv.org/abs/1711.01731
 夕小瑶：认真的聊一聊对话系统（任务型、检索式、生成式对话论文与工具串讲）
->>>>>>> 168739def04157cd77828ec6c00d8e2502ff367d
