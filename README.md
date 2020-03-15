@@ -1,5 +1,6 @@
 # Summary of Dialogue System
 
+![ds_pic_1.png](blog-picture-new.oss-cn-beijing.aliyuncs.com/dialog/ds_pic_1.png)
 
 # Papers
 + [martian-ai/Awesome-Paper](https://github.com/martian-ai/Awesome-Paper/blob/master/chatbot-papers-candidates.md)
