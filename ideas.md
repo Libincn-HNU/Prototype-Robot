@@ -54,13 +54,6 @@
     + 实现
         + https://github.com/lan2720/GAN-AEL
         + https://github.com/deepanshugarg257/Response-Generation-with-AEL
-+ Deep Reinforcement Learning for Dialogue Generation
-    + https://www.cnblogs.com/jiangxinyang/p/10469860.html
-    + 传统的seq2seq 问题
-        + 1> 安全回答
-        + 2> 使用MLE 容易死循环
-    + 首先使用Seq-to-Seq模型预训练一个基础模型，然后根据作者提出的三种Reward来计算每次生成的对话的好坏，并使用policy network的方法提升对话响应的多样性、连贯性和对话轮次。文章最大的亮点就在于定义了三种reward（Ease of answering、Information Flow、Semantic Coherence），分别用于解决dull response、repetitive response、ungrammatical response
-    + https://zhuanlan.zhihu.com/p/21587758
 
 + Awesome-chatbot
 + rasa
