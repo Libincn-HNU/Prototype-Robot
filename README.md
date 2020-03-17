@@ -55,19 +55,6 @@
     + 多轮领域识别
     + 多轮意图识别
 
-"""
-1.baseline:
-GBDT (domain classification) Hypotheses Ranking for Robust Domain Classification And Tracking in Dialogue Systems
-2. RNNs
-CONTEXTUAL SPOKEN LANGUAGE UNDERSTANDING USING RECURRENT NEURAL NETWORKS
-CONTEXTUAL DOMAIN CLASSIFICATION IN SPOKEN LANGUAGE UNDERSTANDING SYSTEMS USING RECURRENT NEURAL NETWORK
-Context Sensitive Spoken Language Understanding using Role Dependent LSTM layers
-3. MemNets:
-End-to-End Memory Networks with Knowledge Carryover for Multi-Turn Spoken Language Understanding
-Sequential Dialogue Context Modeling for Spoken Language Understanding
-4. CNNs on DA(dialog act classification task)
-Using Context Information for Dialog Act Classification in DNN Framework
-"""
 
 + context query understanding
     + 实体链接
@@ -95,12 +82,3 @@ Using Context Information for Dialog Act Classification in DNN Framework
 + 熵
 + BLEU
 + 图灵测试
-
-# Reference
-xingluxi：基于知识的机器阅读理解论文列表
-Ted Li：rasa的component，policy，action的自定义开发
-BreezeDeus：微软小冰对话机器人架构
-李永彬：小蜜团队万字长文：讲透对话管理模型研究最新进展
-https://arxiv.org/abs/1711.01731
-夕小瑶：认真的聊一聊对话系统（任务型、检索式、生成式对话论文与工具串讲）
->>>>>>> 6047b876ad87128c7a6c76888cc99647e023bc42
