@@ -7,7 +7,7 @@
 + See in 'corpus' folder
 + include 
     + chatbot
-    + mrc
+    + qa
     + skill
 
 # Framework
@@ -17,37 +17,21 @@
 
 ## query
 + nlu
-    + 分词/词性/实体
-    + 句法
-    + 关键词
-    + 长难句压缩
-    + 问题改写
-    + 单轮状态识别
 
 ## dm
 + up
 + kb
 + state tracking
-    + 多轮情感识别
-    + 多轮领域识别
-    + 多轮意图识别
-
-
 + context query understanding
-    + 实体链接
-    + 指代消解
-    + 句子补全
 + user simulation
-    + Topic Model
 + agent setting
 
 ## response
 + skill
-    + task
-    Task-Oriented-Dialogue-Dataset-Survey](https://github.com/AtmaHou/Task-Oriented-Dialogue-Dataset-Survey)
+    + task [Task-Oriented-Dialogue-Dataset-Survey](https://github.com/AtmaHou/Task-Oriented-Dialogue-Dataset-Survey)
 + qa
     + kbqa
-    + qbda(mrc)
+    + mrc
 + chatbot
     + ir
     + nlg
