@@ -4,8 +4,8 @@
 
 
 # Corpus & Preprocessing
-+ See in 'corpus' folder
-+ include 
++ 见 corpus 文件夹
++ 语料分类为
     + chatbot
     + qa
     + skill

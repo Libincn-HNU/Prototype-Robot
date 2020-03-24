@@ -26,6 +26,8 @@ def query_deal(input_str:str):
     # 1. 问句改写 
     # 1.1 纠错
     # pycorrector
+    # import pycorrector
+    # corrected_sent, detail = pycorrector.correct('少先队员应该为老人让坐')
 
     # 1.2 指代消解
     # todo
