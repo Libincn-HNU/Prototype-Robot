@@ -2,23 +2,26 @@
 
 ![ds_pic_1.png](https://blog-picture-new.oss-cn-beijing.aliyuncs.com/dialog/ds_pic_1.png)
 
+## Corpus & Preprocessing
 
-# Corpus & Preprocessing
 + 见 corpus 文件夹
 + 语料分类为
-    + chatbot
-    + qa
-    + skill
+  + chatbot
+  + qa
+  + skill
 
-# Framework
+## Framework
+
 + https://app.gitmind.cn/doc/4f4a6005da14c77e840f13c15dd3af03
 
-# Solutions
+## Solutions
 
-## query
+### query nlu
+
 + nlu
 
-## dm
+### dialog manager
+
 + up
 + kb
 + state tracking
@@ -27,19 +30,12 @@
 + agent setting
 
 ## response
-+ skill
-    + task [Task-Oriented-Dialogue-Dataset-Survey](https://github.com/AtmaHou/Task-Oriented-Dialogue-Dataset-Survey)
-+ qa
-    + kbqa
-    + mrc
-+ chatbot
-    + ir
-    + nlg
 
-# Metric
-+ 困惑度
-+ SSA
-+ 生成回复长度
-+ 熵
-+ BLEU
-+ 图灵测试
++ skill
+  + task
++ qa
+  + kbqa
+  + mrc
++ chatbot
+  + ir
+  + nlg

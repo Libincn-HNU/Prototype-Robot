@@ -25,10 +25,7 @@
 + 百度 Unit
     + https://ai.baidu.com/unit/v2#/sceneliblist
     
-# Tools
-+ MatchZoo : A Toolkit for deep text matching
-+ ES
-+ Rasa
+
 
 # Views
 + ACL 2019 http://www.sohu.com/a/333666460_129720
