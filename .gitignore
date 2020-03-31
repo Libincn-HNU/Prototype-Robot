@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 *jd*
 *JD*
+*.data
 checkpoint
 gen_data/
 *.json

@@ -184,7 +184,10 @@
 ## Challenge
 
 + squad 2.0
-+ https://leaderboard.allenai.org/drop/submissions/public
++ allenai
+  + https://leaderboard.allenai.org/drop/submissions/public
++ baidu
+  + https://ai.baidu.com/broad/leaderboard?dataset=dureader
 
 ## Survey
 
