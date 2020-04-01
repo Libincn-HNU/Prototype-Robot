@@ -61,10 +61,10 @@
   + 百度搜索和百度知道的数据
 
 ## 3. 解决方案
-[Sogou Machine Reading Comprehension Toolkit](https://arxiv.org/pdf/1903.11848v2.pdf)
-[Dual Ask-Answer Network for Machine Reading Comprehension](https://arxiv.org/pdf/1809.01997v2.pdf)
 
-+ pass
++ [Sogou Machine Reading Comprehension Toolkit](https://arxiv.org/pdf/1903.11848v2.pdf)
+
++ [Dual Ask-Answer Network for Machine Reading Comprehension](https://arxiv.org/pdf/1809.01997v2.pdf)
 
 ## 4. Close Type
 
@@ -168,7 +168,6 @@
 + Span-Extraction Dataset
   + [A Span-Extraction Dataset for Chinese Machine Reading Comprehension](https://arxiv.org/pdf/1810.07366v2.pdf)
 
-
 ## 最新进展
 
 + 基于知识的机器阅读理解
@@ -183,16 +182,11 @@
 + 给定上下文的局限性
 + 推理能力不足
 
-## Tools
-
-+ Sogou Machine Reading Comprehension， SMRC
-  + https://www.leiphone.com/news/201905/Vne0qMUXttiSr8z4.html?viewType=#
-
 ## Challenge
 
 + squad 2.0
 + allenai
-  + https://leaderboard.allenai.org/drop/submissions/public
+  + https://leaderboard.allenai.org/drop
 + baidu
   + https://ai.baidu.com/broad/leaderboard?dataset=dureader
 
