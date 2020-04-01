@@ -61,6 +61,8 @@
   + 百度搜索和百度知道的数据
 
 ## 3. 解决方案
+[Sogou Machine Reading Comprehension Toolkit](https://arxiv.org/pdf/1903.11848v2.pdf)
+[Dual Ask-Answer Network for Machine Reading Comprehension](https://arxiv.org/pdf/1809.01997v2.pdf)
 
 + pass
 
@@ -161,6 +163,11 @@
 + DrQA
 + ORQA
   + https://zhuanlan.zhihu.com/p/35755367
++ DRCD
+  + [DRCD: a Chinese Machine Reading Comprehension Dataset](https://arxiv.org/pdf/1806.00920v3.pdf)
++ Span-Extraction Dataset
+  + [A Span-Extraction Dataset for Chinese Machine Reading Comprehension](https://arxiv.org/pdf/1810.07366v2.pdf)
+
 
 ## 最新进展
 
