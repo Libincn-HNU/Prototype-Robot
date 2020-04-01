@@ -1,3 +1,8 @@
+## DialoGPT
++ https://arxiv.org/abs/1911.00536
++ https://www.microsoft.com/en-us/research/project/large-scale-pretraining-for-response-generation/
++ https://github.com/microsoft/DialoGPT
+
 
 # 文本生成方法
 + GPT
