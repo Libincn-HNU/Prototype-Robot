@@ -30,6 +30,11 @@
 ### 1.7 繁简转化 
 + snow nlp
 
+### 1.8 stopwords 去除
++ http://www.baiduguide.com/baidu-stopwords/
++ https://github.com/ourren/stopwords_zh
++ https://github.com/stopwords-iso/stopwords-zh
+
 ## 2. 长难句压缩/消除冗余/文本摘要
 + 语法树分析 加 关键词典
 + 抽取方式
