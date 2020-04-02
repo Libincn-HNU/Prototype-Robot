@@ -11,7 +11,7 @@ class state_detection(object):
     """
     领域检测
     """
-    def domian_detect(self, ):
+    def domain_detect(self):
         # 搜集文本分类数据集合
         # THUNEWS 
         # 搜狐

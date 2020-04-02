@@ -15,6 +15,13 @@
 + (PAI)Mention ranking models：显式地将mention作为query，对所有candidate做rank，得分最高的就被认为是指代消解项。
 + (PAI)Entity-Mention models：一种更优雅的模型，找出所有的entity及其对话上下文。根据对话上下文聚类，在同一个类中的mention消解为同一个entity。但这种方法其实用得不多。
 
++ 分类
+    + https://blog.csdn.net/u013378306/article/details/64441596
++ 零指代消解
+    + https://www.jiqizhixin.com/articles/2018-07-28-8
++ https://zhuanlan.zhihu.com/p/53550123
++ https://zhuanlan.zhihu.com/p/103794289
+
 
 ### 1.3 专有名替换/缩略词扩充
 + 针对具体应用场景对专有名词和缩略词进行处理
