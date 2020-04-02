@@ -1,0 +1,1 @@
+textutil -convert docx ./jd_mrc_test/*.doc 
