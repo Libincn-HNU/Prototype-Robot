@@ -29,6 +29,9 @@ parser.load(par_model_path)
 stopwords = codecs.open(stopwords_path, encoding='utf-8', mode='r').readlines()
 abbreviations = codecs.open(abbreviation_path, encoding='utf-8', mode='r').readlines()
 
+stopwords = [item.strip() for item in stopwords]
+abbreviations = [item.strip() for item in abbreviations]
+
 
 def text_rewrite(input_text:str)->str:
     """
