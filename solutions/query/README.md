@@ -3,8 +3,9 @@
 ## 1. 问句改写
 
 ### 1.1 纠错
++ FASPell
+    + https://github.com/iqiyi/FASPell
 + pycorrector
-+ 相关总结见
     + https://blog.csdn.net/yiminghd2861/article/details/84181349
 
 + 基于transformer 的通用纠错

@@ -1,9 +1,3 @@
-<!-- TOC -->
-
-1. [Problems](#problems)
-
-<!-- /TOC -->
-
 # Problems
 
 + seqGAN
@@ -12,3 +6,7 @@
         + 可能是 参数问题导致迭代的太慢，又有可能是代码逻辑问题
 
 + beam search， antilm， pointer network
+
+# IDEAS
+
++ mrc/chatbot 各个数据集汇总 
