@@ -9,7 +9,7 @@ from sogou_mrc.data.batch_generator import BatchGenerator
 tf.logging.set_verbosity(tf.logging.ERROR)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-data_folder = '../../../../corpus/mrc/dataset/squad2'
+data_folder = '../../../../corpus/mrc/dataset/squad'
 embedding_folder = ''
 train_file = data_folder + "train-v1.1.json"
 dev_file = data_folder + "dev-v1.1.json"
