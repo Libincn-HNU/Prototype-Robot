@@ -13,7 +13,6 @@ import logging
 from sogou_mrc.data.batch_generator import BatchGenerator
 
 tf.logging.set_verbosity(tf.logging.ERROR)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 data_folder = '/export/home/sunhongchao1/Prototype-Robot/corpus/mrc/dataset/squad2'
 embedding_folder = '/export/home/sunhongchao1/Workspace-of-NLU/resources'
