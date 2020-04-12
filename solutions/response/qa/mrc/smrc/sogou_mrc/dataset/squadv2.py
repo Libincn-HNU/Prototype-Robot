@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from sogou_mrc.utils.tokenizer import SpacyTokenizer
+from sogou_mrc.utils.tokenizer import JieBaTokenizer
 from sogou_mrc.dataset.base_dataset import BaseReader, BaseEvaluator
 import json
 from collections import OrderedDict, Counter
@@ -14,7 +14,7 @@ import sys
 
 class SquadV2Reader(BaseReader):
     def __init__(self):
-        self.tokenizer = SpacyTokenizer()
+        self.tokenizer = JieBaTokenizer()
 
     def read(self, file_path):
         logging.info("Reading file at %s", file_path)
