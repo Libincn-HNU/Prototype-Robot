@@ -2,6 +2,9 @@
 
 ![20200330204239](https://blog-picture-new.oss-cn-beijing.aliyuncs.com/dialog/20200330204239.png)
 
+![](https://blog-picture-new.oss-cn-beijing.aliyuncs.com/dialog/20200330204239.png)
+
+
 ## 0. 背景
 
 + 机器阅读理解，广泛的范围是指构建机器阅读文档，并理解相关内容，通过不断的阅读和理解来建立逻辑能力，来回答相关问题
@@ -37,6 +40,10 @@
 + CMRC-2018 Span-Extraction
   + https://hfl-rc.github.io/cmrc2018/
   + https://github.com/ymcui/cmrc2018
++ DRCD
+  + https://github.com/sebastianruder/NLP-progress/blob/master/chinese/question_answering.md
+  + https://arxiv.org/abs/1806.00920
+  + https://github.com/DRCKnowledgeTeam/DRCD
 
 ### 1.4 句子填空
 
