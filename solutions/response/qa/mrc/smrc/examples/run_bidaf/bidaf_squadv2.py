@@ -1,6 +1,11 @@
 #coding:utf-8
 
 # coding: utf-8
+
+import sys
+
+sys.path.append("../..")
+
 from sogou_mrc.data.vocabulary import Vocabulary
 from sogou_mrc.dataset.squadv2 import SquadV2Reader, SquadV2Evaluator
 from sogou_mrc.model.bidaf import BiDAF
@@ -12,8 +17,8 @@ tf.logging.set_verbosity(tf.logging.INFO)
 logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
 logging.getLogger().setLevel(logging.INFO)
 
-data_folder = ''
-embedding_folder = '/search/odin/jdwu/glove/'
+data_folder = '/export/home/sunhongchao1/Prototype-Robot/corpus/mrc/squadv2/'
+embedding_folder = '/export/home/sunhongchao1/Prototype-Robot/resources/'
 train_file = data_folder + "train-v2.0.json"
 dev_file = data_folder + "dev-v2.0.json"
 
@@ -24,7 +29,7 @@ evaluator = SquadV2Evaluator(dev_file)
 
 vocab = Vocabulary()
 vocab.build_vocab(train_data + eval_data, min_word_count=3, min_char_count=10)
-word_embedding = vocab.make_word_embedding(embedding_folder + "glove.6B.100d.txt")
+word_embedding = vocab.make_word_embedding(embedding_folder + "glove.42B.300d.txt")
 
 train_batch_generator = BatchGenerator(vocab, train_data, batch_size=60, training=True,additional_fields=['is_impossible'])
 eval_batch_generator = BatchGenerator(vocab, eval_data, batch_size=60,additional_fields=['is_impossible'])
