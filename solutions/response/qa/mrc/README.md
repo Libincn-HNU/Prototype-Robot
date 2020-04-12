@@ -2,9 +2,6 @@
 
 ![20200330204239](https://blog-picture-new.oss-cn-beijing.aliyuncs.com/dialog/20200330204239.png)
 
-![](https://blog-picture-new.oss-cn-beijing.aliyuncs.com/dialog/20200330204239.png)
-
-
 ## 0. 背景
 
 + 机器阅读理解，广泛的范围是指构建机器阅读文档，并理解相关内容，通过不断的阅读和理解来建立逻辑能力，来回答相关问题

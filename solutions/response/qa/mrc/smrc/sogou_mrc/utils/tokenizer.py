@@ -1,9 +1,11 @@
 # coding:utf-8
 import spacy
-from stanfordnlp.server.client import CoreNLPClient
+# from stanfordnlp.server.client import CoreNLPClient
 import jieba
 import multiprocessing
 import re
+
+
 class SpacyTokenizer(object):
     def __init__(self,fine_grained=False):
         self.nlp = spacy.load('en', disable=['parser','tagger','entity'])
@@ -59,29 +61,29 @@ class JieBaTokenizer(object):
         return tokens, token_spans
 
 
-class StanfordTokenizer(object):
-    def __init__(self, language='zh', annotators='ssplit tokenize', timeout=30000, memory="4G"):
-        if language=='zh':
-            CHINESE_PROPERTIES = {
-                "tokenize.language": "zh",
-                "segment.model": "edu/stanford/nlp/models/segmenter/chinese/ctb.gz",
-                "segment.sighanCorporaDict": "edu/stanford/nlp/models/segmenter/chinese",
-                "segment.serDictionary": "edu/stanford/nlp/models/segmenter/chinese/dict-chris6.ser.gz",
-                "segment.sighanPostProcessing": "true",
-                "ssplit.boundaryTokenRegex": "[.。]|[!?！？]+",
-            }
-        else:
-            CHINESE_PROPERTIES = {}
-        self.client = CoreNLPClient(annotators=annotators, timeout=timeout, memory=memory,properties=CHINESE_PROPERTIES)
+# class StanfordTokenizer(object):
+#     def __init__(self, language='zh', annotators='ssplit tokenize', timeout=30000, memory="4G"):
+#         if language=='zh':
+#             CHINESE_PROPERTIES = {
+#                 "tokenize.language": "zh",
+#                 "segment.model": "edu/stanford/nlp/models/segmenter/chinese/ctb.gz",
+#                 "segment.sighanCorporaDict": "edu/stanford/nlp/models/segmenter/chinese",
+#                 "segment.serDictionary": "edu/stanford/nlp/models/segmenter/chinese/dict-chris6.ser.gz",
+#                 "segment.sighanPostProcessing": "true",
+#                 "ssplit.boundaryTokenRegex": "[.。]|[!?！？]+",
+#             }
+#         else:
+#             CHINESE_PROPERTIES = {}
+#         self.client = CoreNLPClient(annotators=annotators, timeout=timeout, memory=memory,properties=CHINESE_PROPERTIES)
 
-    def word_tokenizer(self, doc):
-        try:
-            annotated = self.client.annotate(doc)
-            tokens, token_spans = [], []
-            for sentence in annotated.sentence:
-                for token in sentence.token:
-                    tokens.append(token.word)
-                    token_spans.append((token.beginChar, token.endChar))
-            return tokens, token_spans
-        except Exception as e:
-            return None,None
+#     def word_tokenizer(self, doc):
+#         try:
+#             annotated = self.client.annotate(doc)
+#             tokens, token_spans = [], []
+#             for sentence in annotated.sentence:
+#                 for token in sentence.token:
+#                     tokens.append(token.word)
+#                     token_spans.append((token.beginChar, token.endChar))
+#             return tokens, token_spans
+#         except Exception as e:
+#             return None,None
